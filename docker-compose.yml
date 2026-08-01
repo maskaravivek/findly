@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: findly
+      POSTGRES_PASSWORD: findly
+      POSTGRES_DB: findly
+    ports: ["5432:5432"]
+    volumes: ["findly-postgres:/var/lib/postgresql/data", "./infra/migrations:/docker-entrypoint-initdb.d:ro"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U findly"], interval: 5s, timeout: 5s, retries: 10 }
+volumes:
+  findly-postgres:

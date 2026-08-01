@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+dist/
+.env
+.idea/
+.gradle/
+**/build/
+local.properties
+*.iml
+playwright-report/
+test-results/
+supabase/.temp/

@@ -1,0 +1,10 @@
+import type { FastifyInstance } from "fastify";
+import { SearchRequestSchema } from "@findly/contracts";
+import { SearchRequestForbiddenError, SearchRequestNotFoundError, type SearchService } from "../server/search-service.js";
+import type { RequireAuth } from "../auth/supabase-auth.js";
+export async function searchRoutes(app: FastifyInstance, options: { service: SearchService; requireAuth: RequireAuth }) {
+  app.addHook("preHandler", options.requireAuth);
+  app.post("/v1/search", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (request, reply) => { const parsed = SearchRequestSchema.safeParse(request.body); if (!parsed.success) return reply.code(400).send({ error: "invalid_request", issues: parsed.error.issues }); return options.service.start(parsed.data, request.userId); });
+  app.post<{ Params: { requestId: string }; Body: { answer?: string } }>("/v1/search/:requestId/clarification", async (request, reply) => { if (!request.body?.answer) return reply.code(400).send({ error: "answer_required" }); try { return await options.service.resume(request.params.requestId, request.body.answer, request.userId); } catch (error) { if (error instanceof SearchRequestForbiddenError) return reply.code(403).send({ error: "request_forbidden" }); if (error instanceof SearchRequestNotFoundError) return reply.code(404).send({ error: "request_not_found" }); throw error; } });
+  app.get<{ Params: { requestId: string } }>("/v1/search/:requestId/events", async (request, reply) => { try { const events = await options.service.events(request.params.requestId, request.userId); reply.raw.writeHead(200, { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" }); for (const item of events) reply.raw.write(`event: ${item.type}\ndata: ${JSON.stringify(item)}\n\n`); reply.raw.end(); } catch (error) { if (error instanceof SearchRequestForbiddenError) return reply.code(403).send({ error: "request_forbidden" }); if (error instanceof SearchRequestNotFoundError) return reply.code(404).send({ error: "request_not_found" }); throw error; } });
+}
