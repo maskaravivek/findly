@@ -58,14 +58,15 @@ Focused lenses use a visible badge and a short evidence line. The badge names th
 
 ## Offer card hierarchy
 
-1. Lens badge and evidence, when viewing a focused lens.
-2. Retailer and known total.
-3. Product title, exact model, rating, and review count.
-4. Fulfillment chips: pickup, shipping, aisle, and bay.
-5. Store name, distance, and verified quantity.
-6. Freshness and provenance.
-7. Recoverable warnings.
-8. A single “View at retailer” action.
+The offer card is a compact decision row, not a product-detail page. Lens headings already explain why results are ordered, so cards do not repeat large ranking badges or generic evidence.
+
+1. Product image, retailer, and known total.
+2. Product title, limited to two visual lines, followed by rating, review count, and exact model when present.
+3. One plain-language fulfillment statement. Store, quantity, distance, aisle, and bay share one supporting line.
+4. A concise caveat only when it changes the buying decision, such as marketplace seller or different bundle.
+5. Freshness and provenance beside one compact “View item” action.
+
+Do not use fulfillment chips as passive labels, repeat ratings in multiple places, show every raw adapter warning, or use a full-width outlined button when a compact trailing action is sufficient.
 
 The card never contains a checkout or purchase action. Opening a retailer link is the terminal Findly action.
 

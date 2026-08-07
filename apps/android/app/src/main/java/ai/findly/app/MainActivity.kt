@@ -9,8 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -42,7 +39,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -51,7 +47,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -75,6 +70,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -85,7 +81,6 @@ import ai.findly.app.data.Offer
 import ai.findly.app.ui.SearchUiState
 import ai.findly.app.ui.SearchViewModel
 import ai.findly.app.ui.OfferLens
-import ai.findly.app.ui.lensBadge
 import ai.findly.app.ui.lensEvidence
 import ai.findly.app.ui.offersForLens
 import coil3.compose.AsyncImage
@@ -312,20 +307,20 @@ private fun ShoppingScreen(
                     } else {
                         val lensOffers = offersForLens(result.offers, selectedLens)
                         item {
-                            ResultSectionTitle(
-                                selectedLens.label,
+                            Text(
                                 when (selectedLens) {
-                                    OfferLens.Recommended -> "Best balance of ratings, listed price, and availability"
-                                    OfferLens.LowestPrice -> "Lowest listed totals; checkout taxes or unknown shipping may differ"
+                                    OfferLens.Recommended -> "Top matches for product fit, value, and availability"
+                                    OfferLens.LowestPrice -> "Listed totals, before unknown shipping or tax"
                                     OfferLens.Fastest -> "Pickup first, then retailer-provided delivery timing"
                                     OfferLens.All -> "Every current result"
                                 },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MutedInk,
                             )
                         }
-                        itemsIndexed(lensOffers, key = { _, offer -> "${selectedLens.name}-${offer.offerId}" }) { index, offer ->
+                        items(lensOffers, key = { offer -> "${selectedLens.name}-${offer.offerId}" }) { offer ->
                             OfferCard(
                                 offer = offer,
-                                badge = lensBadge(selectedLens, index),
                                 evidence = lensEvidence(offer, selectedLens, result.offers),
                             )
                         }
@@ -479,125 +474,176 @@ private fun ResultSectionTitle(title: String, subtitle: String) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun OfferCard(offer: Offer, badge: String? = null, evidence: String? = null) {
+private fun OfferCard(offer: Offer, evidence: String? = null) {
     val uriHandler = LocalUriHandler.current
+    val fulfillment = fulfillmentSummary(offer)
+    val caveat = compactOfferCaveat(offer)
+    val imageUrl = offer.product.imageUrl
+    var imageFailed by remember(imageUrl) { mutableStateOf(false) }
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            badge?.let {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = Evergreen,
-                    shape = RoundedCornerShape(999.dp),
-                ) {
-                    Text(
-                        it,
-                        modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
-            evidence?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = MutedInk)
-            }
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                offer.product.imageUrl?.let { imageUrl ->
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = offer.product.title,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(76.dp),
-                    )
+                if (imageUrl != null && !imageFailed) {
+                    Surface(
+                        modifier = Modifier.size(72.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                    ) {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = offer.product.title,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxSize().padding(7.dp),
+                            onError = { imageFailed = true },
+                        )
+                    }
                 }
-                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(offer.retailer.name, style = MaterialTheme.typography.labelLarge, color = Evergreen)
-                        Spacer(Modifier.weight(1f))
+                        Text(
+                            offer.retailer.name,
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Evergreen,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Spacer(Modifier.width(8.dp))
                         Text(
                             cad(offer.price.total.amountMinor),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontWeight = FontWeight.Bold,
                         )
                     }
-                    Text(offer.product.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    offer.product.modelNumber?.let { Text("Model $it", style = MaterialTheme.typography.bodySmall, color = MutedInk) }
-                    offer.product.rating?.let { rating ->
+                    Text(
+                        offer.product.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    val metadata = productMetadata(offer)
+                    if (metadata.isNotBlank()) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Icon(Icons.Outlined.Star, contentDescription = null, tint = WarningAmber, modifier = Modifier.size(17.dp))
+                            if (offer.product.rating != null) {
+                                Icon(Icons.Outlined.Star, contentDescription = null, tint = WarningAmber, modifier = Modifier.size(15.dp))
+                            }
                             Text(
-                                buildString {
-                                    append(String.format(Locale.CANADA, "%.1f", rating))
-                                    offer.product.reviewCount?.let { append(" (${NumberFormat.getIntegerInstance(Locale.CANADA).format(it)})") }
-                                },
+                                metadata,
                                 style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.SemiBold,
+                                color = MutedInk,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     }
                 }
             }
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                if (offer.fulfillment.pickup) SuggestionChip(onClick = {}, label = { Text(offer.fulfillment.estimate ?: "Pickup") })
-                if (offer.fulfillment.shipping) SuggestionChip(onClick = {}, label = { Text("Shipping") })
-                offer.fulfillment.aisle?.let { aisle ->
-                    SuggestionChip(
-                        onClick = {},
-                        label = { Text("Aisle $aisle${offer.fulfillment.bay?.let { " • Bay $it" }.orEmpty()}") },
-                    )
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    fulfillment.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (fulfillment.positive) LiveGreen else Ink,
+                )
+                fulfillment.secondary?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MutedInk, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 }
             }
 
-            offer.fulfillment.storeName?.let { storeName ->
-                Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text(
-                        buildString {
-                            append(storeName)
-                            offer.fulfillment.storeDistanceKm?.let { append(" • ${String.format(Locale.CANADA, "%.1f", it)} km") }
-                        },
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Text(
-                        when {
-                            offer.fulfillment.inventoryQuantity != null && offer.fulfillment.inventoryQuantity > 0 -> "${offer.fulfillment.inventoryQuantity} in stock"
-                            offer.fulfillment.status == "out_of_stock" -> "Out of stock at this store"
-                            else -> "Store inventory unavailable"
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if ((offer.fulfillment.inventoryQuantity ?: 0) > 0) LiveGreen else MutedInk,
-                    )
-                }
+            evidence?.let {
+                Text(it, style = MaterialTheme.typography.labelMedium, color = Evergreen, fontWeight = FontWeight.SemiBold)
             }
 
-            HorizontalDivider()
-            Text(
-                when {
-                    offer.source.liveVerified && offer.fulfillment.inventoryQuantity != null -> "Live price & store stock • ${freshnessLabel(offer.source.observedAt)}"
-                    offer.source.liveVerified -> "Live price • ${freshnessLabel(offer.source.observedAt)}"
-                    offer.source.kind == "cached_verified" -> "Recently verified • ${freshnessLabel(offer.source.observedAt)}"
-                    else -> "Not live verified"
-                },
-                style = MaterialTheme.typography.labelMedium,
-                color = if (offer.source.liveVerified) LiveGreen else WarningAmber,
-            )
-            offer.warnings.take(2).forEach { warning ->
-                Text("• $warning", style = MaterialTheme.typography.bodySmall, color = MutedInk)
+            caveat?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall, color = MutedInk, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
-            OutlinedButton(
-                onClick = { uriHandler.openUri(offer.url) },
-                modifier = Modifier.fillMaxWidth(),
+
+            Row(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("View at ${offer.retailer.name}")
-                Spacer(Modifier.width(8.dp))
-                Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(
+                    Icons.Outlined.Verified,
+                    contentDescription = null,
+                    tint = if (offer.source.liveVerified) LiveGreen else WarningAmber,
+                    modifier = Modifier.size(17.dp),
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    sourceSummary(offer),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (offer.source.liveVerified) LiveGreen else WarningAmber,
+                )
+                TextButton(onClick = { uriHandler.openUri(offer.url) }) {
+                    Text("View item")
+                    Spacer(Modifier.width(5.dp))
+                    Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null, modifier = Modifier.size(17.dp))
+                }
             }
         }
     }
+}
+
+private data class FulfillmentSummary(val primary: String, val secondary: String?, val positive: Boolean)
+
+private fun fulfillmentSummary(offer: Offer): FulfillmentSummary {
+    val fulfillment = offer.fulfillment
+    val primary = when {
+        fulfillment.status == "out_of_stock" -> "Out of stock"
+        fulfillment.pickup -> fulfillment.estimate ?: "Pickup available"
+        fulfillment.inStore -> "Available in store"
+        fulfillment.delivery -> fulfillment.estimate ?: "Delivery available"
+        fulfillment.shipping -> "Shipping available"
+        else -> "Availability not provided"
+    }
+    val details = listOfNotNull(
+        fulfillment.storeName,
+        fulfillment.inventoryQuantity?.takeIf { it > 0 }?.let { "$it in stock" },
+        fulfillment.storeDistanceKm?.let { String.format(Locale.CANADA, "%.1f km away", it) },
+        fulfillment.aisle?.let { aisle -> "Aisle $aisle${fulfillment.bay?.let { ", bay $it" }.orEmpty()}" },
+    ).joinToString(" • ").ifBlank { null }
+    return FulfillmentSummary(
+        primary = primary,
+        secondary = details,
+        positive = fulfillment.status != "out_of_stock" && (fulfillment.pickup || fulfillment.inStore),
+    )
+}
+
+private fun productMetadata(offer: Offer): String = buildList {
+    offer.product.rating?.let { rating ->
+        add(buildString {
+            append(String.format(Locale.CANADA, "%.1f", rating))
+            offer.product.reviewCount?.let { append(" (${NumberFormat.getIntegerInstance(Locale.CANADA).format(it)})") }
+        })
+    }
+    offer.product.modelNumber?.let { add("Model $it") }
+}.joinToString(" • ")
+
+private fun compactOfferCaveat(offer: Offer): String? {
+    val caveats = buildList {
+        if (offer.seller.type == "marketplace") add("Marketplace seller")
+        if (offer.warnings.any { it.contains("different bundle", ignoreCase = true) }) add("Different bundle or package")
+        if (offer.warnings.any { it.contains("pickup was not offered", ignoreCase = true) }) add("Store stock shown, pickup unavailable")
+        if (isEmpty() && offer.warnings.any { it.contains("seller and bundle", ignoreCase = true) }) add("Check seller and bundle details")
+    }
+    return caveats.distinct().take(2).joinToString(" • ").ifBlank { null }
+}
+
+private fun sourceSummary(offer: Offer): String = when {
+    offer.source.liveVerified && offer.fulfillment.inventoryQuantity != null -> "Price and stock live • ${freshnessLabel(offer.source.observedAt)}"
+    offer.source.liveVerified -> "Price live • ${freshnessLabel(offer.source.observedAt)}"
+    offer.source.kind == "cached_verified" -> "Recently verified • ${freshnessLabel(offer.source.observedAt)}"
+    offer.source.kind == "fixture" -> "Demo result"
+    else -> "Not live verified"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
