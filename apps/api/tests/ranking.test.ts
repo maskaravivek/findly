@@ -37,4 +37,18 @@ describe("local fulfillment ranking", () => {
     });
     expect(rankOffers({ ...request, urgency: "no_preference", fulfillmentPreferences: [] }, [singleReview, established])[0]?.offer.offerId).toBe("established");
   });
+
+  it("keeps accessories below products that match the requested type", () => {
+    const battery = offer({
+      offerId: "battery",
+      product: { title: "DEWALT 20V MAX Battery and Charger Kit", rating: 4.9, reviewCount: 8_000 },
+      price: { item: { amountMinor: 3_000, currency: "CAD" }, total: { amountMinor: 3_000, currency: "CAD" } },
+    });
+    const drill = offer({
+      offerId: "drill",
+      product: { title: "DEWALT 20V MAX Cordless Drill Driver", rating: 4.5, reviewCount: 300 },
+      price: { item: { amountMinor: 12_000, currency: "CAD" }, total: { amountMinor: 12_000, currency: "CAD" } },
+    });
+    expect(rankOffers({ ...request, urgency: "no_preference", fulfillmentPreferences: [] }, [battery, drill])[0]?.offer.offerId).toBe("drill");
+  });
 });
