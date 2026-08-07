@@ -9,6 +9,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +34,7 @@ import androidx.compose.material.icons.outlined.LocationOff
 import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,6 +52,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -77,6 +84,10 @@ import androidx.navigation.compose.rememberNavController
 import ai.findly.app.data.Offer
 import ai.findly.app.ui.SearchUiState
 import ai.findly.app.ui.SearchViewModel
+import ai.findly.app.ui.OfferLens
+import ai.findly.app.ui.lensBadge
+import ai.findly.app.ui.lensEvidence
+import ai.findly.app.ui.offersForLens
 import coil3.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -145,6 +156,7 @@ private fun ShoppingScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val focusManager = LocalFocusManager.current
     var requestedLocation by rememberSaveable { mutableStateOf(false) }
+    var selectedLens by rememberSaveable(state.result?.requestId) { mutableStateOf(OfferLens.Recommended) }
     val locationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { permissions ->
@@ -282,18 +294,43 @@ private fun ShoppingScreen(
                 if (result.warnings.isNotEmpty()) {
                     item { RetailerWarningCard(result.warnings) }
                 }
-                val nearbyOffers = result.offers.filter { it.fulfillment.storeName != null }
-                val onlineOffers = result.offers.filter { it.fulfillment.storeName == null }
-                if (nearbyOffers.isNotEmpty()) {
-                    item { ResultSectionTitle("Nearby pickup", "Stock checked at your closest Home Depot") }
+                if (result.offers.isNotEmpty()) {
+                    item {
+                        ResultLensTabs(selected = selectedLens, select = { selectedLens = it })
+                    }
+                    if (selectedLens == OfferLens.All) {
+                        val nearbyOffers = result.offers.filter { it.fulfillment.storeName != null }
+                        val onlineOffers = result.offers.filter { it.fulfillment.storeName == null }
+                        if (nearbyOffers.isNotEmpty()) {
+                            item { ResultSectionTitle("Nearby pickup", "Stock checked at your closest Home Depot") }
+                        }
+                        items(nearbyOffers, key = { "all-${it.offerId}" }) { offer -> OfferCard(offer) }
+                        if (onlineOffers.isNotEmpty()) {
+                            item { ResultSectionTitle("Online options", "Current online prices for comparison") }
+                        }
+                        items(onlineOffers, key = { "all-${it.offerId}" }) { offer -> OfferCard(offer) }
+                    } else {
+                        val lensOffers = offersForLens(result.offers, selectedLens)
+                        item {
+                            ResultSectionTitle(
+                                selectedLens.label,
+                                when (selectedLens) {
+                                    OfferLens.Recommended -> "Best balance of ratings, listed price, and availability"
+                                    OfferLens.LowestPrice -> "Lowest listed totals; checkout taxes or unknown shipping may differ"
+                                    OfferLens.Fastest -> "Pickup first, then retailer-provided delivery timing"
+                                    OfferLens.All -> "Every current result"
+                                },
+                            )
+                        }
+                        itemsIndexed(lensOffers, key = { _, offer -> "${selectedLens.name}-${offer.offerId}" }) { index, offer ->
+                            OfferCard(
+                                offer = offer,
+                                badge = lensBadge(selectedLens, index),
+                                evidence = lensEvidence(offer, selectedLens, result.offers),
+                            )
+                        }
+                    }
                 }
-                items(nearbyOffers, key = { it.offerId }) { offer ->
-                    OfferCard(offer)
-                }
-                if (onlineOffers.isNotEmpty()) {
-                    item { ResultSectionTitle("Amazon comparison", "Current online prices for comparison") }
-                }
-                items(onlineOffers, key = { it.offerId }) { offer -> OfferCard(offer) }
                 if (result.offers.isEmpty()) {
                     item {
                         Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
@@ -305,6 +342,24 @@ private fun ShoppingScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ResultLensTabs(selected: OfferLens, select: (OfferLens) -> Unit) {
+    TabRow(
+        selectedTabIndex = OfferLens.entries.indexOf(selected),
+        containerColor = Cream,
+        contentColor = Evergreen,
+    ) {
+        OfferLens.entries.forEach { lens ->
+            Tab(
+                selected = selected == lens,
+                onClick = { select(lens) },
+                modifier = Modifier.heightIn(min = 48.dp),
+                text = { Text(lens.label, fontWeight = if (selected == lens) FontWeight.Bold else FontWeight.Medium) },
+            )
         }
     }
 }
@@ -424,14 +479,32 @@ private fun ResultSectionTitle(title: String, subtitle: String) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun OfferCard(offer: Offer) {
+private fun OfferCard(offer: Offer, badge: String? = null, evidence: String? = null) {
     val uriHandler = LocalUriHandler.current
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            badge?.let {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = Evergreen,
+                    shape = RoundedCornerShape(999.dp),
+                ) {
+                    Text(
+                        it,
+                        modifier = Modifier.padding(horizontal = 11.dp, vertical = 6.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+            evidence?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall, color = MutedInk)
+            }
             Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 offer.product.imageUrl?.let { imageUrl ->
                     AsyncImage(
@@ -453,10 +526,23 @@ private fun OfferCard(offer: Offer) {
                     }
                     Text(offer.product.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     offer.product.modelNumber?.let { Text("Model $it", style = MaterialTheme.typography.bodySmall, color = MutedInk) }
+                    offer.product.rating?.let { rating ->
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Icon(Icons.Outlined.Star, contentDescription = null, tint = WarningAmber, modifier = Modifier.size(17.dp))
+                            Text(
+                                buildString {
+                                    append(String.format(Locale.CANADA, "%.1f", rating))
+                                    offer.product.reviewCount?.let { append(" (${NumberFormat.getIntegerInstance(Locale.CANADA).format(it)})") }
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        }
+                    }
                 }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (offer.fulfillment.pickup) SuggestionChip(onClick = {}, label = { Text(offer.fulfillment.estimate ?: "Pickup") })
                 if (offer.fulfillment.shipping) SuggestionChip(onClick = {}, label = { Text("Shipping") })
                 offer.fulfillment.aisle?.let { aisle ->

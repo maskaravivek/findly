@@ -1,19 +1,60 @@
 import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
 export type Ranked = { offer: NormalizedRetailOffer; score: number; reasons: string[] };
 
+const knownTotalScore = (amountMinor: number, minimum: number, maximum: number) => {
+  if (maximum <= minimum) return 30;
+  return 30 * (1 - (amountMinor - minimum) / (maximum - minimum));
+};
+
+const ratingScore = (offer: NormalizedRetailOffer) => {
+  const rating = offer.product.rating;
+  if (rating === undefined) return 18;
+  const count = offer.product.reviewCount ?? 0;
+  const adjusted = (rating * count + 4 * 25) / (count + 25);
+  return adjusted / 5 * 25;
+};
+
+const speedScore = (offer: NormalizedRetailOffer, urgent: boolean) => {
+  const fulfillment = offer.fulfillment;
+  const estimate = fulfillment.estimate?.toLowerCase() ?? "";
+  if (fulfillment.pickup && fulfillment.status !== "out_of_stock") return urgent ? 40 : 32;
+  if (fulfillment.inStore && fulfillment.status !== "out_of_stock") return urgent ? 35 : 28;
+  if (fulfillment.delivery && /today|same.day/.test(estimate)) return urgent ? 34 : 30;
+  if (fulfillment.delivery && /tomorrow|next.day/.test(estimate)) return urgent ? 25 : 24;
+  if (fulfillment.delivery && estimate) return 18;
+  if (fulfillment.shipping) return urgent ? 4 : 10;
+  return 0;
+};
+
 export function rankOffers(request: ShoppingRequest, offers: NormalizedRetailOffer[]): Ranked[] {
   const urgent = request.urgency === "today" || request.urgency === "immediate" || request.fulfillmentPreferences.some(value => value === "pickup" || value === "in_store");
+  const totals = offers.map(offer => offer.price.total.amountMinor);
+  const minimumTotal = Math.min(...totals);
+  const maximumTotal = Math.max(...totals);
   return offers.map(offer => {
-    let score = Math.round(offer.confidence * 40);
+    let score = offer.confidence * 15;
     const reasons: string[] = [];
-    if (request.modelNumber && offer.product.modelNumber?.toLowerCase() === request.modelNumber.toLowerCase()) { score += 30; reasons.push("Exact model number"); }
-    if (offer.seller.type === "first_party") { score += 8; reasons.push("First-party seller"); }
-    if (offer.source.liveVerified) { score += 6; reasons.push("Verified during this search"); }
-    if (offer.fulfillment.pickup && offer.fulfillment.status !== "out_of_stock") { score += urgent ? 28 : 14; reasons.push("Pickup available nearby"); }
-    if (offer.fulfillment.inventoryQuantity !== undefined && offer.fulfillment.inventoryQuantity > 0) { score += 8; reasons.push("Store stock verified"); }
-    if (offer.fulfillment.storeDistanceKm !== undefined) score += Math.max(0, 6 - Math.floor(offer.fulfillment.storeDistanceKm));
-    if (urgent && !offer.fulfillment.pickup) score -= 8;
-    score -= Math.min(20, Math.floor(offer.price.total.amountMinor / 10_000));
-    return { offer, score, reasons };
+    const modelMatches = request.modelNumber && offer.product.modelNumber?.toLowerCase() === request.modelNumber.toLowerCase();
+    if (modelMatches) { score += 100; reasons.push("Exact model number"); }
+    else if (request.modelNumber && offer.product.modelNumber) score -= 75;
+
+    const cost = knownTotalScore(offer.price.total.amountMinor, minimumTotal, maximumTotal);
+    score += cost;
+    if (offer.price.total.amountMinor === minimumTotal) reasons.push("Lowest listed total");
+
+    const speed = speedScore(offer, urgent);
+    score += speed;
+    if (offer.fulfillment.pickup && offer.fulfillment.status !== "out_of_stock") reasons.push("Pickup available nearby");
+    else if (offer.fulfillment.delivery && offer.fulfillment.estimate) reasons.push(offer.fulfillment.estimate);
+
+    score += ratingScore(offer);
+    if (offer.product.rating !== undefined) {
+      reasons.push(`${offer.product.rating.toFixed(1)} rating${offer.product.reviewCount ? ` from ${offer.product.reviewCount} reviews` : ""}`);
+    }
+    if (offer.seller.type === "first_party") score += 3;
+    if (offer.source.liveVerified) { score += 5; reasons.push("Verified during this search"); }
+    if ((offer.fulfillment.inventoryQuantity ?? 0) > 0) { score += 4; reasons.push("Store stock verified"); }
+    if (offer.fulfillment.storeDistanceKm !== undefined) score += Math.max(0, 4 - offer.fulfillment.storeDistanceKm / 5);
+    return { offer, score: Math.round(score * 10) / 10, reasons };
   }).sort((a, b) => b.score - a.score || a.offer.price.total.amountMinor - b.offer.price.total.amountMinor);
 }

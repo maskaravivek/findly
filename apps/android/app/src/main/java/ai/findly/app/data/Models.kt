@@ -17,7 +17,15 @@ import kotlinx.serialization.SerialName
 )
 @Serializable data class Money(val amountMinor: Int, val currency: String)
 @Serializable data class Source(val kind: String, val observedAt: String, val liveVerified: Boolean)
-@Serializable data class Product(val title: String, val brand: String? = null, val modelNumber: String? = null, val variant: String? = null, val imageUrl: String? = null)
+@Serializable data class Product(
+    val title: String,
+    val brand: String? = null,
+    val modelNumber: String? = null,
+    val variant: String? = null,
+    val imageUrl: String? = null,
+    val rating: Double? = null,
+    val reviewCount: Int? = null,
+)
 @Serializable data class Retailer(val id: String, val name: String, val domain: String)
 @Serializable data class Seller(val name: String? = null, val type: String)
 @Serializable data class Price(val item: Money, val shipping: Money? = null, val total: Money)

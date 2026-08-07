@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { NormalizedRetailOffer, RetailerCapabilities } from "@findly/contracts";
 import type { RetailerAdapter, RetailerExecutionContext, RetailerSearchInput, RetailerSearchResult } from "@findly/retailer-sdk";
 import type { BrowserService } from "../browser/browser-service.js";
+import { parseRating, parseReviewCount } from "./rating-parser.js";
 
 const capabilities: RetailerCapabilities = {
   productSearch: true, productDetails: false, currentPrice: true, storeInventory: false, inventoryQuantity: false,
@@ -11,7 +12,7 @@ const capabilities: RetailerCapabilities = {
 };
 const CardSchema = z.object({
   asin: z.string().min(5), title: z.string().min(3).max(500), href: z.string().url(), priceText: z.string().max(50),
-  imageUrl: z.string().url().optional(), text: z.string().max(2_000)
+  imageUrl: z.string().url().optional(), text: z.string().max(2_000), ratingText: z.string().max(80).optional(), reviewCountText: z.string().max(80).optional()
 });
 const MOBILE_USER_AGENT = "Mozilla/5.0 (Linux; Android 15; Pixel 9 Pro XL) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Mobile Safari/537.36";
 const clean = (value: string) => value.replace(/[\u0000-\u001f<>]/g, " ").replace(/\s+/g, " ").trim();
@@ -57,11 +58,15 @@ export class AmazonBrowserbaseAdapter implements RetailerAdapter {
         const titleNode = node.querySelector<HTMLElement>("h2 span, [data-cy='title-recipe'] h2, .a-size-base-plus.a-color-base.a-text-normal");
         const link = node.querySelector<HTMLAnchorElement>("h2 a[href*='/dp/'], a[href*='/dp/']");
         const image = node.querySelector<HTMLImageElement>("img.s-image");
+        const ratingText = Array.from(node.querySelectorAll<HTMLElement>(".a-icon-alt, [aria-label*='out of 5 stars']"))
+          .map(value => value.textContent || value.getAttribute("aria-label") || "")
+          .find(value => /out of 5/i.test(value));
+        const reviewCountText = node.querySelector<HTMLElement>("a[href*='customerReviews'] span, [data-csa-c-content-id='alf-customer-ratings-count-component'] span, .a-size-base.s-underline-text")?.textContent?.trim();
         return {
           asin: node.getAttribute("data-asin") ?? "", title: (titleNode?.textContent ?? "").trim(), href: link?.href ?? "",
           priceText: node.querySelector<HTMLElement>(".a-price .a-offscreen")?.textContent?.trim() ?? "",
           imageUrl: image?.currentSrc || image?.dataset.src || image?.src || undefined,
-          text: (node.textContent ?? "").replace(/\s+/g, " ").trim()
+          text: (node.textContent ?? "").replace(/\s+/g, " ").trim(), ratingText, reviewCountText
         };
       }));
 
@@ -71,6 +76,8 @@ export class AmazonBrowserbaseAdapter implements RetailerAdapter {
         const host = new URL(parsed.data.href).hostname;
         const minor = priceMinor(parsed.data.priceText);
         if (minor === null || !(host === "amazon.ca" || host.endsWith(".amazon.ca"))) return [];
+        const rating = parseRating(parsed.data.ratingText);
+        const reviewCount = parseReviewCount(parsed.data.reviewCountText);
         const estimate = deliveryEstimate(parsed.data.text);
         const warnings = [
           "Seller and bundle details require verification on Amazon",
@@ -79,7 +86,11 @@ export class AmazonBrowserbaseAdapter implements RetailerAdapter {
         return [{
           offerId: `amazon_ca:${parsed.data.asin}:${index}`,
           retailer: { id: "amazon_ca", name: this.retailer.name, domain: this.retailer.domain }, seller: { type: "unknown" },
-          product: { title: parsed.data.title, ...(parsed.data.imageUrl && !/grey-pixel|\.svg/i.test(parsed.data.imageUrl) ? { imageUrl: parsed.data.imageUrl } : {}) },
+          product: {
+            title: parsed.data.title,
+            ...(parsed.data.imageUrl && !/grey-pixel|\.svg/i.test(parsed.data.imageUrl) ? { imageUrl: parsed.data.imageUrl } : {}),
+            ...(rating !== undefined ? { rating } : {}), ...(reviewCount !== undefined ? { reviewCount } : {})
+          },
           price: { item: { amountMinor: minor, currency: "CAD" }, total: { amountMinor: minor, currency: "CAD" } },
           fulfillment: { shipping: true, delivery: Boolean(estimate), pickup: false, inStore: false, status: "in_stock", ...(estimate && deliveryLocationVerified ? { estimate } : {}) },
           url: parsed.data.href, source: { kind: "browser_verified", observedAt, liveVerified: true }, confidence: 0.72, warnings

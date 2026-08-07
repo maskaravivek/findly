@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { NormalizedRetailOffer, RetailerCapabilities } from "@findly/contracts";
 import type { RetailerAdapter, RetailerExecutionContext, RetailerSearchInput, RetailerSearchResult } from "@findly/retailer-sdk";
 import type { BrowserService } from "../browser/browser-service.js";
+import { extractProductRatingMetadata, parseRating, parseReviewCount } from "./rating-parser.js";
 
 const capabilities: RetailerCapabilities = {
   productSearch: true, productDetails: true, currentPrice: true, storeInventory: true, inventoryQuantity: true,
@@ -60,6 +61,33 @@ const stockStatus = (quantity: number, raw?: string): "in_stock" | "limited" | "
   if (/outofstock|out_of_stock|zero/i.test(raw ?? "")) return "out_of_stock";
   return "unknown";
 };
+
+async function readHomeDepotDomRatings(page: Page) {
+  await page.locator("a[href*='/product/']").first().waitFor({ state: "attached", timeout: 1_500 }).catch(() => undefined);
+  const values = await page.locator("a[href*='/product/']").evaluateAll(links => links.slice(0, 80).flatMap(link => {
+    const href = (link as HTMLAnchorElement).href;
+    const code = href.match(/\/(\d{8,})(?:[/?#]|$)/)?.[1];
+    if (!code) return [];
+    let container: HTMLElement | null = link as HTMLElement;
+    for (let depth = 0; depth < 7 && container && container.tagName !== "BODY"; depth += 1) {
+      const text = (container.textContent ?? "").replace(/\s+/g, " ");
+      const ariaText = Array.from(container.querySelectorAll<HTMLElement>("[aria-label*='out of 5'], [aria-label*='star']"))
+        .map(value => value.getAttribute("aria-label") ?? "").join(" ");
+      const ratingText = `${ariaText} ${text}`.match(/\d(?:\.\d+)?\s*(?:out of 5|stars?)/i)?.[0];
+      if (ratingText) {
+        const reviewCountText = text.match(/(?:\(|\b)(\d[\d,.]*\s*[KM]?)(?:\)|\s+reviews?\b)/i)?.[1];
+        return [{ code, ratingText, reviewCountText }];
+      }
+      container = container.parentElement;
+    }
+    return [];
+  }));
+  return new Map(values.map(value => [value.code, {
+    ...(parseRating(value.ratingText) !== undefined ? { rating: parseRating(value.ratingText)! } : {}),
+    ...(parseReviewCount(value.reviewCountText) !== undefined ? { reviewCount: parseReviewCount(value.reviewCountText)! } : {})
+  }]));
+}
+
 export class HomeDepotBrowserbaseAdapter implements RetailerAdapter {
   readonly retailer = { id: "home_depot_ca" as const, name: "Home Depot Canada", domain: "homedepot.ca", capabilities, live: true };
   constructor(private readonly browserService: BrowserService) {}
@@ -96,11 +124,13 @@ export class HomeDepotBrowserbaseAdapter implements RetailerAdapter {
       const storeDistanceKm = input.latitude !== undefined && input.longitude !== undefined
         ? haversineKm({ latitude: input.latitude, longitude: input.longitude }, store.geoPoint)
         : distanceKm(store.formattedDistance);
+      const domRatings = await readHomeDepotDomRatings(page);
 
       const offers = parsedSearch.products.slice(0, 16).flatMap((rawProduct): NormalizedRetailOffer[] => {
         const parsedProduct = HomeDepotProductSchema.safeParse(rawProduct);
         if (!parsedProduct.success) return [];
         const product = parsedProduct.data;
+        const ratingMetadata = domRatings.get(product.code) ?? extractProductRatingMetadata(rawProduct);
         if (product.pricing.displayPrice.currencyIso !== "CAD") return [];
         const minor = Math.round(product.pricing.displayPrice.value * 100);
         const quantity = Math.max(0, Math.trunc(product.storeStock.stockLevel ?? 0));
@@ -117,7 +147,11 @@ export class HomeDepotBrowserbaseAdapter implements RetailerAdapter {
         return [{
           offerId: `home_depot_ca:${product.code}:${store.name}`,
           retailer: { id: "home_depot_ca", name: this.retailer.name, domain: this.retailer.domain }, seller: { type: "first_party" },
-          product: { title: clean(product.name), ...(product.brand ? { brand: clean(product.brand) } : {}), ...(product.modelNumber ? { modelNumber: clean(product.modelNumber) } : {}), ...(product.imageUrl ? { imageUrl: product.imageUrl } : {}) },
+          product: {
+            title: clean(product.name), ...(product.brand ? { brand: clean(product.brand) } : {}),
+            ...(product.modelNumber ? { modelNumber: clean(product.modelNumber) } : {}), ...(product.imageUrl ? { imageUrl: product.imageUrl } : {}),
+            ...ratingMetadata
+          },
           price: { item: { amountMinor: minor, currency: "CAD" }, total: { amountMinor: minor, currency: "CAD" } },
           fulfillment: {
             shipping: product.fulfillmentOptions.addToCart === true && (product.stock.stockLevel ?? 0) > 0,

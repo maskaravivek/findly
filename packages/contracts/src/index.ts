@@ -32,7 +32,12 @@ export type RetailerCapabilities = z.infer<typeof RetailerCapabilitiesSchema>;
 export const NormalizedRetailOfferSchema = z.object({
   offerId: z.string(), retailer: z.object({ id: RetailerIdSchema, name: z.string(), domain: z.string() }),
   seller: z.object({ name: z.string().optional(), type: z.enum(["first_party", "marketplace", "unknown"]) }),
-  product: z.object({ title: z.string(), brand: z.string().optional(), modelNumber: z.string().optional(), manufacturerPartNumber: z.string().optional(), upc: z.string().optional(), gtin: z.string().optional(), ean: z.string().optional(), category: z.string().optional(), variant: z.string().optional(), size: z.string().optional(), colour: z.string().optional(), imageUrl: z.url().optional() }),
+  product: z.object({
+    title: z.string(), brand: z.string().optional(), modelNumber: z.string().optional(), manufacturerPartNumber: z.string().optional(),
+    upc: z.string().optional(), gtin: z.string().optional(), ean: z.string().optional(), category: z.string().optional(),
+    variant: z.string().optional(), size: z.string().optional(), colour: z.string().optional(), imageUrl: z.url().optional(),
+    rating: z.number().min(0).max(5).optional(), reviewCount: z.int().nonnegative().optional()
+  }),
   price: z.object({ item: MoneySchema, shipping: MoneySchema.optional(), estimatedTax: MoneySchema.optional(), total: MoneySchema }),
   fulfillment: z.object({
     shipping: z.boolean(), delivery: z.boolean(), pickup: z.boolean(), inStore: z.boolean(),

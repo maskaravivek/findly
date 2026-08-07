@@ -25,4 +25,16 @@ describe("local fulfillment ranking", () => {
     });
     expect(rankOffers(request, [amazon, homeDepot])[0]?.offer.offerId).toBe("home-depot");
   });
+
+  it("uses review volume to avoid over-weighting a single high rating", () => {
+    const established = offer({
+      offerId: "established",
+      product: { title: "Cordless drill", rating: 4.7, reviewCount: 1_200 },
+    });
+    const singleReview = offer({
+      offerId: "single-review",
+      product: { title: "Cordless drill", rating: 5, reviewCount: 1 },
+    });
+    expect(rankOffers({ ...request, urgency: "no_preference", fulfillmentPreferences: [] }, [singleReview, established])[0]?.offer.offerId).toBe("established");
+  });
 });
