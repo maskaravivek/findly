@@ -2,7 +2,7 @@
 
 - Android receives no model, Browserbase, retailer, database, or administrator credentials.
 - Retailer domains are allowlisted at both application and Browserbase session levels.
-- CAPTCHA solving is explicitly disabled. Authentication and access controls are not bypassed.
+- Browserbase's supported CAPTCHA solver is enabled for retailer sessions. Authentication requirements, retailer access-denied responses, and other access controls are not bypassed.
 - Retailer HTML is untrusted data. Extract only schema-allowed product fields, strip scripts, and never concatenate page instructions into privileged prompts.
 - Browser sessions have bounded timeouts, no persistent context by default, explicit release, structured correlation metadata, and redacted logs.
 - The model has no purchase, email, secret, arbitrary-network, or authentication-token tools.
