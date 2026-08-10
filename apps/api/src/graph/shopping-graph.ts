@@ -4,8 +4,44 @@ import type { ModelProvider } from "@findly/model-sdk";
 import type { RetailerAdapter } from "@findly/retailer-sdk";
 import type { SearchRequest } from "@findly/contracts";
 import { rankOffers } from "../ranking/rank-offers.js";
+import { partitionRelevantOffers } from "../products/product-relevance.js";
 import { ShoppingGraphAnnotation, event, type ShoppingGraphState } from "./state.js";
 import { publicRetailerError } from "../retailers/retailer-errors.js";
+
+const rejectedOfferWarning = (count: number) => `Excluded ${count} retailer ${count === 1 ? "result" : "results"} that did not match the requested product`;
+
+async function searchRetailerWithFallback(adapter: RetailerAdapter, state: ShoppingGraphState) {
+  const request = state.understoodRequest!;
+  const queries = state.searchPlan?.queries.length ? state.searchPlan.queries.slice(0, 2) : [request.originalQuery ?? "product"];
+  let rejectedCount = 0;
+  let lastResult: Awaited<ReturnType<RetailerAdapter["searchProducts"]>> | undefined;
+  for (const query of queries) {
+    const result = await adapter.searchProducts({
+      request, query,
+      ...(state.input.postalCode ? { postalCode: state.input.postalCode } : {}),
+      ...(state.input.selectedStoreId ? { selectedStoreId: state.input.selectedStoreId } : {}),
+      ...(state.input.latitude !== undefined ? { latitude: state.input.latitude } : {}),
+      ...(state.input.longitude !== undefined ? { longitude: state.input.longitude } : {}),
+      ...(state.input.locationAccuracyMeters !== undefined ? { locationAccuracyMeters: state.input.locationAccuracyMeters } : {}),
+      ...(state.input.locationApproximate !== undefined ? { locationApproximate: state.input.locationApproximate } : {}),
+    }, { requestId: state.requestId, correlationId: state.threadId });
+    lastResult = result;
+    const { relevant, rejected } = partitionRelevantOffers(request, result.offers);
+    rejectedCount += rejected.length;
+    if (relevant.length) {
+      return {
+        ...result,
+        offers: relevant,
+        warnings: [...new Set([...result.warnings, ...(rejectedCount ? [rejectedOfferWarning(rejectedCount)] : [])])],
+      };
+    }
+  }
+  return {
+    ...lastResult!,
+    offers: [],
+    warnings: [...new Set([...(lastResult?.warnings ?? []), ...(rejectedCount ? [rejectedOfferWarning(rejectedCount)] : [])])],
+  };
+}
 
 export async function createCheckpointer(mode: "memory" | "postgres", databaseUrl?: string, schema = "findly_internal"): Promise<BaseCheckpointSaver> { if (mode === "memory") return new MemorySaver(); if (!databaseUrl) throw new Error("DATABASE_URL is required"); const saver = PostgresSaver.fromConnString(databaseUrl, { schema }); await saver.setup(); return saver; }
 export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdapter[], checkpointer: BaseCheckpointSaver) {
@@ -14,13 +50,14 @@ export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdap
     .addNode("understand_request", async (state) => ({ understoodRequest: await model.understandShoppingRequest({ imageIds: state.input.imageIds, ...(state.input.text ? { text: state.input.text } : {}), ...(state.input.barcode ? { barcode: state.input.barcode } : {}), ...(state.input.selectedStoreId ? { selectedStoreId: state.input.selectedStoreId } : {}), ...(state.input.postalCode ? { postalCode: state.input.postalCode } : {}) }), updatedAt: new Date().toISOString() }))
     .addNode("request_clarification", async (state) => { const request = state.understoodRequest!; const answer = String(interrupt({ type: "clarification", requestId: state.requestId, question: request.clarificationQuestion, options: request.clarificationOptions, reason: "The answer changes product compatibility and ranking." })); return { clarificationAnswer: answer, understoodRequest: { ...request, clarificationNeeded: false, requiredFeatures: [...request.requiredFeatures, `Suitable for ${answer.toLowerCase()}`], confidence: Math.min(1, request.confidence + 0.08) }, status: "planning", progressEvents: [event("clarification_applied", "Using your clarification")] }; })
     .addNode("build_search_plan", async (state) => ({ status: "planning", searchPlan: await model.generateSearchPlan({ request: state.understoodRequest! }), progressEvents: [event("planning", "Building a retailer search plan")], updatedAt: new Date().toISOString() }))
-    .addNode("dispatch_retailer_searches", async (state) => { const request = state.understoodRequest!; const query = state.searchPlan!.queries[0] ?? request.originalQuery ?? "product"; const selectedAdapters = adapters.filter(a => state.searchPlan!.retailerIds.includes(a.retailer.id)); const settled = await Promise.allSettled(selectedAdapters.map(async adapter => { const result = await adapter.searchProducts({ request, query, ...(state.input.postalCode ? { postalCode: state.input.postalCode } : {}), ...(state.input.selectedStoreId ? { selectedStoreId: state.input.selectedStoreId } : {}), ...(state.input.latitude !== undefined ? { latitude: state.input.latitude } : {}), ...(state.input.longitude !== undefined ? { longitude: state.input.longitude } : {}), ...(state.input.locationAccuracyMeters !== undefined ? { locationAccuracyMeters: state.input.locationAccuracyMeters } : {}), ...(state.input.locationApproximate !== undefined ? { locationApproximate: state.input.locationApproximate } : {}) }, { requestId: state.requestId, correlationId: state.threadId }); return result; })); const results = settled.flatMap(x => x.status === "fulfilled" ? [x.value] : []); const errors = settled.flatMap((x, i) => x.status === "rejected" ? [publicRetailerError(selectedAdapters[i]?.retailer.id ?? "unknown", x.reason)] : []); return { status: "searching", retailerResults: results, retailerErrors: errors, progressEvents: results.map(r => event("searching_retailer", `Checked ${r.retailerId}`, { retailer: r.retailerId, offersFound: r.offers.length })), warnings: [...results.flatMap(r => r.warnings), ...errors.map(e => `${e.retailerId}: ${e.message}`)], updatedAt: new Date().toISOString() }; })
+    .addNode("dispatch_retailer_searches", async (state) => { const selectedAdapters = adapters.filter(a => state.searchPlan!.retailerIds.includes(a.retailer.id)); const settled = await Promise.allSettled(selectedAdapters.map(adapter => searchRetailerWithFallback(adapter, state))); const results = settled.flatMap(x => x.status === "fulfilled" ? [x.value] : []); const errors = settled.flatMap((x, i) => x.status === "rejected" ? [publicRetailerError(selectedAdapters[i]?.retailer.id ?? "unknown", x.reason)] : []); return { status: "searching", retailerResults: results, retailerErrors: errors, progressEvents: results.map(r => event("searching_retailer", `Checked ${r.retailerId}`, { retailer: r.retailerId, offersFound: r.offers.length })), warnings: [...results.flatMap(r => r.warnings), ...errors.map(e => `${e.retailerId}: ${e.message}`)], updatedAt: new Date().toISOString() }; })
     .addNode("normalize_offers", async (state) => ({ status: "matching", normalizedOffers: state.retailerResults.flatMap(r => r.offers), progressEvents: [event("matching", "Matching exact products, bundles and variants")], updatedAt: new Date().toISOString() }))
-    .addNode("rank_offers", async (state) => { const ranked = rankOffers(state.understoodRequest!, state.normalizedOffers).map(r => r.offer); return { status: "ranking", rankedOffers: ranked, progressEvents: [event("ranking", `Ranked ${ranked.length} offers`)], updatedAt: new Date().toISOString() }; })
+    .addNode("match_products", async (state) => { const { relevant, rejected } = partitionRelevantOffers(state.understoodRequest!, state.normalizedOffers); return { matchedOffers: relevant, warnings: rejected.length ? [rejectedOfferWarning(rejected.length)] : [], progressEvents: [event("matching", `Matched ${relevant.length} relevant offers`)], updatedAt: new Date().toISOString() }; })
+    .addNode("rank_offers", async (state) => { const ranked = rankOffers(state.understoodRequest!, state.matchedOffers).map(r => r.offer); return { status: "ranking", rankedOffers: ranked, progressEvents: [event("ranking", `Ranked ${ranked.length} offers`)], updatedAt: new Date().toISOString() }; })
     .addNode("generate_result_summary", async (state) => ({ recommendation: await model.summarizeRecommendation({ request: state.understoodRequest!, rankedOffers: state.rankedOffers }), status: state.retailerErrors.length ? "partially_completed" : "completed", progressEvents: [event("completed", "Recommendations ready", { type: "complete", offersFound: state.rankedOffers.length })], completedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }))
     .addEdge(START, "load_request").addEdge("load_request", "understand_request")
     .addConditionalEdges("understand_request", (state) => state.understoodRequest?.clarificationNeeded && !state.clarificationAnswer ? "clarify" : "plan", { clarify: "request_clarification", plan: "build_search_plan" })
-    .addEdge("request_clarification", "build_search_plan").addEdge("build_search_plan", "dispatch_retailer_searches").addEdge("dispatch_retailer_searches", "normalize_offers").addEdge("normalize_offers", "rank_offers").addEdge("rank_offers", "generate_result_summary").addEdge("generate_result_summary", END);
+    .addEdge("request_clarification", "build_search_plan").addEdge("build_search_plan", "dispatch_retailer_searches").addEdge("dispatch_retailer_searches", "normalize_offers").addEdge("normalize_offers", "match_products").addEdge("match_products", "rank_offers").addEdge("rank_offers", "generate_result_summary").addEdge("generate_result_summary", END);
   return graph.compile({ checkpointer });
 }
 export type ShoppingGraph = ReturnType<typeof createShoppingGraph>;

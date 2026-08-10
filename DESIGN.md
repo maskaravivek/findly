@@ -8,7 +8,7 @@ Findly is used one-handed, often while the shopper is standing in a bright store
 
 ## Experience principles
 
-1. Answer the shopping decision first. Results lead with the best way to obtain the right product, not the workflow that produced it.
+1. Answer the shopping decision first. Results lead with the best way to obtain the right product, not the workflow that produced it. Product relevance is a gate before price, rating, or speed can influence any lens.
 2. Separate facts from judgment. Price, stock, distance, ratings, and freshness are retailer-derived facts; “Best overall” is Findly's deterministic ranking.
 3. Make local usefulness visible. Store name, stock, distance, pickup, aisle, and bay outrank secondary metadata when available.
 4. Never imply certainty the source did not provide. Missing ratings, quantities, shipping costs, or delivery times are omitted or explicitly described as unavailable.
@@ -51,7 +51,7 @@ The result surface has four lenses over the same verified offer set:
 
 - **Recommended** shows up to three offers from the backend ranking. Exact identifiers and compatibility are gates; ratings with review volume, known total, fulfillment speed, confidence, and freshness determine the order.
 - **Lowest price** shows up to three offers sorted by the known total in integer CAD minor units. Copy says “listed total” because unknown shipping and tax may change checkout.
-- **Fastest** shows up to three offers ordered by in-stock pickup, in-store availability, explicit same-day or next-day delivery, other retailer delivery estimates, and shipping. It never invents an ETA.
+- **Fastest** shows up to three currently available offers ordered by verified pickup, in-store availability, explicit same-day or next-day delivery, other retailer delivery estimates, and shipping. Out-of-stock and non-actionable offers stay in All. It never invents an ETA or promotes an unverified delivery phrase over verified local availability.
 - **All** preserves the complete ranked result list and groups nearby-store offers separately from online offers.
 
 Focused lenses use a visible badge and a short evidence line. The badge names the lens outcome; the evidence names the underlying facts. Ratings are shown only when extracted from retailer content and schema-validated. Review volume is displayed alongside the rating and is used to reduce the influence of ratings based on very few reviews.
@@ -99,3 +99,5 @@ The card never contains a checkout or purchase action. Opening a retailer link i
 ## Data trust boundary
 
 Retailer pages are untrusted data. Browser extraction accepts only expected fields, validates them with schemas, and strips irrelevant content. Ratings are parsed deterministically from rendered retailer HTML or the browser-loaded product document. Findly does not send arbitrary page instructions to a model, does not expose secrets to browser extraction, and never allows webpage content to initiate a purchase.
+
+Schema-valid retailer data is not automatically product-relevant. A shared deterministic matcher compares exact identifiers and normalized product terms before offers can enter ranking. A successful retailer search with no relevant products may try one bounded canonical query variant; access challenges, timeouts, and other retailer failures do not trigger that fallback. Rejected products produce a recoverable warning and never become a recommendation.

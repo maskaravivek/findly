@@ -16,6 +16,31 @@ const request = ShoppingRequestSchema.parse({
 });
 
 describe("local fulfillment ranking", () => {
+  it("excludes unrelated offers before price and rating can influence the recommendation", () => {
+    const drillingRequest = {
+      ...request,
+      category: undefined,
+      possibleProductNames: ["drilling machine"],
+      urgency: "no_preference" as const,
+      fulfillmentPreferences: [],
+    };
+    const unrelatedBargain = offer({
+      offerId: "unrelated-bargain",
+      retailer: { id: "home_depot_ca", name: "Home Depot Canada", domain: "homedepot.ca" },
+      seller: { type: "first_party" },
+      product: { title: "Toque 100% Acrylic", rating: 5, reviewCount: 1_000 },
+      price: { item: { amountMinor: 598, currency: "CAD" }, total: { amountMinor: 598, currency: "CAD" } },
+    });
+    const relevantDrill = offer({
+      offerId: "relevant-drill",
+      product: { title: "20V Cordless Drill Driver", rating: 4.4, reviewCount: 300 },
+      price: { item: { amountMinor: 4_999, currency: "CAD" }, total: { amountMinor: 4_999, currency: "CAD" } },
+    });
+
+    expect(rankOffers(drillingRequest, [unrelatedBargain, relevantDrill]).map(result => result.offer.offerId))
+      .toEqual(["relevant-drill"]);
+  });
+
   it("prioritizes verified same-day store pickup over a cheaper online offer", () => {
     const amazon = offer({ offerId: "amazon" });
     const homeDepot = offer({

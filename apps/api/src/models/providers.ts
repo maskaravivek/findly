@@ -4,6 +4,7 @@ import { z } from "zod";
 import { ShoppingRequestSchema, type NormalizedRetailOffer, type ShoppingRequest } from "@findly/contracts";
 import type { ModelProvider, RecommendationSummary, SearchPlan } from "@findly/model-sdk";
 import type { Env } from "../config/env.js";
+import { buildRetailerSearchQueries } from "../products/product-relevance.js";
 
 const defaults = (input: { text?: string; barcode?: string; selectedStoreId?: string; postalCode?: string }): ShoppingRequest => {
   const text = input.text ?? ""; const lower = text.toLowerCase();
@@ -15,7 +16,7 @@ const defaults = (input: { text?: string; barcode?: string; selectedStoreId?: st
 export class MockModelProvider implements ModelProvider {
   async understandShoppingRequest(input: Parameters<ModelProvider["understandShoppingRequest"]>[0]) { return defaults(input); }
   async analyzeProductImages(input: { imageIds: string[] }) { return { labels: input.imageIds.length ? ["unknown hardware item"] : [], confidence: 0.55 }; }
-  async generateSearchPlan({ request }: { request: ShoppingRequest }): Promise<SearchPlan> { return { queries: [request.modelNumber ?? request.barcode ?? request.possibleProductNames[0] ?? request.originalQuery ?? "product"], retailerIds: ["home_depot_ca", "amazon_ca"], exactMatch: Boolean(request.modelNumber || request.barcode) }; }
+  async generateSearchPlan({ request }: { request: ShoppingRequest }): Promise<SearchPlan> { return { queries: buildRetailerSearchQueries(request), retailerIds: ["home_depot_ca", "amazon_ca"], exactMatch: Boolean(request.modelNumber || request.barcode) }; }
   async compareAmbiguousProducts({ offers }: { request: ShoppingRequest; offers: NormalizedRetailOffer[] }) { return { equivalentOfferIds: offers.filter(o => o.product.modelNumber === offers[0]?.product.modelNumber).map(o => o.offerId), reason: "Exact normalized model-number comparison" }; }
   async assessCompatibility() { return { compatible: null, confidence: 0.4, reason: "No verified compatibility rule was available" }; }
   async summarizeRecommendation({ rankedOffers }: { request: ShoppingRequest; rankedOffers: NormalizedRetailOffer[] }): Promise<RecommendationSummary> { const best = rankedOffers[0]; const live = best?.source.liveVerified === true; const cached = best?.source.kind === "cached_verified"; const local = best?.fulfillment.pickup && best.fulfillment.storeName; return { headline: best ? `${local ? "Best nearby option" : live ? "Best verified match" : cached ? "Best recent match" : "Best demo match"}: ${best.product.title}` : "No matching offers found", explanation: best ? cached ? `Recently verified retailer data from ${best.source.observedAt}; Findly refreshes it every few minutes.` : local ? `Available for pickup at ${best.fulfillment.storeName}; compared with current Amazon prices.` : live ? "Price verified from the retailer during this request. Store availability is shown only when separately verified." : "Ranked by product match, rating confidence, listed price and fulfillment speed. Demo inventory is not live." : "Try a more specific product name or barcode.", ...(best ? { bestOfferId: best.offerId } : {}) }; }

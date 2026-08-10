@@ -318,6 +318,16 @@ private fun ShoppingScreen(
                                 color = MutedInk,
                             )
                         }
+                        if (selectedLens == OfferLens.Fastest && lensOffers.isEmpty()) {
+                            item {
+                                Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                                    Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                        Text("No available fast option", fontWeight = FontWeight.Bold)
+                                        Text("Check All for products with unavailable or unknown fulfillment.", color = MutedInk)
+                                    }
+                                }
+                            }
+                        }
                         items(lensOffers, key = { offer -> "${selectedLens.name}-${offer.offerId}" }) { offer ->
                             OfferCard(
                                 offer = offer,

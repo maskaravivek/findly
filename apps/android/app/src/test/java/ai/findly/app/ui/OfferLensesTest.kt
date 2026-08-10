@@ -27,13 +27,27 @@ class OfferLensesTest {
     }
 
     @Test
+    fun fastestExcludesUnavailableOffers() {
+        val shipping = offer("shipping", 5_000)
+        val unavailablePickup = offer("unavailable", 1_000, pickup = true, distanceKm = 2.0, status = "out_of_stock")
+
+        assertEquals(listOf("shipping"), offersForLens(listOf(unavailablePickup, shipping), OfferLens.Fastest).map { it.offerId })
+    }
+
+    @Test
     fun recommendedPreservesBackendRanking() {
         val first = offer("first", 12_000)
         val second = offer("second", 8_000)
         assertEquals(listOf("first", "second"), offersForLens(listOf(first, second), OfferLens.Recommended).map { it.offerId })
     }
 
-    private fun offer(id: String, total: Int, pickup: Boolean = false, distanceKm: Double? = null) = Offer(
+    private fun offer(
+        id: String,
+        total: Int,
+        pickup: Boolean = false,
+        distanceKm: Double? = null,
+        status: String = "in_stock",
+    ) = Offer(
         offerId = id,
         retailer = Retailer("home_depot_ca", "Home Depot Canada", "homedepot.ca"),
         seller = Seller(type = "first_party"),
@@ -44,7 +58,7 @@ class OfferLensesTest {
             delivery = false,
             shipping = !pickup,
             inStore = pickup,
-            status = "in_stock",
+            status = status,
             inventoryQuantity = if (pickup) 3 else null,
             storeDistanceKm = distanceKm,
         ),

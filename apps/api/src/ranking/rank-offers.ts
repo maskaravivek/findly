@@ -1,4 +1,5 @@
 import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
+import { assessProductRelevance, partitionRelevantOffers } from "../products/product-relevance.js";
 export type Ranked = { offer: NormalizedRetailOffer; score: number; reasons: string[] };
 
 const knownTotalScore = (amountMinor: number, minimum: number, maximum: number) => {
@@ -26,29 +27,18 @@ const speedScore = (offer: NormalizedRetailOffer, urgent: boolean) => {
   return 0;
 };
 
-const genericProductWords = new Set(["cordless", "power", "tool", "tools", "product", "products", "machine", "compatible", "kit"]);
-const token = (value: string) => value.length > 4 && value.endsWith("s") ? value.slice(0, -1) : value;
-const words = (value: string) => value.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).map(token);
-
 const productTypeScore = (request: ShoppingRequest, offer: NormalizedRetailOffer) => {
-  const brandWords = new Set(words([request.manufacturer, ...request.preferredBrands].filter(Boolean).join(" ")));
-  const anchors = new Set(
-    words([request.category, ...request.possibleProductNames].filter(Boolean).join(" "))
-      .filter(value => value.length >= 3 && !genericProductWords.has(value) && !brandWords.has(value))
-  );
-  if (!anchors.size) return { score: 0, matches: false };
-  const titleWords = new Set(words(`${offer.product.title} ${offer.product.category ?? ""}`));
-  const matched = [...anchors].filter(value => titleWords.has(value)).length;
-  if (!matched) return { score: -120, matches: false };
-  return { score: 20 + 10 * matched / anchors.size, matches: true };
+  const relevance = assessProductRelevance(request, offer);
+  return { score: 20 + 10 * relevance.coverage, matches: relevance.matches };
 };
 
 export function rankOffers(request: ShoppingRequest, offers: NormalizedRetailOffer[]): Ranked[] {
+  const { relevant } = partitionRelevantOffers(request, offers);
   const urgent = request.urgency === "today" || request.urgency === "immediate" || request.fulfillmentPreferences.some(value => value === "pickup" || value === "in_store");
-  const totals = offers.map(offer => offer.price.total.amountMinor);
+  const totals = relevant.map(offer => offer.price.total.amountMinor);
   const minimumTotal = Math.min(...totals);
   const maximumTotal = Math.max(...totals);
-  return offers.map(offer => {
+  return relevant.map(offer => {
     let score = offer.confidence * 15;
     const reasons: string[] = [];
     const typeMatch = productTypeScore(request, offer);

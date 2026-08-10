@@ -16,12 +16,14 @@ fun offersForLens(offers: List<Offer>, lens: OfferLens): List<Offer> = when (len
             .thenByDescending { it.source.liveVerified }
             .thenByDescending { it.confidence },
     ).take(3)
-    OfferLens.Fastest -> offers.sortedWith(
-        compareBy<Offer> { fulfillmentSpeedBucket(it) }
-            .thenBy { it.fulfillment.storeDistanceKm ?: Double.MAX_VALUE }
-            .thenBy { it.price.total.amountMinor }
-            .thenByDescending { it.source.liveVerified },
-    ).take(3)
+    OfferLens.Fastest -> offers
+        .filter(::isFastestCandidate)
+        .sortedWith(
+            compareBy<Offer> { fulfillmentSpeedBucket(it) }
+                .thenBy { it.fulfillment.storeDistanceKm ?: Double.MAX_VALUE }
+                .thenBy { it.price.total.amountMinor }
+                .thenByDescending { it.source.liveVerified },
+        ).take(3)
     OfferLens.All -> offers
 }
 
@@ -49,6 +51,13 @@ private fun fulfillmentSpeedBucket(offer: Offer): Int {
         fulfillment.shipping -> 5
         else -> 6
     }
+}
+
+private fun isFastestCandidate(offer: Offer): Boolean {
+    val fulfillment = offer.fulfillment
+    if (fulfillment.status == "out_of_stock") return false
+    return fulfillment.pickup || fulfillment.inStore || fulfillment.shipping ||
+        (fulfillment.delivery && !fulfillment.estimate.isNullOrBlank())
 }
 
 private fun moneyDifference(amountMinor: Int) = java.text.NumberFormat.getCurrencyInstance(java.util.Locale.CANADA).apply {
