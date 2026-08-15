@@ -37,6 +37,6 @@ Brand display name is configured by `BRAND_NAME` on the API and Android resource
 
 ## Production vertical slice
 
-The phone-test deployment is available at `https://findly-api-production-6df6.up.railway.app`. It uses Railway for the Node.js API, a Canada Central Supabase project for PostgreSQL checkpointing and anonymous JWT authentication, Gemini for shopping-request understanding, and Browserbase for Home Depot Canada plus Amazon Canada. Home Depot results are bound to a validated nearby store and expose stock/pickup/aisle fields only when supplied by the retailer; Amazon is an online price comparison and does not claim local inventory.
+The phone-test deployment is available at `https://findly-api.maskaravivek.workers.dev`. It uses a scale-to-zero Cloudflare Container behind a Worker for the Node.js API, a Canada Central Supabase project for PostgreSQL checkpointing and anonymous JWT authentication, Gemini for shopping-request understanding, and Browserbase for Home Depot Canada plus Amazon Canada. Home Depot results are bound to a validated nearby store and expose stock/pickup/aisle fields only when supplied by the retailer; Amazon is an online price comparison and does not claim local inventory.
 
 See [`docs/deployment.md`](docs/deployment.md) for environment variables, verification commands, Android build configuration, and the boundary between the deployed demo slice and future live retailer/model credentials.

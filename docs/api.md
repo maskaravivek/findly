@@ -18,4 +18,4 @@ Returns an SSE stream/replay of sanitized progress. Event types are `progress`, 
 
 ## `GET /health`
 
-Returns liveness and the configured brand. `GET /ready` additionally verifies the PostgreSQL connection and is used by Railway health checks.
+Returns container liveness and the configured brand. `GET /ready` additionally verifies the PostgreSQL connection. `GET /edge-health` verifies the Cloudflare Worker without waking the scale-to-zero container.

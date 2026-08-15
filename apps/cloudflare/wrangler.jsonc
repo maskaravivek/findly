@@ -1,0 +1,68 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "findly-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "NODE_ENV": "production",
+    "HOST": "0.0.0.0",
+    "PORT": "3000",
+    "DEMO_MODE": "false",
+    "CHECKPOINTER_MODE": "postgres",
+    "RETAILER_MODE": "live",
+    "CHECKPOINT_SCHEMA": "findly_internal",
+    "AUTH_MODE": "supabase",
+    "SUPABASE_URL": "https://jewvwzxydkfgmhkpxvrm.supabase.co",
+    "ENABLE_DOCS": "false",
+    "RATE_LIMIT_MAX": "30",
+    "MODEL_PROVIDER": "gemini",
+    "PRIMARY_MODEL": "gemini-3.1-flash-lite",
+    "BRAND_NAME": "Findly",
+    "BROWSER_PROXY_COUNTRY": "CA",
+    "BROWSER_PROXY_CITY": "TORONTO",
+    "RETAILER_CACHE_ENABLED": "true",
+    "RETAILER_CACHE_TTL_SECONDS": "300"
+  },
+  "ratelimits": [
+    {
+      "name": "API_RATE_LIMITER",
+      "namespace_id": "26081501",
+      "simple": { "limit": 30, "period": 60 }
+    },
+    {
+      "name": "SEARCH_RATE_LIMITER",
+      "namespace_id": "26081502",
+      "simple": { "limit": 10, "period": 60 }
+    }
+  ],
+  "containers": [
+    {
+      "name": "findly-api",
+      "class_name": "FindlyApiContainer",
+      "image": "registry.cloudflare.com/29e7b0f839c5d73c0c6039868664a51c/findly-api:worker",
+      "max_instances": 1,
+      "instance_type": "basic",
+      "constraints": { "regions": ["ENAM"] }
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "FINDLY_API_CONTAINER",
+        "class_name": "FindlyApiContainer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["FindlyApiContainer"]
+    }
+  ]
+}

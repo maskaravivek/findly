@@ -10,7 +10,7 @@
 - Prices use integer CAD minor units. Live claims require `source.liveVerified=true` and a current `observedAt`.
 - Authenticate users before lists, watches, saved locations, images, or history are enabled. Apply object-level authorization by `userId`; never trust a client-supplied owner ID.
 - Production search, clarification, and SSE routes validate Supabase JWTs. Clarification and SSE access also compare the authenticated subject with the checkpoint owner.
-- Railway terminates public TLS. PostgreSQL tables and LangGraph checkpoints live in a private `findly_internal` schema; `anon` and `authenticated` have no schema access.
+- Cloudflare terminates public TLS and forwards requests through the Worker to the private container instance. PostgreSQL tables and LangGraph checkpoints live in a private `findly_internal` schema; `anon` and `authenticated` have no schema access.
 - The Android client contains only the Supabase publishable key. Database credentials, model keys, service-role keys, and retailer/browser credentials remain server-side.
 - Production rate-limits requests and bounds request bodies/timeouts. Image uploads are not enabled yet; validate file types, dimensions, malware risk, retention, and object-level authorization before enabling them.
 

@@ -1,0 +1,25 @@
+{
+  "name": "@findly/cloudflare",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "image:build": "docker build --platform linux/amd64 -f ../../infra/docker/api.Dockerfile -t findly-api:worker ../..",
+    "image:push": "wrangler containers push findly-api:worker",
+    "deploy": "pnpm run image:build && pnpm run image:push && wrangler deploy",
+    "deploy:worker": "wrangler deploy",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cloudflare/containers": "0.3.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260815.1",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10",
+    "wrangler": "4.123.0"
+  }
+}

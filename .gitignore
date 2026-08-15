@@ -10,3 +10,5 @@ local.properties
 playwright-report/
 test-results/
 supabase/.temp/
+.wrangler/
+.dev.vars

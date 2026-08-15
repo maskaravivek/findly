@@ -9,6 +9,13 @@ COPY packages/retailer-sdk/package.json packages/retailer-sdk/package.json
 COPY packages/test-fixtures/package.json packages/test-fixtures/package.json
 RUN pnpm install --frozen-lockfile
 COPY . .
-RUN pnpm build
+RUN pnpm --filter @findly/api... build
+
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/apps/api ./apps/api
+COPY --from=build /app/packages ./packages
 EXPOSE 3000
-CMD ["pnpm", "--filter", "@findly/api", "start"]
+CMD ["node", "apps/api/dist/src/server/index.js"]
