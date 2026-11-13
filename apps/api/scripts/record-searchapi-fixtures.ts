@@ -1,12 +1,12 @@
 // Records one live SearchAPI response per shopping engine for q="cordless drill" into
-// packages/test-fixtures/src/searchapi/recorded/<engine>.json (and a generated <engine>.ts const, because the
+// apps/api/tests/fixtures/searchapi/recorded/<engine>.json (and a generated <engine>.ts const, because the
 // workspace tsconfig has no resolveJsonModule). One attempt per engine, no retries: five calls, five credits.
 //   node --env-file=../../.env --import tsx scripts/record-searchapi-fixtures.ts            # record + generate
 //   node --import tsx scripts/record-searchapi-fixtures.ts --ts-only                        # regenerate .ts from saved JSON
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-const OUT_DIR = fileURLToPath(new URL("../../../packages/test-fixtures/src/searchapi/recorded/", import.meta.url));
+const OUT_DIR = fileURLToPath(new URL("../tests/fixtures/searchapi/recorded/", import.meta.url));
 const ENDPOINT = "https://www.searchapi.io/api/v1/search";
 const QUERY = "cordless drill";
 const MAX_ITEMS = 6;

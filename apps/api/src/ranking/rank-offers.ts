@@ -1,4 +1,4 @@
-import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
+import type { NormalizedRetailOffer, ShoppingRequest } from "../contracts.js";
 import { assessProductRelevance, partitionRelevantOffers } from "../products/product-relevance.js";
 export type Ranked = { offer: NormalizedRetailOffer; score: number; reasons: string[] };
 

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { SearchRequestSchema } from "@findly/contracts";
+import { SearchRequestSchema } from "../contracts.js";
 import { SearchRequestNotFoundError, type SearchService } from "../server/search-service.js";
 export async function searchRoutes(app: FastifyInstance, options: { service: SearchService }) {
   app.post("/v1/search", { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } }, async (request, reply) => { const parsed = SearchRequestSchema.safeParse(request.body); if (!parsed.success) return reply.code(400).send({ error: "invalid_request", issues: parsed.error.issues }); return options.service.start(parsed.data); });

@@ -35,13 +35,13 @@ Price ceilings are passed in major units (Home Depot rounds up to whole dollars)
 ### Adding an engine
 
 1. Confirm the engine slug, params, and result keys in SearchAPI's docs and record them in `docs/plans/searchapi-engines.md`.
-2. Add the retailer id and display name to `KNOWN_RETAILERS` in `packages/contracts`.
+2. Add the retailer id and display name to `KNOWN_RETAILERS` in `apps/api/src/contracts.ts`.
 3. Add a `SearchApiEngineDefinition` in `engines.ts`: `resultsKey`, `capabilities` (only what the engine really returns), an item schema built with `opt(...)` so optional fields degrade rather than fail, `buildParams` (with `usOnly` or a currency rule), and `toOffer` via `baseOffer`.
 4. Register it in `SEARCHAPI_ENGINES` and add it to `SEARCHAPI_ENGINES` in `.env.example` if it should be on by default.
 5. Add a mapping test with a sample response in `apps/api/tests/searchapi-adapter.test.ts`.
 
 ## Tests
 
-Tests never call SearchAPI. They pass a `SearchApiClient` with a stubbed `fetch` that serves the recorded responses in `packages/test-fixtures` (`searchApiFixtures`, keyed by engine) to `buildApp(config, { searchApiClient })`; with an injected client no `SEARCHAPI_API_KEY` is needed.
+Tests never call SearchAPI. They pass a `SearchApiClient` with a stubbed `fetch` that serves the recorded responses in `apps/api/tests/fixtures/searchapi` (`searchApiFixtures`, keyed by engine) to `buildApp(config, { searchApiClient })`; with an injected client no `SEARCHAPI_API_KEY` is needed.
 
 Retailer results are cached only by the SearchAPI client TTL cache; only data observed during a SearchAPI response may be marked `liveVerified=true`.

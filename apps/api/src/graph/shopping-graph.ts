@@ -1,7 +1,7 @@
 import { Command, END, MemorySaver, START, StateGraph, interrupt } from "@langchain/langgraph";
-import type { ModelProvider } from "@findly/model-sdk";
-import type { RetailerAdapter } from "@findly/retailer-sdk";
-import type { SearchRequest } from "@findly/contracts";
+import type { ModelProvider } from "../models/types.js";
+import type { RetailerAdapter } from "../retailers/types.js";
+import type { SearchRequest } from "../contracts.js";
 import { rankOffers } from "../ranking/rank-offers.js";
 import { verifyAgentShortlist } from "../products/verify-shortlist.js";
 import { ShoppingGraphAnnotation, event, type ShoppingGraphState } from "./state.js";

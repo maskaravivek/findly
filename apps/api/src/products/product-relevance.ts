@@ -1,4 +1,4 @@
-import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
+import type { NormalizedRetailOffer, ShoppingRequest } from "../contracts.js";
 
 export type ProductRelevance = {
   matches: boolean;

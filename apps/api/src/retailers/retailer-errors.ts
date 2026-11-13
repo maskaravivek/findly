@@ -1,4 +1,4 @@
-import { KNOWN_RETAILERS } from "@findly/contracts";
+import { KNOWN_RETAILERS } from "../contracts.js";
 
 
 export function publicRetailerError(retailerId: string, error: unknown) {

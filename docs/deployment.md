@@ -28,7 +28,7 @@ The API refuses to start without `SEARCHAPI_API_KEY`, or without `ANTHROPIC_API_
 
 ## Cloudflare configuration
 
-The deployment source of truth is `apps/cloudflare/wrangler.jsonc`. Non-sensitive production configuration is declared in `vars` there (`MODEL_PROVIDER=anthropic`, `PRIMARY_MODEL`). `apps/cloudflare/src/index.ts` forwards an explicit list of bindings to the container, so a new variable (for example `DEFAULT_COUNTRY`) must be added there as well as in `wrangler.jsonc` or as a secret. Store keys as Worker secrets:
+The deployment source of truth is `infra/cloudflare/wrangler.jsonc`. Non-sensitive production configuration is declared in `vars` there (`MODEL_PROVIDER=anthropic`, `PRIMARY_MODEL`). `infra/cloudflare/src/index.ts` forwards an explicit list of bindings to the container, so a new variable (for example `DEFAULT_COUNTRY`) must be added there as well as in `wrangler.jsonc` or as a secret. Store keys as Worker secrets:
 
 ```bash
 pnpm --filter @findly/cloudflare exec wrangler secret put ANTHROPIC_API_KEY

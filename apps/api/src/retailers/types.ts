@@ -1,4 +1,4 @@
-import type { NormalizedRetailOffer, RetailerCapabilities, RetailerId, ShoppingRequest } from "@findly/contracts";
+import type { NormalizedRetailOffer, RetailerCapabilities, RetailerId, ShoppingRequest } from "../contracts.js";
 export type RetailerDefinition = { id: RetailerId; name: string; domain: string; capabilities: RetailerCapabilities; live: boolean; /** One line for the agent prompt: what the store sells and how its listings behave. */ description?: string };
 export type RetailerExecutionContext = { requestId: string; correlationId: string; signal?: AbortSignal };
 export type RetailerSearchInput = {

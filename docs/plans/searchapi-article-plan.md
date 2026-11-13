@@ -73,26 +73,27 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
 - Keep `/v1/search/:id/events` SSE; drop clarification endpoint from the article (mention as extension).
 
 ### 3.6 Tests
-> Status: done with sample responses in `apps/api/tests/` (`searchapi-*.test.ts`, `shopping-agent.test.ts`, `agent-graph.test.ts`); real responses recorded via `pnpm --filter @findly/api record:fixtures` into `packages/test-fixtures/src/searchapi/recorded/`.
+> Status: done with sample responses in `apps/api/tests/` (`searchapi-*.test.ts`, `shopping-agent.test.ts`, `agent-graph.test.ts`); real responses recorded via `pnpm --filter @findly/api record:fixtures` into `apps/api/tests/fixtures/searchapi/recorded/` (originally `packages/test-fixtures`, folded into the API by the workspace flattening).
 
 - Record 3–4 real SearchAPI responses once into `packages/test-fixtures/searchapi/*.json` (strip keys), use them for adapter mapping tests and a mocked agent-loop test in vitest.
 - Fake tool runner for the loop: assert budget enforcement and that `finalize_shortlist` ids are validated against seen results (no hallucinated offers).
 
-### 3.7 Article-sized example
-> Status: done. See layout below.
+### 3.7 Article walkthrough
+> Status: superseded. The standalone example was dropped when the workspace was flattened; the article walks through `apps/api` directly.
 
-- `examples/searchapi-shopping-agent/`, no LangGraph, Zod only. Article walks through this; links to the full findly repo for the production shape (LangGraph, SSE, ranking).
-  - `searchapi.ts`: SearchAPI call, per-engine normalisation into one `Offer` type, in-memory cache.
-  - `agent.ts`: Claude tool loop (`search_products`, `get_seen_offers`, `finalize_shortlist`) with budget and shortlist-id validation.
-  - `rank.ts`: deterministic ranking by price, rating and fulfillment.
-  - `server.ts`: `POST /search`.
-  - `demo.ts`: command-line run.
-  - `agent.test.ts`: keyless, network-free loop test.
-  - `README.md`: setup, run, response shape.
+Files a reader follows, in order (all under `apps/api/src/`):
+  - `config/env.ts`: `SEARCHAPI_API_KEY`, `ANTHROPIC_API_KEY`, `SEARCHAPI_ENGINES`, `PRIMARY_MODEL`.
+  - `retailers/searchapi/client.ts`: the SearchAPI HTTP call, timeout, and cache.
+  - `retailers/searchapi/engines.ts`: per-engine params and normalisation into one offer type.
+  - `retailers/searchapi/adapter.ts`: one `RetailerAdapter` per engine.
+  - `agent/shopping-agent.ts`: tool definitions, budget, and shortlist-id validation.
+  - `models/providers.ts`: the Claude tool loop (`AnthropicModelProvider`).
+  - `graph/shopping-graph.ts`: LangGraph nodes from request understanding through verification and ranking.
+  - `routes/search.ts`: `POST /v1/search` and the SSE events route.
 
 ### What's left
 - Done: single-path cleanup. SearchAPI is the only retailer source and the Anthropic agent the only model path; demo mode, fixture retailers, the Gemini/OpenAI providers, `RETAILER_MODE`, and the fixed search-plan branch are removed. `MockModelProvider` remains for tests only.
-- Done: live runs pass for the example and the API; real fixtures are recorded (keys stripped) and back the adapter tests.
+- Done: live runs pass for the API; real fixtures are recorded (keys stripped) and back the adapter tests.
 - Android client not updated for open retailer ids: `Models.kt` decodes any id string, but the UI formats prices as CAD (`OfferLenses.kt`, `MainActivity.kt`) and hard-codes a Home Depot pickup heading.
 - `tool_call` SSE events are replayed after the agent completes, not streamed live while it runs.
 

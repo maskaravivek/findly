@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { searchApiFixtures } from "@findly/test-fixtures";
-import { NormalizedRetailOfferSchema, type ShoppingRequest } from "@findly/contracts";
-import type { RetailerSearchInput } from "@findly/retailer-sdk";
+import { searchApiFixtures } from "./fixtures/searchapi/index.js";
+import { NormalizedRetailOfferSchema, type ShoppingRequest } from "../src/contracts.js";
+import type { RetailerSearchInput } from "../src/retailers/types.js";
 import { EnvSchema } from "../src/config/env.js";
 import { SearchApiClient } from "../src/retailers/searchapi/client.js";
 import { SEARCHAPI_ENGINES, amazonDeliveryEstimate, capTitle, cleanAmazonDelivery, normalizeLink } from "../src/retailers/searchapi/engines.js";

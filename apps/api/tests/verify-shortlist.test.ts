@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
+import type { NormalizedRetailOffer, ShoppingRequest } from "../src/contracts.js";
 import { verifyAgentShortlist } from "../src/products/verify-shortlist.js";
 import { offer, request } from "./agent-fixtures.js";
 

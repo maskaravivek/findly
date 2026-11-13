@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ShoppingRequestSchema, type NormalizedRetailOffer } from "@findly/contracts";
+import { ShoppingRequestSchema, type NormalizedRetailOffer } from "../src/contracts.js";
 import { rankOffers } from "../src/ranking/rank-offers.js";
 
 const observedAt = new Date().toISOString();

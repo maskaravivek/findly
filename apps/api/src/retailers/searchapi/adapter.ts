@@ -1,5 +1,5 @@
-import { KNOWN_RETAILERS, NormalizedRetailOfferSchema, type NormalizedRetailOffer, type RetailerCapabilities } from "@findly/contracts";
-import type { RetailerAdapter, RetailerDefinition, RetailerExecutionContext, RetailerSearchInput, RetailerSearchResult } from "@findly/retailer-sdk";
+import { KNOWN_RETAILERS, NormalizedRetailOfferSchema, type NormalizedRetailOffer, type RetailerCapabilities } from "../../contracts.js";
+import type { RetailerAdapter, RetailerDefinition, RetailerExecutionContext, RetailerSearchInput, RetailerSearchResult } from "../types.js";
 import { searchApiEngines, type Env } from "../../config/env.js";
 import { SearchApiClient, metadataFrom } from "./client.js";
 import { SEARCHAPI_ENGINES, type EngineDefaults, type SearchApiEngineDefinition } from "./engines.js";
