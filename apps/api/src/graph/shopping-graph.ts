@@ -34,7 +34,7 @@ async function runAgentSearch(model: ModelProvider, adapters: RetailerAdapter[],
 export type ShoppingGraphDefaults = { currency: string; country: string; maxToolCalls?: number; maxResultsPerCall?: number };
 /** load_request -> understand_request -> [clarification interrupt] -> agent_search -> match_products -> rank_offers -> generate_result_summary */
 export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdapter[], defaults: ShoppingGraphDefaults = { currency: "USD", country: "US" }) {
-  const budget = { maxToolCalls: defaults.maxToolCalls ?? 6, maxResultsPerCall: defaults.maxResultsPerCall ?? 8 };
+  const budget = { maxToolCalls: defaults.maxToolCalls ?? 12, maxResultsPerCall: defaults.maxResultsPerCall ?? 10 };
   const graph = new StateGraph(ShoppingGraphAnnotation)
     .addNode("load_request", async () => ({ status: "understanding", updatedAt: new Date().toISOString(), progressEvents: [event("understanding", "Understanding what you need")] }))
     .addNode("understand_request", async (state) => { const understood = await model.understandShoppingRequest({ imageIds: state.input.imageIds, ...(state.input.text ? { text: state.input.text } : {}), ...(state.input.barcode ? { barcode: state.input.barcode } : {}), ...(state.input.selectedStoreId ? { selectedStoreId: state.input.selectedStoreId } : {}), ...(state.input.postalCode ? { postalCode: state.input.postalCode } : {}), currency: state.input.currency?.toUpperCase() ?? defaults.currency, country: state.input.country?.toUpperCase() ?? defaults.country }); return { understoodRequest: understood.maximumPrice ? understood : { ...understood, ...maximumPriceFrom(state.input.maxPrice, understood.currency) }, updatedAt: new Date().toISOString() }; })

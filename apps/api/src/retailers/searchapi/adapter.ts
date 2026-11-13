@@ -11,7 +11,7 @@ export class SearchApiRetailerAdapter implements RetailerAdapter {
   readonly retailer: RetailerDefinition;
   constructor(private readonly client: SearchApiClient, readonly definition: SearchApiEngineDefinition, private readonly defaults: EngineDefaults) {
     const known = KNOWN_RETAILERS[definition.retailerId];
-    this.retailer = { id: definition.retailerId, name: known?.name ?? definition.retailerId, domain: known?.domain ?? "", capabilities: { ...noCapabilities, ...definition.capabilities }, live: true };
+    this.retailer = { id: definition.retailerId, name: known?.name ?? definition.retailerId, domain: known?.domain ?? "", capabilities: { ...noCapabilities, ...definition.capabilities }, live: true, description: definition.description };
   }
 
   supports(capability: keyof RetailerCapabilities) { return this.retailer.capabilities[capability]; }

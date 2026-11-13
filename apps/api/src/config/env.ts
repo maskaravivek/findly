@@ -13,7 +13,7 @@ export const EnvSchema = z.object({
   // Required at startup (see validateConfig); optional in the schema so tests can inject a SearchApiClient instead.
   SEARCHAPI_API_KEY: z.string().min(1).optional(), SEARCHAPI_ENGINES: z.string().default("amazon_search,walmart_search,home_depot_search,bestbuy_search,google_shopping"),
   SEARCHAPI_TIMEOUT_MS: int(20_000), SEARCHAPI_CACHE_TTL_MS: z.coerce.number().int().nonnegative().default(300_000),
-  AGENT_MAX_TOOL_CALLS: int(6), AGENT_MAX_RESULTS_PER_CALL: int(8)
+  AGENT_MAX_TOOL_CALLS: int(12), AGENT_MAX_RESULTS_PER_CALL: int(10)
 });
 export type Env = z.infer<typeof EnvSchema>;
 export const env = EnvSchema.parse(process.env);

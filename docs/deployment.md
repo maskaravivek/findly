@@ -22,7 +22,7 @@ The public API base URL is `https://findly-api.maskaravivek.workers.dev/`.
 | `MODEL_PROVIDER` | `anthropic` | `mock` is for tests only |
 | `PRIMARY_MODEL` | `claude-sonnet-5-5` | Anthropic model id |
 | `DEFAULT_COUNTRY` / `DEFAULT_CURRENCY` | `US` / `USD` | Used when a request omits them |
-| `AGENT_MAX_TOOL_CALLS` / `AGENT_MAX_RESULTS_PER_CALL` | `6` / `8` | Agent search budget |
+| `AGENT_MAX_TOOL_CALLS` / `AGENT_MAX_RESULTS_PER_CALL` | `12` / `10` | Agent search budget |
 
 The API refuses to start without `SEARCHAPI_API_KEY`, or without `ANTHROPIC_API_KEY` when `MODEL_PROVIDER=anthropic`.
 
