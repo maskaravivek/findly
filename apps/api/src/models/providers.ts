@@ -2,8 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { BetaRunnableTool } from "@anthropic-ai/sdk/lib/tools/BetaRunnableTool";
 import { ToolError } from "@anthropic-ai/sdk/lib/tools/ToolError";
-import { ShoppingRequestSchema, type NormalizedRetailOffer, type ShoppingRequest } from "@findly/contracts";
-import type { AgentToolCall, ModelProvider, RecommendationSummary, ShoppingAgentBudget, ShoppingAgentResult, ShoppingAgentTools } from "@findly/model-sdk";
+import { ShoppingRequestSchema, type NormalizedRetailOffer, type ShoppingRequest } from "../contracts.js";
+import type { AgentToolCall, ModelProvider, RecommendationSummary, ShoppingAgentBudget, ShoppingAgentResult, ShoppingAgentTools } from "./types.js";
 import type { Env } from "../config/env.js";
 import { FinalizeShortlistInputSchema, SearchProductsInputSchema, SeenOffers, agentToolDefinitions, buildSystemPrompt, buildUserMessage, compactView, fallbackShortlist, searchSummary, validateShortlist } from "../agent/shopping-agent.js";
 

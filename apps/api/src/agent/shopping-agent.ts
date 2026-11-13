@@ -1,9 +1,9 @@
 // Provider-independent pieces of the agentic shopping loop.
 // The LLM proposes (queries, retailers, a shortlist); the code here verifies (budget, grounding, compact views).
 import { z } from "zod";
-import type { Money, NormalizedRetailOffer, SearchRequest, ShoppingRequest } from "@findly/contracts";
-import type { AgentSortOrder, ShoppingAgentBudget, ShoppingAgentTools } from "@findly/model-sdk";
-import type { RetailerAdapter } from "@findly/retailer-sdk";
+import type { Money, NormalizedRetailOffer, SearchRequest, ShoppingRequest } from "../contracts.js";
+import type { AgentSortOrder, ShoppingAgentBudget, ShoppingAgentTools } from "../models/types.js";
+import type { RetailerAdapter } from "../retailers/types.js";
 import { publicRetailerError } from "../retailers/retailer-errors.js";
 import { rankOffers } from "../ranking/rank-offers.js";
 

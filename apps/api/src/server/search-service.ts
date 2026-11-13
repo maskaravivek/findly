@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { SearchRequest, SearchResponse } from "@findly/contracts";
+import type { SearchRequest, SearchResponse } from "../contracts.js";
 import type { ShoppingGraph } from "../graph/shopping-graph.js";
 import { initialState, resumeCommand } from "../graph/shopping-graph.js";
 export class SearchService {

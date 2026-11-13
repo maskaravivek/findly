@@ -35,7 +35,7 @@
     {
       "name": "findly-api",
       "class_name": "FindlyApiContainer",
-      "image": "../../infra/docker/api.Dockerfile",
+      "image": "../docker/api.Dockerfile",
       "image_build_context": "../..",
       "max_instances": 1,
       "instance_type": "basic",

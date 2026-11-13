@@ -1,14 +1,14 @@
 import { vi } from "vitest";
-import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
-import type { RetailerAdapter, RetailerSearchInput } from "@findly/retailer-sdk";
-import { searchApiFixtures } from "@findly/test-fixtures";
+import type { NormalizedRetailOffer, ShoppingRequest } from "../src/contracts.js";
+import type { RetailerAdapter, RetailerSearchInput } from "../src/retailers/types.js";
+import { searchApiFixtures } from "./fixtures/searchapi/index.js";
 import { EnvSchema } from "../src/config/env.js";
 import { SearchApiClient } from "../src/retailers/searchapi/client.js";
 
 /** Test config: the mock provider and no SearchAPI key; tests inject fixtureClient() instead. */
 export const testConfig = EnvSchema.parse({ NODE_ENV: "test", MODEL_PROVIDER: "mock" });
 
-/** A real SearchApiClient whose fetch serves the recorded responses in @findly/test-fixtures. */
+/** A real SearchApiClient whose fetch serves the recorded responses in tests/fixtures/searchapi. */
 export function fixtureClient() {
   const fetch = vi.fn<typeof globalThis.fetch>(async (url) => {
     const engine = new URL(String(url)).searchParams.get("engine") as keyof typeof searchApiFixtures;

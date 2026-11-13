@@ -1,6 +1,6 @@
-import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
+import type { NormalizedRetailOffer, ShoppingRequest } from "../contracts.js";
 export type RecommendationSummary = { headline: string; explanation: string; bestOfferId?: string };
-// Mirrors RetailerSortOrder in @findly/retailer-sdk; model-sdk does not depend on that package.
+// Mirrors RetailerSortOrder in ../retailers/types.ts; kept separate so the model layer does not depend on retailer types.
 export type AgentSortOrder = "relevance" | "price_low_to_high" | "price_high_to_low" | "rating";
 /** One tool call made by the shopping agent. resultSummary is a short human string, never a raw provider payload. */
 export type AgentToolCall = { tool: string; input: Record<string, unknown>; resultSummary: string; durationMs: number };

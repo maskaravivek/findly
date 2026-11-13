@@ -1,7 +1,7 @@
 // Verification for the agent path. The model already chose from real retailer results and grounding is
 // enforced by validateShortlist, so this checks only what the model can get wrong against the request's
 // hard constraints: exact identifiers, the price cap and exclusions. It does not re-judge product type.
-import type { Money, NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
+import type { Money, NormalizedRetailOffer, ShoppingRequest } from "../contracts.js";
 import { assessProductRelevance } from "./product-relevance.js";
 
 export type ShortlistRule = "exact_identifier" | "price_limit" | "excluded_retailer" | "excluded_brand";

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { KNOWN_RETAILERS, type NormalizedRetailOffer, type RetailerCapabilities, type RetailerId } from "@findly/contracts";
-import type { RetailerSearchInput, RetailerSortOrder } from "@findly/retailer-sdk";
+import { KNOWN_RETAILERS, type NormalizedRetailOffer, type RetailerCapabilities, type RetailerId } from "../../contracts.js";
+import type { RetailerSearchInput, RetailerSortOrder } from "../types.js";
 import { parseRating, parseReviewCount } from "../rating-parser.js";
 import type { SearchApiParams } from "./client.js";
 

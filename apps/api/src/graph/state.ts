@@ -1,6 +1,6 @@
 import { Annotation } from "@langchain/langgraph";
-import type { NormalizedRetailOffer, ProgressEvent, SearchRequest, ShoppingRequest } from "@findly/contracts";
-import type { AgentToolCall, RecommendationSummary } from "@findly/model-sdk";
+import type { NormalizedRetailOffer, ProgressEvent, SearchRequest, ShoppingRequest } from "../contracts.js";
+import type { AgentToolCall, RecommendationSummary } from "../models/types.js";
 export const ShoppingGraphAnnotation = Annotation.Root({
   requestId: Annotation<string>(), threadId: Annotation<string>(), status: Annotation<string>(), input: Annotation<SearchRequest>(),
   understoodRequest: Annotation<ShoppingRequest | undefined>(), clarificationAnswer: Annotation<string | undefined>(),

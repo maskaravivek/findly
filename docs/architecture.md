@@ -4,10 +4,10 @@
 Android (Compose, UDF/MVVM)
        | HTTPS + SSE
        v
-Fastify API -> LangGraph shopping graph -> model-sdk (AnthropicModelProvider)
+Fastify API -> LangGraph shopping graph -> models/types.ts (AnthropicModelProvider)
                          |
                          |-- agent_search: Claude tool loop over retailer adapters, budgeted
-                         |        -> retailer-sdk adapters
+                         |        -> retailers/types.ts adapters
                          |             -> SearchApiRetailerAdapter (one per engine) -> searchapi.io
                          -> deterministic verification (hard constraints) and ranking
                          -> in-memory checkpoints

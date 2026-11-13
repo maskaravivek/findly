@@ -35,7 +35,7 @@ curl -X POST http://localhost:3000/v1/search \
 
 Every search runs one path: the Anthropic agent loop (`claude-sonnet-5-5` by default, override with `PRIMARY_MODEL`) calls `search_products` against the configured SearchAPI engines, then `finalize_shortlist`; code enforces the budget, drops any offer id no search returned, verifies hard constraints (price cap, exclusions, exact model), and ranks. Walmart, Home Depot, and Best Buy engines are US stores; Amazon and Google Shopping localise by country. See [`docs/retailer-adapters.md`](docs/retailer-adapters.md).
 
-Tests need no keys: they inject a `SearchApiClient` that serves the recorded responses in `packages/test-fixtures` and use `MODEL_PROVIDER=mock`, a deterministic test-only stand-in for the agent.
+Tests need no keys: they inject a `SearchApiClient` that serves the recorded responses in `apps/api/tests/fixtures/searchapi` and use `MODEL_PROVIDER=mock`, a deterministic test-only stand-in for the agent.
 
 ## Android
 
@@ -43,15 +43,10 @@ Build with `pnpm android:build` (or `./gradlew assembleDebug -PbrandName=YourBra
 
 ## Workspace
 
-- `apps/api`: Fastify, LangGraph with in-memory checkpoints, SSE, the Anthropic model provider and shopping agent (plus a test-only mock), and SearchAPI retailer adapters.
+- `apps/api`: Fastify, LangGraph with in-memory checkpoints, SSE, the Anthropic model provider and shopping agent (plus a test-only mock), and SearchAPI retailer adapters. Zod wire schemas live in `src/contracts.ts`, the model and retailer interfaces in `src/models/types.ts` and `src/retailers/types.ts`, and recorded SearchAPI responses in `tests/fixtures/searchapi`.
 - `apps/android`: Compose/Material 3 client using MVVM and unidirectional Flow state.
-- `apps/cloudflare`: Worker and Container configuration for the deployed API.
-- `packages/contracts`: Zod wire and domain schemas.
-- `packages/model-sdk`: provider-neutral AI contract, including the shopping-agent interface.
-- `packages/retailer-sdk`: adapter and capability contract.
-- `packages/test-fixtures`: recorded SearchAPI responses used by the tests.
-- `examples/searchapi-shopping-agent`: article-sized standalone agent (SearchAPI + Claude, no LangGraph).
-- `infra`: the production API container image.
+- `infra/cloudflare`: Worker and Container configuration for the deployed API.
+- `infra/docker`: the production API container image.
 - `docs`: architecture, security, workflow, adapters, deployment, and API details.
 
 Brand display name is configured by `BRAND_NAME` on the API and Android resources/application configuration on the client. No purchasing endpoint exists: offer links hand control to the retailer.
