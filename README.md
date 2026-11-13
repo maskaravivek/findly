@@ -14,7 +14,7 @@ ANTHROPIC_API_KEY=<Anthropic API key>
 DEFAULT_COUNTRY=US            # ISO 3166-1 alpha-2, used when a request omits country
 DEFAULT_CURRENCY=USD          # ISO 4217, used when a request omits currency
 SEARCHAPI_ENGINES=amazon_search,walmart_search,home_depot_search,bestbuy_search,google_shopping
-AGENT_MAX_TOOL_CALLS=6        # search_products calls per request
+AGENT_MAX_TOOL_CALLS=12       # search_products calls per request
 ```
 
 Then:

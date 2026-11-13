@@ -51,6 +51,17 @@ describe("AnthropicModelProvider.runShoppingAgent", () => {
     expect(toolResults).not.toContain("observedAt");
   });
 
+  it("keeps the budget exact when one turn issues parallel searches", async () => {
+    const { run } = setup([
+      [{ name: "search_products", input: { retailerId: "amazon", query: "drill" } }, { name: "search_products", input: { retailerId: "walmart", query: "drill" } }],
+      [{ name: "finalize_shortlist", input: { offerIds: ["a1"], reasoning: "ok" } }],
+    ], 1);
+    const result = await run();
+    const searches = result.toolTrace.filter(t => t.tool === "search_products").map(t => t.resultSummary);
+    expect(searches.filter(s => s === "rejected: budget spent")).toHaveLength(1);
+    expect(searches.filter(s => s !== "rejected: budget spent")).toHaveLength(1);
+  });
+
   it("enforces the budget and falls back to code-ranked offers when the model never finalizes", async () => {
     const search = { name: "search_products", input: { retailerId: "amazon", query: "drill" } };
     const { run, requests, turnsUsed } = setup([[search], [search], [search], [search], [search], [search]], 1);

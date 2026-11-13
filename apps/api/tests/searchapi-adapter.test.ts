@@ -4,7 +4,7 @@ import { NormalizedRetailOfferSchema, type ShoppingRequest } from "@findly/contr
 import type { RetailerSearchInput } from "@findly/retailer-sdk";
 import { EnvSchema } from "../src/config/env.js";
 import { SearchApiClient } from "../src/retailers/searchapi/client.js";
-import { SEARCHAPI_ENGINES, amazonDeliveryEstimate, cleanAmazonDelivery, normalizeLink } from "../src/retailers/searchapi/engines.js";
+import { SEARCHAPI_ENGINES, amazonDeliveryEstimate, capTitle, cleanAmazonDelivery, normalizeLink } from "../src/retailers/searchapi/engines.js";
 import { SearchApiRetailerAdapter, createSearchApiAdapters } from "../src/retailers/searchapi/adapter.js";
 
 const request: ShoppingRequest = {
@@ -34,7 +34,7 @@ describe("SearchAPI engine mapping", () => {
     expect(result.offers.map(o => o.offerId)).toEqual(["amazon:B00IJ0ALYS", "amazon:B00ET5VMTU", "amazon:B0CC1RHJY1", "amazon:B0GNB4XT2G", "amazon:B0C3TGRLLM", "amazon:B08YJTYDD4"]);
     const [first, , third] = result.offers;
     expect(first).toMatchObject({
-      retailer: { id: "amazon", name: "Amazon", domain: "amazon.com" }, seller: { type: "first_party" }, url: "https://www.amazon.com/dp/B00IJ0ALYS",
+      retailer: { id: "amazon", name: "Amazon", domain: "amazon.com" }, seller: { type: "unknown" }, url: "https://www.amazon.com/dp/B00IJ0ALYS",
       price: { item: { amountMinor: 14900, currency: "USD" }, total: { amountMinor: 14900, currency: "USD" } },
       product: { rating: 4.7, reviewCount: 61409, imageUrl: (searchApiFixtures.amazon_search.organic_results[0] as { thumbnail: string }).thumbnail },
       // standard_delivery is the "Join Prime to get FREE delivery Tomorrow" upsell, so the non-member date is used.
@@ -133,12 +133,25 @@ describe("SearchAPI engine mapping", () => {
     const [first, second, , , , sixth] = result.offers;
     expect(first).toMatchObject({
       offerId: "google_shopping:12306540703916217177", confidence: 0.75, url: expect.stringMatching(/^https:\/\/www\.google\.com\/search\?ibp=oshop&.*prds=headlineOfferDocid:12306540703916217177/),
-      seller: { name: "Tool Factory Outlet", type: "marketplace" }, price: { item: { amountMinor: 9455, currency: "USD" } }, product: { rating: 5, reviewCount: 684 },
+      seller: { name: "Tool Factory Outlet", type: "unknown" }, price: { item: { amountMinor: 9455, currency: "USD" } }, product: { rating: 5, reviewCount: 684 },
       fulfillment: { delivery: false }, warnings: ["Link opens a Google Shopping page"]
     });
-    expect(second).toMatchObject({ offerId: "google_shopping:2247793873030585785", seller: { name: "Mercari" }, product: { rating: 3.9, reviewCount: 142 }, fulfillment: { delivery: true, estimate: "Free delivery" } });
+    expect(second).toMatchObject({ offerId: "google_shopping:2247793873030585785", seller: { name: "Mercari", type: "marketplace" }, product: { rating: 3.9, reviewCount: 142 }, fulfillment: { delivery: true, estimate: "Free delivery" },
+      warnings: ["Link opens a Google Shopping page", "Reseller via Google Shopping"] });
+    for (const offer of result.offers) expect(offer.product.title.length).toBeLessThanOrEqual(160);
+    expect(result.offers.map(o => o.seller)).toEqual([
+      { name: "Tool Factory Outlet", type: "unknown" }, { name: "Mercari", type: "marketplace" }, { name: "Mercari", type: "marketplace" },
+      { name: "eBay - david382611", type: "marketplace" }, { name: "eBay - zhanghu-49", type: "marketplace" }, { name: "Acme Tools", type: "unknown" }
+    ]);
     expect(sixth).toMatchObject({ seller: { name: "Acme Tools" }, price: { item: { amountMinor: 15294 } }, fulfillment: { estimate: "Free delivery on $199+" } });
     expect(result.warnings).toEqual([skipped]);
+  });
+
+  it("caps long Google Shopping titles at 160 chars", () => {
+    expect(capTitle("short title")).toBe("short title");
+    const capped = capTitle("x".repeat(400));
+    expect(capped).toHaveLength(160);
+    expect(capped.endsWith("…")).toBe(true);
   });
 
   it.each(Object.keys(searchApiFixtures) as (keyof typeof searchApiFixtures)[])("yields at least 3 valid offers from the recorded %s response", async engine => {
@@ -173,7 +186,12 @@ describe("createSearchApiAdapters", () => {
     expect(createSearchApiAdapters(env).map(a => a.retailer.id)).toEqual(["amazon", "google_shopping"]);
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("ebay_search"));
   });
-  it("builds all five default engines", () => {
-    expect(createSearchApiAdapters(EnvSchema.parse({ SEARCHAPI_API_KEY: "k" })).map(a => a.retailer.id)).toEqual(["amazon", "walmart", "home_depot", "best_buy", "google_shopping"]);
+  it("builds all five default engines, each with a prompt description", () => {
+    const adapters = createSearchApiAdapters(EnvSchema.parse({ SEARCHAPI_API_KEY: "k" }));
+    expect(adapters.map(a => a.retailer.id)).toEqual(["amazon", "walmart", "home_depot", "best_buy", "google_shopping"]);
+    for (const adapter of adapters) expect(adapter.retailer.description).toMatch(/\w{10,}/);
+  });
+  it("defaults the agent budget to 12 searches of up to 10 offers", () => {
+    expect(EnvSchema.parse({})).toMatchObject({ AGENT_MAX_TOOL_CALLS: 12, AGENT_MAX_RESULTS_PER_CALL: 10 });
   });
 });

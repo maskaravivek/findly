@@ -10,6 +10,8 @@ export type EngineContext = { observedAt: string; currency: string; domain: stri
 export type BuiltParams = { params: SearchApiParams; warnings: string[]; currency: string; domain: string };
 export type SearchApiEngineDefinition<T = any> = {
   engine: string; retailerId: RetailerId; resultsKey: string; capabilities: Partial<RetailerCapabilities>;
+  /** Written for the agent prompt: what the store carries and how its listings behave. */
+  description: string;
   itemSchema: z.ZodType<T>;
   buildParams(input: RetailerSearchInput, defaults: EngineDefaults): BuiltParams;
   toOffer(item: T, context: EngineContext): NormalizedRetailOffer | null;
@@ -123,6 +125,7 @@ const amazonProductUrl = (link: string | undefined, asin: string | undefined, do
 };
 const amazon: SearchApiEngineDefinition<z.infer<typeof AmazonItem>> = {
   engine: "amazon_search", retailerId: "amazon", resultsKey: "organic_results", itemSchema: AmazonItem,
+  description: "Amazon marketplace in the shopper's country; broad catalog, first-party and third-party sellers, delivery estimates",
   capabilities: { productSearch: true, currentPrice: true, deliveryEstimate: true, officialApi: true },
   buildParams(input, defaults) {
     const warnings: string[] = [], country = countryOf(input, defaults);
@@ -135,7 +138,8 @@ const amazon: SearchApiEngineDefinition<z.infer<typeof AmazonItem>> = {
   },
   toOffer(item, context) {
     const estimate = amazonDeliveryEstimate(item.fulfillment);
-    return baseOffer("amazon", { ...item, id: item.asin }, context, 0.85, { url: amazonProductUrl(item.link, item.asin, context.domain), seller: { type: "first_party" },
+    // Amazon search results don't expose the seller (no seller/sold_by/ships_from field), so first-party vs marketplace is unknown.
+    return baseOffer("amazon", { ...item, id: item.asin }, context, 0.85, { url: amazonProductUrl(item.link, item.asin, context.domain), seller: { type: "unknown" },
       fulfillment: { shipping: true, delivery: true, pickup: false, inStore: false, status: "unknown", ...optional("estimate", estimate) } });
   }
 };
@@ -152,6 +156,7 @@ const WalmartItem = z.object({
 });
 const walmart: SearchApiEngineDefinition<z.infer<typeof WalmartItem>> = {
   engine: "walmart_search", retailerId: "walmart", resultsKey: "organic_results", itemSchema: WalmartItem,
+  description: "Walmart US; general merchandise, pickup and delivery",
   capabilities: { productSearch: true, currentPrice: true, deliveryEstimate: true, officialApi: true, storeInventory: true, pickupEstimate: true },
   buildParams(input, defaults) {
     const warnings = usOnly("Walmart", countryOf(input, defaults));
@@ -183,6 +188,7 @@ const HomeDepotItem = z.object({
 });
 const homeDepot: SearchApiEngineDefinition<z.infer<typeof HomeDepotItem>> = {
   engine: "home_depot_search", retailerId: "home_depot", resultsKey: "organic_results", itemSchema: HomeDepotItem,
+  description: "The Home Depot US; tools, hardware, home improvement; pickup where a store is set",
   capabilities: { productSearch: true, currentPrice: true, deliveryEstimate: true, officialApi: true, storeInventory: true, inventoryQuantity: true, pickupEstimate: true },
   buildParams(input, defaults) {
     const warnings = usOnly("Home Depot", countryOf(input, defaults));
@@ -214,6 +220,7 @@ const BestBuyItem = z.object({
 });
 const bestBuy: SearchApiEngineDefinition<z.infer<typeof BestBuyItem>> = {
   engine: "bestbuy_search", retailerId: "best_buy", resultsKey: "organic_results", itemSchema: BestBuyItem,
+  description: "Best Buy US; consumer electronics and appliances",
   capabilities: { productSearch: true, currentPrice: true },
   buildParams(input, defaults) {
     const warnings = usOnly("Best Buy", countryOf(input, defaults));
@@ -235,8 +242,23 @@ const COUNTRY_CURRENCY: Record<string, string> = { US: "USD", CA: "CAD", GB: "GB
 const GoogleItem = z.object({
   ...required, product_id: opt(idish), prds: opt(idish), product_link: opt(text), offers_link: opt(text), seller: opt(text), rating: opt(numberish), reviews: opt(numberish), price: opt(text), delivery: opt(text), thumbnail: opt(text)
 });
+// Titles are sometimes merchant marketing copy; capped so one listing cannot flood the prompt or the UI.
+const GOOGLE_TITLE_LIMIT = 160;
+export const capTitle = (title: string, limit = GOOGLE_TITLE_LIMIT) => {
+  const trimmed = title.trim();
+  return trimmed.length <= limit ? trimmed : `${trimmed.slice(0, limit - 1).trimEnd()}…`;
+};
+// Individual-seller marketplaces that Google Shopping aggregates (recorded responses are full of them).
+const RESELLER = /ebay|mercari|poshmark|offerup/i;
+/** Marketplace for known resellers and "eBay - user"-style storefronts; any other merchant (Lowe's, Micro Center) is unknown, name kept. */
+export const googleSeller = (name: string | undefined): NormalizedRetailOffer["seller"] => {
+  const trimmed = name?.trim();
+  if (!trimmed) return { type: "unknown" };
+  return { name: trimmed, type: RESELLER.test(trimmed) || trimmed.includes(" - ") ? "marketplace" : "unknown" };
+};
 const googleShopping: SearchApiEngineDefinition<z.infer<typeof GoogleItem>> = {
   engine: "google_shopping", retailerId: "google_shopping", resultsKey: "shopping_results", itemSchema: GoogleItem,
+  description: "Google Shopping price comparison across many merchants, often resellers and marketplaces; good for finding the lowest price and extra merchants, links open a Google product page",
   capabilities: { productSearch: true, currentPrice: true },
   buildParams(input, defaults) {
     const warnings: string[] = [], country = countryOf(input, defaults);
@@ -249,8 +271,9 @@ const googleShopping: SearchApiEngineDefinition<z.infer<typeof GoogleItem>> = {
   toOffer(item, context) {
     const deliveryText = item.delivery?.trim() || undefined;
     const url = normalizeLink(item.product_link, "https://www.google.com") ?? normalizeLink(item.offers_link, "https://www.google.com");
-    return baseOffer("google_shopping", { ...item, id: item.product_id ?? item.prds }, context, 0.75, { url, warnings: ["Link opens a Google Shopping page"],
-      seller: sellerOf(item.seller, "google_shopping"),
+    const warnings = ["Link opens a Google Shopping page", ...(item.seller && RESELLER.test(item.seller) ? ["Reseller via Google Shopping"] : [])];
+    return baseOffer("google_shopping", { ...item, title: capTitle(item.title), id: item.product_id ?? item.prds }, context, 0.75, { url, warnings,
+      seller: googleSeller(item.seller),
       fulfillment: { shipping: false, delivery: Boolean(deliveryText), pickup: false, inStore: false, status: "unknown", ...optional("estimate", deliveryText) } });
   }
 };
