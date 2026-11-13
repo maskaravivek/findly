@@ -4,7 +4,9 @@ export type RetailerExecutionContext = { requestId: string; correlationId: strin
 export type RetailerSearchInput = {
   request: ShoppingRequest; query: string; postalCode?: string; country?: string; selectedStoreId?: string;
   latitude?: number; longitude?: number; locationAccuracyMeters?: number; locationApproximate?: boolean;
+  maxPrice?: number; sortBy?: RetailerSortOrder; maxResults?: number;
 };
+export type RetailerSortOrder = "relevance" | "price_low_to_high" | "price_high_to_low" | "rating";
 export type RetailerSearchResult = { retailerId: RetailerId; offers: NormalizedRetailOffer[]; observedAt: string; liveVerified: boolean; warnings: string[] };
 export interface RetailerAdapter {
   readonly retailer: RetailerDefinition;
