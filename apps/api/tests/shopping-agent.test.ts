@@ -46,8 +46,18 @@ describe("grounding", () => {
   it("compactView truncates titles to 120 chars and formats prices", () => {
     const [view] = compactView([offer("a1", "amazon", "x".repeat(300))]);
     expect(view!.title).toHaveLength(120);
-    expect(view).toMatchObject({ offerId: "a1", retailer: "amazon", price: "$99.00", rating: 4.7, reviews: 1200, fulfillment: "in stock; shipping, pickup at Chelsea" });
+    expect(view).toMatchObject({ offerId: "a1", retailer: "amazon", seller: { type: "first_party" }, price: "$99.00", rating: 4.7, reviews: 1200, fulfillment: "in stock; shipping, pickup at Chelsea", warnings: [] });
+    expect(view!.seller).not.toHaveProperty("name");
     expect(view).not.toHaveProperty("source");
+  });
+
+  it("compactView shows the seller and caps warnings at 3 of 80 chars", () => {
+    const base = offer("g1", "google_shopping");
+    const [view] = compactView([{ ...base, seller: { name: "eBay - someone", type: "marketplace" }, warnings: ["a", "b".repeat(200), "c", "d"] }]);
+    expect(view!.seller).toEqual({ name: "eBay - someone", type: "marketplace" });
+    expect(view!.warnings).toHaveLength(3);
+    expect(view!.warnings[1]).toHaveLength(80);
+    expect(view!.warnings).toEqual(["a", expect.stringMatching(/^b+…$/), "c"]);
   });
 });
 
@@ -70,7 +80,9 @@ describe("prompt and tool schemas", () => {
     for (const r of fullSet) expect(prompt).toContain(`- ${r.id} (${r.name}): ${r.notes}`);
     expect(prompt).toContain("1. Search google_shopping first, once");
     expect(prompt).toContain("(at least 3)");
-    expect(prompt).toMatch(/prefer a first-party retailer listing/);
+    expect(prompt).toMatch(/prefer a first_party listing/);
+    expect(prompt).toContain("on its own turn");
+    expect(prompt).toMatch(/2\. Then, in a single turn, search every direct retailer.*multiple search_products calls in the same response so they run in parallel/);
     expect(prompt).toContain("4 to 8 offerIds");
     expect(prompt.indexOf("Budget:")).toBeGreaterThan(prompt.indexOf("- google_shopping"));
     expect(prompt.split("\n").length).toBeLessThanOrEqual(40);

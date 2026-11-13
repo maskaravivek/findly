@@ -34,7 +34,7 @@ describe("SearchAPI engine mapping", () => {
     expect(result.offers.map(o => o.offerId)).toEqual(["amazon:B00IJ0ALYS", "amazon:B00ET5VMTU", "amazon:B0CC1RHJY1", "amazon:B0GNB4XT2G", "amazon:B0C3TGRLLM", "amazon:B08YJTYDD4"]);
     const [first, , third] = result.offers;
     expect(first).toMatchObject({
-      retailer: { id: "amazon", name: "Amazon", domain: "amazon.com" }, seller: { type: "first_party" }, url: "https://www.amazon.com/dp/B00IJ0ALYS",
+      retailer: { id: "amazon", name: "Amazon", domain: "amazon.com" }, seller: { type: "unknown" }, url: "https://www.amazon.com/dp/B00IJ0ALYS",
       price: { item: { amountMinor: 14900, currency: "USD" }, total: { amountMinor: 14900, currency: "USD" } },
       product: { rating: 4.7, reviewCount: 61409, imageUrl: (searchApiFixtures.amazon_search.organic_results[0] as { thumbnail: string }).thumbnail },
       // standard_delivery is the "Join Prime to get FREE delivery Tomorrow" upsell, so the non-member date is used.
@@ -133,12 +133,16 @@ describe("SearchAPI engine mapping", () => {
     const [first, second, , , , sixth] = result.offers;
     expect(first).toMatchObject({
       offerId: "google_shopping:12306540703916217177", confidence: 0.75, url: expect.stringMatching(/^https:\/\/www\.google\.com\/search\?ibp=oshop&.*prds=headlineOfferDocid:12306540703916217177/),
-      seller: { name: "Tool Factory Outlet", type: "marketplace" }, price: { item: { amountMinor: 9455, currency: "USD" } }, product: { rating: 5, reviewCount: 684 },
+      seller: { name: "Tool Factory Outlet", type: "unknown" }, price: { item: { amountMinor: 9455, currency: "USD" } }, product: { rating: 5, reviewCount: 684 },
       fulfillment: { delivery: false }, warnings: ["Link opens a Google Shopping page"]
     });
-    expect(second).toMatchObject({ offerId: "google_shopping:2247793873030585785", seller: { name: "Mercari" }, product: { rating: 3.9, reviewCount: 142 }, fulfillment: { delivery: true, estimate: "Free delivery" },
+    expect(second).toMatchObject({ offerId: "google_shopping:2247793873030585785", seller: { name: "Mercari", type: "marketplace" }, product: { rating: 3.9, reviewCount: 142 }, fulfillment: { delivery: true, estimate: "Free delivery" },
       warnings: ["Link opens a Google Shopping page", "Reseller via Google Shopping"] });
     for (const offer of result.offers) expect(offer.product.title.length).toBeLessThanOrEqual(160);
+    expect(result.offers.map(o => o.seller)).toEqual([
+      { name: "Tool Factory Outlet", type: "unknown" }, { name: "Mercari", type: "marketplace" }, { name: "Mercari", type: "marketplace" },
+      { name: "eBay - david382611", type: "marketplace" }, { name: "eBay - zhanghu-49", type: "marketplace" }, { name: "Acme Tools", type: "unknown" }
+    ]);
     expect(sixth).toMatchObject({ seller: { name: "Acme Tools" }, price: { item: { amountMinor: 15294 } }, fulfillment: { estimate: "Free delivery on $199+" } });
     expect(result.warnings).toEqual([skipped]);
   });

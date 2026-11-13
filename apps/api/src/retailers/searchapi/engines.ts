@@ -138,7 +138,8 @@ const amazon: SearchApiEngineDefinition<z.infer<typeof AmazonItem>> = {
   },
   toOffer(item, context) {
     const estimate = amazonDeliveryEstimate(item.fulfillment);
-    return baseOffer("amazon", { ...item, id: item.asin }, context, 0.85, { url: amazonProductUrl(item.link, item.asin, context.domain), seller: { type: "first_party" },
+    // Amazon search results don't expose the seller (no seller/sold_by/ships_from field), so first-party vs marketplace is unknown.
+    return baseOffer("amazon", { ...item, id: item.asin }, context, 0.85, { url: amazonProductUrl(item.link, item.asin, context.domain), seller: { type: "unknown" },
       fulfillment: { shipping: true, delivery: true, pickup: false, inStore: false, status: "unknown", ...optional("estimate", estimate) } });
   }
 };
@@ -249,6 +250,12 @@ export const capTitle = (title: string, limit = GOOGLE_TITLE_LIMIT) => {
 };
 // Individual-seller marketplaces that Google Shopping aggregates (recorded responses are full of them).
 const RESELLER = /ebay|mercari|poshmark|offerup/i;
+/** Marketplace for known resellers and "eBay - user"-style storefronts; any other merchant (Lowe's, Micro Center) is unknown, name kept. */
+export const googleSeller = (name: string | undefined): NormalizedRetailOffer["seller"] => {
+  const trimmed = name?.trim();
+  if (!trimmed) return { type: "unknown" };
+  return { name: trimmed, type: RESELLER.test(trimmed) || trimmed.includes(" - ") ? "marketplace" : "unknown" };
+};
 const googleShopping: SearchApiEngineDefinition<z.infer<typeof GoogleItem>> = {
   engine: "google_shopping", retailerId: "google_shopping", resultsKey: "shopping_results", itemSchema: GoogleItem,
   description: "Google Shopping price comparison across many merchants, often resellers and marketplaces; good for finding the lowest price and extra merchants, links open a Google product page",
@@ -266,7 +273,7 @@ const googleShopping: SearchApiEngineDefinition<z.infer<typeof GoogleItem>> = {
     const url = normalizeLink(item.product_link, "https://www.google.com") ?? normalizeLink(item.offers_link, "https://www.google.com");
     const warnings = ["Link opens a Google Shopping page", ...(item.seller && RESELLER.test(item.seller) ? ["Reseller via Google Shopping"] : [])];
     return baseOffer("google_shopping", { ...item, title: capTitle(item.title), id: item.product_id ?? item.prds }, context, 0.75, { url, warnings,
-      seller: sellerOf(item.seller, "google_shopping"),
+      seller: googleSeller(item.seller),
       fulfillment: { shipping: false, delivery: Boolean(deliveryText), pickup: false, inStore: false, status: "unknown", ...optional("estimate", deliveryText) } });
   }
 };
