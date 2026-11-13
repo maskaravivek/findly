@@ -1,10 +1,15 @@
+import Anthropic from "@anthropic-ai/sdk";
+import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
+import type { BetaRunnableTool } from "@anthropic-ai/sdk/lib/tools/BetaRunnableTool";
+import { ToolError } from "@anthropic-ai/sdk/lib/tools/ToolError";
 import { GoogleGenAI } from "@google/genai";
 import OpenAI from "openai";
 import { z } from "zod";
 import { ShoppingRequestSchema, type NormalizedRetailOffer, type ShoppingRequest } from "@findly/contracts";
-import type { ModelProvider, RecommendationSummary, SearchPlan } from "@findly/model-sdk";
+import type { AgentToolCall, ModelProvider, RecommendationSummary, SearchPlan, ShoppingAgentBudget, ShoppingAgentResult, ShoppingAgentTools } from "@findly/model-sdk";
 import type { Env } from "../config/env.js";
 import { buildRetailerSearchQueries } from "../products/product-relevance.js";
+import { FinalizeShortlistInputSchema, SearchProductsInputSchema, SeenOffers, agentToolDefinitions, buildSystemPrompt, buildUserMessage, compactView, fallbackShortlist, searchSummary, validateShortlist } from "../agent/shopping-agent.js";
 
 type UnderstandInput = Parameters<ModelProvider["understandShoppingRequest"]>[0];
 const defaults = (input: Omit<UnderstandInput, "imageIds">): ShoppingRequest => {
@@ -56,7 +61,108 @@ export class OpenAIModelProvider extends JsonModelProvider {
   constructor(apiKey: string, private readonly model: string) { super(); this.client = new OpenAI({ apiKey }); }
   protected async generateJson(prompt: string) { const response = await this.client.responses.create({ model: this.model, input: prompt, text: { format: { type: "json_object" } } }); return JSON.parse(response.output_text); }
 }
+
+export const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5-5";
+// Server-side refusal fallback: on a policy decline the API re-runs the turn on a fallback model it picks.
+const anthropicFallback = () => ({ betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const });
+const POST_BUDGET_GRACE_TURNS = 2;
+const BUDGET_SPENT = "Search budget is spent. Call finalize_shortlist now with offerIds you have already seen (get_seen_offers lists them).";
+
+export class AnthropicModelProvider extends JsonModelProvider {
+  private readonly client: Anthropic;
+  constructor(apiKey: string, private readonly model: string = DEFAULT_ANTHROPIC_MODEL, options: { client?: Anthropic } = {}) {
+    super();
+    this.client = options.client ?? new Anthropic({ apiKey, timeout: 60_000, maxRetries: 2 });
+  }
+
+  // Structured outputs, not a forced tool call: forced tool_choice returns a 400 on claude-sonnet-5-5.
+  protected async generateJson(prompt: string) {
+    const response = await this.client.beta.messages.create({
+      ...anthropicFallback(), model: this.model, max_tokens: 16_000,
+      output_config: { effort: "low", format: betaZodOutputFormat(ShoppingRequestSchema) },
+      messages: [{ role: "user", content: prompt }],
+    });
+    if (response.stop_reason === "refusal") throw new Error("Model declined the request");
+    const text = response.content.flatMap(b => b.type === "text" ? [b.text] : []).join("");
+    return JSON.parse(text || "{}");
+  }
+
+  /**
+   * The agent loop. Claude picks retailers and queries through tools; the code owns everything else:
+   * the search budget, what the model sees (compact views only), and which offers can be shortlisted.
+   */
+  async runShoppingAgent({ request, tools, budget }: { request: ShoppingRequest; tools: ShoppingAgentTools; budget: ShoppingAgentBudget }): Promise<ShoppingAgentResult> {
+    const seen = new SeenOffers();
+    const toolTrace: AgentToolCall[] = [];
+    let searchesUsed = 0;
+    let finalized: { offerIds: string[]; reasoning: string } | undefined;
+    const budgetSpent = () => searchesUsed >= budget.maxToolCalls;
+    const record = (tool: string, input: unknown, resultSummary: string, started: number) =>
+      toolTrace.push({ tool, input: input && typeof input === "object" ? input as Record<string, unknown> : {}, resultSummary, durationMs: Date.now() - started });
+
+    const searchProducts = async (raw: unknown) => {
+      const started = Date.now();
+      const parsed = SearchProductsInputSchema.safeParse(raw);
+      if (!parsed.success) { record("search_products", raw, "invalid input", started); throw new ToolError("Invalid input: retailerId and a non-empty query are required."); }
+      if (budgetSpent()) { record("search_products", raw, "rejected: budget spent", started); return BUDGET_SPENT; }
+      searchesUsed++;
+      const { retailerId, query, maxPrice, sortBy } = parsed.data;
+      const result = await tools.searchProducts({ retailerId, query, ...(maxPrice !== undefined ? { maxPrice } : {}), ...(sortBy ? { sortBy } : {}) });
+      seen.add(result.offers);
+      record("search_products", parsed.data, searchSummary(retailerId, result.offers.length, result.warnings), started);
+      const left = budget.maxToolCalls - searchesUsed;
+      return JSON.stringify({ offers: compactView(result.offers), warnings: result.warnings, searchesLeft: left, ...(left === 0 ? { note: BUDGET_SPENT } : {}) });
+    };
+    const getSeenOffers = async () => {
+      const started = Date.now();
+      record("get_seen_offers", {}, `${seen.size} seen offers`, started);
+      return JSON.stringify({ offers: compactView(seen.all()) });
+    };
+    const finalizeShortlist = async (raw: unknown) => {
+      const started = Date.now();
+      const parsed = FinalizeShortlistInputSchema.safeParse(raw);
+      if (!parsed.success) { record("finalize_shortlist", raw, "invalid input", started); throw new ToolError("Invalid input: offerIds (string[]) and reasoning (string) are required."); }
+      const { offers, dropped } = validateShortlist(parsed.data.offerIds, seen);
+      // If none of the ids are real but real offers exist, give the model one chance to correct itself.
+      if (!offers.length && seen.size) { record("finalize_shortlist", parsed.data, `rejected: ${dropped} unseen ids`, started); throw new ToolError("None of those offerIds came from search results. Use get_seen_offers and pick real ids."); }
+      finalized = parsed.data;
+      record("finalize_shortlist", parsed.data, `${offers.length} offers shortlisted${dropped ? `, ${dropped} unseen ids dropped` : ""}`, started);
+      return "Shortlist received.";
+    };
+
+    const handlers: Record<string, (raw: unknown) => Promise<string>> = { search_products: searchProducts, get_seen_offers: getSeenOffers, finalize_shortlist: finalizeShortlist };
+    // Validation happens inside run(), so invalid calls still land in the trace.
+    const runnableTools: BetaRunnableTool[] = agentToolDefinitions(tools.retailers).map(def => ({ ...def, strict: true, parse: (raw: unknown) => raw, run: handlers[def.name]! }));
+
+    const runner = this.client.beta.messages.toolRunner({
+      ...anthropicFallback(), model: this.model, max_tokens: 16_000, output_config: { effort: "medium" },
+      system: buildSystemPrompt(request, tools.retailers, budget),
+      messages: [{ role: "user", content: buildUserMessage(request) }],
+      tools: runnableTools,
+      thread: false, // send full history each turn; simpler to reason about and test
+      max_iterations: budget.maxToolCalls + POST_BUDGET_GRACE_TURNS + 3,
+    });
+
+    let graceTurns = 0;
+    for await (const message of runner) {
+      if (message.stop_reason === "refusal") break;
+      const spentBeforeThisTurn = budgetSpent();
+      await runner.generateToolResponse(); // run this turn's tools now so we can stop right after finalize
+      if (finalized) break;
+      if (spentBeforeThisTurn && ++graceTurns >= POST_BUDGET_GRACE_TURNS) break;
+    }
+
+    if (finalized) {
+      const { offers, dropped } = validateShortlist(finalized.offerIds, seen);
+      if (dropped) console.warn(JSON.stringify({ event: "agent_unseen_offer_ids_dropped", dropped }));
+      return { shortlist: offers, reasoning: finalized.reasoning, toolTrace, exhaustedBudget: false };
+    }
+    return { shortlist: fallbackShortlist(request, seen), reasoning: "The agent did not finalize a shortlist; offers were ranked by code from everything it found.", toolTrace, exhaustedBudget: budgetSpent() };
+  }
+}
+
 export function createModelProvider(config: Env): ModelProvider {
+  if (config.MODEL_PROVIDER === "anthropic") return new AnthropicModelProvider(config.ANTHROPIC_API_KEY!, config.PRIMARY_MODEL || DEFAULT_ANTHROPIC_MODEL);
   if (config.MODEL_PROVIDER === "gemini") return new GeminiModelProvider(config.GEMINI_API_KEY!, config.PRIMARY_MODEL || "gemini-3.1-flash-lite");
   if (config.MODEL_PROVIDER === "openai") return new OpenAIModelProvider(config.OPENAI_API_KEY!, config.PRIMARY_MODEL || "gpt-5-mini");
   return new MockModelProvider();

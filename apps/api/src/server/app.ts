@@ -6,6 +6,7 @@ import swaggerUi from "@fastify/swagger-ui";
 import { env, retailerMode, validateProductionConfig, type Env } from "../config/env.js";
 import { createModelProvider } from "../models/providers.js";
 import { demoAdapters } from "../retailers/adapters.js";
+import { createSearchApiAdapters } from "../retailers/searchapi/adapter.js";
 import { createShoppingGraph } from "../graph/shopping-graph.js";
 import { SearchService } from "./search-service.js";
 import { searchRoutes } from "../routes/search.js";
@@ -16,8 +17,7 @@ export async function buildApp(config: Env = env) {
   await app.register(cors, { origin: false });
   await app.register(rateLimit, { global: true, max: config.RATE_LIMIT_MAX, timeWindow: "1 minute" });
   if (config.ENABLE_DOCS) { await app.register(swagger, { openapi: { info: { title: `${config.BRAND_NAME} API`, version: "0.1.0", description: "Shopping workflow API. Retailer data declares whether it was live verified." } } }); await app.register(swaggerUi, { routePrefix: "/docs" }); }
-  // TODO(searchapi adapter): build one SearchAPI adapter per engine in searchApiEngines(config).
-  const rawAdapters: RetailerAdapter[] = retailerMode(config) === "demo" ? demoAdapters : [];
+  const rawAdapters: RetailerAdapter[] = retailerMode(config) === "demo" ? demoAdapters : createSearchApiAdapters(config);
   const graph = createShoppingGraph(createModelProvider(config), rawAdapters, { currency: config.DEFAULT_CURRENCY, country: config.DEFAULT_COUNTRY });
   const service = new SearchService(graph);
   await app.register(searchRoutes, { service });
