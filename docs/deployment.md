@@ -5,20 +5,38 @@ The production vertical slice uses:
 - Cloudflare Worker `findly-api` with one on-demand `basic` Container constrained to Eastern North America.
 - In-memory LangGraph checkpoints that last for the lifetime of the current container instance.
 - IP-based Cloudflare rate limits with no account or authentication service.
-- Gemini shopping-request understanding, Home Depot Canada's public JSON endpoints, and Browser Use managed browsers for Amazon Canada.
+- Gemini shopping-request understanding and SearchAPI retailer adapters (`RETAILER_MODE=searchapi`).
 
 The public API base URL is `https://findly-api.maskaravivek.workers.dev/`.
 
+## Environment variables
+
+`apps/api/src/config/env.ts` is the source of truth; `.env.example` lists every variable with its default. The ones that matter for live mode:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `RETAILER_MODE` | `demo` if `DEMO_MODE=true`, else `searchapi` | `demo` fixtures or SearchAPI adapters |
+| `SEARCHAPI_API_KEY` | none | Required in `searchapi` mode |
+| `SEARCHAPI_ENGINES` | all five engines | Comma list of enabled engines |
+| `SEARCHAPI_TIMEOUT_MS` / `SEARCHAPI_CACHE_TTL_MS` | `20000` / `300000` | Per-request timeout; response cache TTL (`0` disables) |
+| `MODEL_PROVIDER` | `mock` | `mock`, `gemini`, `openai`, or `anthropic` (only `anthropic` runs the agent loop with a real model) |
+| `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` / `OPENAI_API_KEY` | none | Required for the matching provider |
+| `PRIMARY_MODEL` | provider default | e.g. `claude-sonnet-5-5`, `gemini-3.1-flash-lite` |
+| `DEFAULT_COUNTRY` / `DEFAULT_CURRENCY` | `US` / `USD` | Used when a request omits them |
+| `AGENT_MAX_TOOL_CALLS` / `AGENT_MAX_RESULTS_PER_CALL` | `6` / `8` | Agent search budget |
+
+The API refuses to start if the selected retailer mode or provider is missing its key.
+
 ## Cloudflare configuration
 
-The deployment source of truth is `apps/cloudflare/wrangler.jsonc`. Non-sensitive production configuration is declared there. Store these values as Worker secrets:
+The deployment source of truth is `apps/cloudflare/wrangler.jsonc`. Non-sensitive production configuration is declared in `vars` there (`RETAILER_MODE=searchapi`, `MODEL_PROVIDER=gemini`, `PRIMARY_MODEL`). `apps/cloudflare/src/index.ts` forwards an explicit list of bindings to the container, so a new variable (for example `ANTHROPIC_API_KEY` or `DEFAULT_COUNTRY`) must be added there as well as in `wrangler.jsonc` or as a secret. Store keys as Worker secrets:
 
-```text
-GEMINI_API_KEY=<server-side Gemini authorization key>
-BROWSER_USE_API_KEY=<Browser Use API key starting with bu_>
+```bash
+pnpm --filter @findly/cloudflare exec wrangler secret put GEMINI_API_KEY
+pnpm --filter @findly/cloudflare exec wrangler secret put SEARCHAPI_API_KEY
 ```
 
-Do not place model keys, the Browser Use API key, or retailer credentials in the Android build.
+Do not place model keys, the SearchAPI key, or retailer credentials in the Android build.
 
 Deploy the container image and Worker from the repository root. Wrangler builds the image from `infra/docker/api.Dockerfile`, publishes a content-addressed image, and immediately rolls the updated container application forward:
 
@@ -32,12 +50,16 @@ The Worker routes every API request to one stable container instance, applies gl
 ## Verification
 
 ```bash
-curl --fail https://findly-api.maskaravivek.workers.dev/edge-health
-curl --fail https://findly-api.maskaravivek.workers.dev/health
-curl --fail https://findly-api.maskaravivek.workers.dev/ready
+BASE=https://findly-api.maskaravivek.workers.dev
+curl --fail $BASE/edge-health
+curl --fail $BASE/health
+curl --fail $BASE/ready
+curl --fail -X POST $BASE/v1/search \
+  -H 'content-type: application/json' \
+  -d '{"text":"cordless drill","country":"US","maxPrice":150,"imageIds":[]}'
 ```
 
-`/ready` must report `state: memory`. Search routes are intentionally unauthenticated for this prototype. Clarification and event replay work only while the current container instance remains awake; after sleep or restart, the client must begin a new search.
+`/ready` must report `state: memory`. A live search returns offers with `source.kind: "search_api"` and `liveVerified: true`; a rejected SearchAPI key or engine error shows up as retailer warnings rather than a failed request. Search routes are intentionally unauthenticated for this prototype. Clarification and event replay work only while the current container instance remains awake; after sleep or restart, the client must begin a new search.
 
 ## Android phone build
 
@@ -50,8 +72,6 @@ cd apps/android
 
 The APK is written to `apps/android/app/build/outputs/apk/debug/app-debug.apk`.
 
-## Expanding live retailer coverage
+## Retailer coverage
 
-Home Depot Canada and Amazon Canada are the only live adapters. Home Depot is the local-inventory source; Amazon is an online comparison source. Walmart, Canadian Tire, RONA, and Best Buy remain omitted until their capabilities are implemented and verified. Retailer challenges and failures produce partial results rather than fabricated availability.
-
-Amazon sessions run in Browser Use managed browsers with a residential proxy geolocated to the user's country (the requested country, defaulting to CA). Amazon's adapter still attempts to set the postal code in the retailer UI and does not claim local inventory. Home Depot's store lookup and product query include the requested Canadian postal code or resolved store ID before location-dependent data is accepted. Retailer results are not cached; every search invokes the configured live adapters and preserves partial failures rather than fabricating availability.
+Coverage is set by `SEARCHAPI_ENGINES`. Walmart, Home Depot, and Best Buy engines are US stores; Amazon and Google Shopping localise by country. Engine failures produce partial results with warnings rather than fabricated availability. See [`retailer-adapters.md`](retailer-adapters.md) for per-engine capabilities and currency rules.

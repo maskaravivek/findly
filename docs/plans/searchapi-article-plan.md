@@ -5,7 +5,7 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
 ## 1. Where the backend is today
 
 - `apps/api` is a Fastify server running a fixed LangGraph pipeline (`shopping-graph.ts`): understand → plan → fan out to retailer adapters → match → rank → summarize.
-- Live retailer data comes from two bespoke adapters: `home-depot.ts` (scrapes homedepot.ca JSON endpoints via curl) and `amazon-browser.ts` (Browser Use managed browser + Playwright). These are exactly the "static scraping" the article argues against, so they become the "before" story.
+- Live retailer data comes from two bespoke scraping adapters: `home-depot.ts` (retailer JSON scraping via curl) and `amazon-browser.ts` (a managed headless browser). These are exactly the "static scraping" the article argues against, so they become the "before" story.
 - Model providers (`providers.ts`) only do structured JSON output (Gemini / OpenAI). There is no tool-calling loop; retailer choice is a hard-coded list in `generateSearchPlan`.
 - Contracts (`packages/contracts`) are Canada-only: `currency: z.literal("CAD")`, `country: z.literal("CA")`, `RetailerIdSchema` is a closed enum of 6 Canadian retailers.
 - `RetailerAdapter` (`packages/retailer-sdk`) is a good seam: a SearchAPI-backed adapter slots in without touching the graph.
@@ -24,10 +24,14 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
 ## 3. Backend changes (in order)
 
 ### 3.1 Prep
+> Status: done. Branch `feat/searchapi-agent`; env vars live in `apps/api/src/config/env.ts` and `.env.example`.
+
 - Commit the Cloudflare migration work on `main`, then branch `feat/searchapi-agent`.
 - Add `SEARCHAPI_API_KEY`, `RETAILER_MODE=searchapi`, `DEFAULT_COUNTRY`, `SEARCHAPI_ENGINES` (comma list) to `env.ts` and `.env.example`.
 
 ### 3.2 SearchAPI client + adapter (`apps/api/src/retailers/searchapi/`)
+> Status: done. `client.ts`, `engines.ts` (five engines; detail tools not built), `adapter.ts`; the old scraping adapters and their dependencies are removed.
+
 - `client.ts`: one `fetch` wrapper for `GET https://www.searchapi.io/api/v1/search` with `Authorization: Bearer`, timeout, retry on 429/5xx, and an in-memory TTL cache keyed on `(engine, params)` to protect credits during dev and tests.
 - One adapter class parameterised by engine, each with a small Zod schema for the fields we actually read:
   - `amazon_search` (`q`, `amazon_domain`, `delivery_country`, `postal_code`, `sort_by`, `price_min/max`) → `organic_results[]`: `asin, title, link, brand, price, extracted_price, rating, reviews, thumbnail, is_prime, fulfillment.standard_delivery/fastest_delivery`.
@@ -36,15 +40,19 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
   - `google_shopping` (`q`, `gl`, `hl`, `location`, `price_min/max`, `sort_by`) → `shopping_results[]`: `product_id, title, product_link, seller, price, extracted_price, rating, reviews, delivery, thumbnail, product_token`. Note `product_link` is a Google page, not the merchant URL.
   - Optional detail tools: `amazon_product` (by `asin`), `walmart_product` (by `product_id`).
 - Map every result to `NormalizedRetailOffer` with `source.kind = "search_api"`, `liveVerified: true`, `observedAt` from `search_metadata`.
-- Drop `amazon-browser.ts`, `browser-service.ts`, `playwright-core`, `BROWSER_USE_API_KEY` from the article branch (keep `home-depot.ts` only if you want a "before vs after" code comparison in the article; otherwise remove).
+- Drop `amazon-browser.ts`, `browser-service.ts`, the headless-browser dependency and its API key, and `home-depot.ts` from the article branch.
 
 ### 3.3 Contracts
+> Status: done. Open string currency/country/retailer ids, `KNOWN_RETAILERS`, `source.kind = "search_api"`; Android UI not updated (see What's left).
+
 - `MoneySchema.currency` and `ShoppingLocationSchema.country` become `z.string()` (3-letter / 2-letter regex) with defaults from env.
 - `RetailerIdSchema` → open string, or extend with `amazon`, `walmart`, `best_buy`, `home_depot`, `google_shopping`. Prefer open string plus a `KNOWN_RETAILERS` map for display names.
 - Add `"search_api"` to `source.kind`.
 - Update `test-fixtures` and Android `Models.kt` if the enum changes (Android can stay on the Canadian build; article only needs the API).
 
 ### 3.4 Agentic loop (the core of the article)
+> Status: done. `apps/api/src/agent/shopping-agent.ts` + `AnthropicModelProvider.runShoppingAgent`; tools are `search_products`, `get_seen_offers`, `finalize_shortlist`; runs as the `agent_search` graph node.
+
 - New `packages/model-sdk` method: `runShoppingAgent({ request, tools }) → { candidates, toolTrace }`.
 - Tools exposed to the LLM (thin wrappers over the adapter):
   - `search_products({ engine, query, maxPrice?, sortBy? })`
@@ -58,21 +66,39 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
 - Emit each tool call as a `ProgressEvent` (`stage: "tool_call"`, engine, query, hits) so SSE shows the agent thinking without leaking prompts.
 
 ### 3.5 API surface for the article
+> Status: done. `POST /v1/search` accepts `country`, `currency`, `maxPrice`; responses carry `agentReasoning` and `toolTrace`; clarification endpoint kept.
+
 - `POST /v1/search` body: `{ text, country?, postalCode?, maxPrice? }`.
 - Response: `understoodRequest`, `shortlist` (ranked offers with retailer, price, link, rating, delivery), `recommendation`, `toolTrace` (engine/query/hits per call), `warnings`.
 - Keep `/v1/search/:id/events` SSE; drop clarification endpoint from the article (mention as extension).
 
 ### 3.6 Tests
+> Status: done with sample responses in `apps/api/tests/` (`searchapi-*.test.ts`, `shopping-agent.test.ts`, `agent-graph.test.ts`); real recorded fixtures still pending.
+
 - Record 3–4 real SearchAPI responses once into `packages/test-fixtures/searchapi/*.json` (strip keys), use them for adapter mapping tests and a mocked agent-loop test in vitest.
 - Fake tool runner for the loop: assert budget enforcement and that `finalize_shortlist` ids are validated against seen results (no hallucinated offers).
 
 ### 3.7 Article-sized example
-- `examples/searchapi-shopping-agent/` (~250 lines, single `index.ts` + `tools.ts` + `server.ts`) with no LangGraph, Zod only. Article walks through this; links to the full findly repo for the production shape (LangGraph, SSE, ranking).
+> Status: done. See layout below.
+
+- `examples/searchapi-shopping-agent/`, no LangGraph, Zod only. Article walks through this; links to the full findly repo for the production shape (LangGraph, SSE, ranking).
+  - `searchapi.ts`: SearchAPI call, per-engine normalisation into one `Offer` type, in-memory cache.
+  - `agent.ts`: Claude tool loop (`search_products`, `get_seen_offers`, `finalize_shortlist`) with budget and shortlist-id validation.
+  - `rank.ts`: deterministic ranking by price, rating and fulfillment.
+  - `server.ts`: `POST /search`.
+  - `demo.ts`: command-line run.
+  - `agent.test.ts`: keyless, network-free loop test.
+  - `README.md`: setup, run, response shape.
+
+### What's left
+- Run against live SearchAPI + Anthropic keys and record real fixtures (keys stripped) to replace the hand-written sample responses.
+- Android client not updated for open retailer ids: `Models.kt` decodes any id string, but the UI formats prices as CAD (`OfferLenses.kt`, `MainActivity.kt`) and hard-codes a Home Depot pickup heading.
+- `tool_call` SSE events are replayed after the agent completes, not streamed live while it runs.
 
 ## 4. Article outline
 
 1. **Why** — natural-language shopping queries, the "which platform should I buy from" question, Findly background.
-2. **Why not scrape** — what the old Amazon (managed browser) and Home Depot (JSON endpoint) adapters cost: bot challenges, layout churn, per-retailer parsers, no shared schema. SearchAPI: one endpoint, `engine=` switch, JSON with `extracted_price`/rating/delivery, localisation via `gl`/`amazon_domain`/`postal_code`.
+2. **Why not scrape** — what the old Amazon (managed browser) and Home Depot (scraped JSON) adapters cost: bot challenges, layout churn, per-retailer parsers, no shared schema. SearchAPI: one endpoint, `engine=` switch, JSON with `extracted_price`/rating/delivery, localisation via `gl`/`amazon_domain`/`postal_code`.
 3. **Architecture** — diagram: request → LLM understanding → tool loop (SearchAPI engines) → deterministic match/rank → summary → API.
 4. **Setup** — keys, `curl` to SearchAPI for one engine, show raw JSON.
 5. **Normalising results** — one `Offer` type across engines; Zod schema; mapping table.
