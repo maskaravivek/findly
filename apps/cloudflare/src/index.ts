@@ -7,7 +7,7 @@ type FindlyBindings = {
   API_RATE_LIMITER: RateLimit;
   SEARCH_RATE_LIMITER: RateLimit;
   GEMINI_API_KEY: string;
-  BROWSER_USE_API_KEY: string;
+  SEARCHAPI_API_KEY: string;
   NODE_ENV: string;
   HOST: string;
   PORT: string;
@@ -37,7 +37,7 @@ export class FindlyApiContainer extends Container {
     PRIMARY_MODEL: bindings.PRIMARY_MODEL,
     BRAND_NAME: bindings.BRAND_NAME,
     GEMINI_API_KEY: bindings.GEMINI_API_KEY,
-    BROWSER_USE_API_KEY: bindings.BROWSER_USE_API_KEY,
+    SEARCHAPI_API_KEY: bindings.SEARCHAPI_API_KEY,
   };
 }
 

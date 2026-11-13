@@ -14,7 +14,7 @@
     "HOST": "0.0.0.0",
     "PORT": "3000",
     "DEMO_MODE": "false",
-    "RETAILER_MODE": "live",
+    "RETAILER_MODE": "searchapi",
     "ENABLE_DOCS": "false",
     "RATE_LIMIT_MAX": "30",
     "MODEL_PROVIDER": "gemini",
