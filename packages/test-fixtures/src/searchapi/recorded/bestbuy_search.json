@@ -1,0 +1,969 @@
+{
+  "search_metadata": {
+    "id": "search_G6ZMRV4jp7tXKArZPk2X071E",
+    "status": "Success",
+    "created_at": "2026-11-13T01:31:21Z",
+    "request_time_taken": 3.98,
+    "parsing_time_taken": 0.03,
+    "total_time_taken": 4.01
+  },
+  "search_parameters": {
+    "engine": "bestbuy_search",
+    "q": "cordless drill"
+  },
+  "search_information": {
+    "total_results": 146
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "product_id": "11443229",
+      "title": "Pursonic - Power Tool Bundle: 21V Cordless Drill & Rechargeable Electric Screwdriver (47-Piece Set)",
+      "short_title": "Power Tool Bundle: 21V Cordless Drill & Rechargeable Electric Screwdriver (47-Piece Set)",
+      "link": "https://www.bestbuy.com/product/pursonic-power-tool-bundle-21v-cordless-drill-rechargeable-electric-screwdriver-47-piece-set/J3GWL474V4/sku/11443229",
+      "brand": "Pursonic",
+      "brand_id": "9103",
+      "model_number": "PSPTS24-PSPTS47",
+      "what_it_is": [
+        "Drill",
+        "Hammer Drill",
+        "Impact Driver"
+      ],
+      "classification": {
+        "department": "DTS",
+        "department_id": "10",
+        "class": "TOOLS",
+        "class_id": "748",
+        "subclass": "HANDHELD TOOLS",
+        "subclass_id": "7873"
+      },
+      "condition": "new",
+      "rating": 5,
+      "reviews": 1,
+      "seller": {
+        "id": "3090",
+        "name": "Marketplace"
+      },
+      "price": "$74.99",
+      "extracted_price": 74.99,
+      "original_price": "$119.99",
+      "extracted_original_price": 119.99,
+      "discount": 45,
+      "discount_percentage": 37,
+      "member_savings": {
+        "non_paid": 45
+      },
+      "installment": {
+        "months": "4 months",
+        "extracted_months": 4,
+        "cost_per_month": "$18.75",
+        "extracted_cost_per_month": 18.75
+      },
+      "buying_options": [
+        {
+          "type": "New",
+          "link": "https://www.bestbuy.com/product/pursonic-power-tool-bundle-21v-cordless-drill-rechargeable-electric-screwdriver-47-piece-set/J3GWL474V4/sku/11443229"
+        }
+      ],
+      "release_date": "2025-11-18T06:00Z",
+      "thumbnail": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/e8cd600d-34e7-4796-8847-ad5a659d163c.jpg",
+      "images": [
+        {
+          "title": "Front Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/e8cd600d-34e7-4796-8847-ad5a659d163c.jpg",
+          "alt_text": "25-31-53-53  \nPURSTEEL  \nD00  \nLIMUE  \nLitewa  \nAT  \nC  \nM  \n21V  \nPURSTEEL"
+        },
+        {
+          "title": "Front Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/e8cd600d-34e7-4796-8847-ad5a659d163c.jpg",
+          "alt_text": "25-31-53-53  \nPURSTEEL  \nD00  \nLIMUE  \nLitewa  \nAT  \nC  \nM  \n21V  \nPURSTEEL"
+        },
+        {
+          "title": "Front Detail",
+          "link": "https://pisces.bbystatic.com/prescaled/105/210/image2/BestBuy_US/images/products/e8cd600d-34e7-4796-8847-ad5a659d163c.jpg",
+          "alt_text": "25-31-53-53  \nPURSTEEL  \nD00  \nLIMUE  \nLitewa  \nAT  \nC  \nM  \n21V  \nPURSTEEL"
+        },
+        {
+          "title": "Front Large",
+          "link": "https://pisces.bbystatic.com/prescaled/160/220/image2/BestBuy_US/images/products/e8cd600d-34e7-4796-8847-ad5a659d163c.jpg",
+          "alt_text": "25-31-53-53  \nPURSTEEL  \nD00  \nLIMUE  \nLitewa  \nAT  \nC  \nM  \n21V  \nPURSTEEL"
+        },
+        {
+          "title": "Front Medium",
+          "link": "https://pisces.bbystatic.com/prescaled/140/70/image2/BestBuy_US/images/products/e8cd600d-34e7-4796-8847-ad5a659d163c.jpg",
+          "alt_text": "25-31-53-53  \nPURSTEEL  \nD00  \nLIMUE  \nLitewa  \nAT  \nC  \nM  \n21V  \nPURSTEEL"
+        },
+        {
+          "title": "Front Thumbnail",
+          "link": "https://pisces.bbystatic.com/prescaled/108/54/image2/BestBuy_US/images/products/e8cd600d-34e7-4796-8847-ad5a659d163c.jpg",
+          "alt_text": "25-31-53-53  \nPURSTEEL  \nD00  \nLIMUE  \nLitewa  \nAT  \nC  \nM  \n21V  \nPURSTEEL"
+        },
+        {
+          "title": "Angle Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/26d547de-caa6-4262-8f4d-80e274b000ff.jpg",
+          "alt_text": "VOLTAGE: 21V  \nBATTERY: RECHARGEABLE LITHIUM BATTERY  \nERGONOMIC DESIGN FOR COMFORTABLE HANDLING  \n\nPURSTEEL  \nBY PURSTEEL  \n\n21V LITHIUM BATTERY"
+        },
+        {
+          "title": "Angle Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/26d547de-caa6-4262-8f4d-80e274b000ff.jpg",
+          "alt_text": "VOLTAGE: 21V  \nBATTERY: RECHARGEABLE LITHIUM BATTERY  \nERGONOMIC DESIGN FOR COMFORTABLE HANDLING  \n\nPURSTEEL  \nBY PURSTEEL  \n\n21V LITHIUM BATTERY"
+        },
+        {
+          "title": "Left Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/8478f0eb-02d6-4fb2-9635-ab2895d46979.jpg",
+          "alt_text": "- Adjustable Handle\n- Forward and Reverse Switch\n- Universal Flexible Shaft\n- Screwdriver Accessories"
+        },
+        {
+          "title": "Left Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/8478f0eb-02d6-4fb2-9635-ab2895d46979.jpg",
+          "alt_text": "- Adjustable Handle\n- Forward and Reverse Switch\n- Universal Flexible Shaft\n- Screwdriver Accessories"
+        }
+      ],
+      "is_sponsored": true
+    },
+    {
+      "position": 2,
+      "product_id": "12476337",
+      "title": "Greenworks - 24V 1/2\" 310 in-lbs Brushless Cordless Drill / Driver, with 2Ah Battery and Charger - Green",
+      "short_title": "24V 1/2\" 310 in-lbs Brushless Cordless Drill / Driver, with 2Ah Battery and Charger",
+      "link": "https://www.bestbuy.com/product/greenworks-24v-1-2-310-in-lbs-brushless-cordless-drill-driver-with-2ah-battery-and-charger-green/J39FCSVHQ4/sku/12476337",
+      "brand": "Greenworks",
+      "brand_id": "43650",
+      "model_number": "3704702",
+      "what_it_is": [
+        "Drill"
+      ],
+      "classification": {
+        "department": "DTS",
+        "department_id": "10",
+        "class": "TOOLS",
+        "class_id": "748",
+        "subclass": "HANDHELD TOOLS",
+        "subclass_id": "7873"
+      },
+      "condition": "new",
+      "rating": 0,
+      "reviews": 0,
+      "syndicated_reviews": [
+        {
+          "source": "greenworkstools.com",
+          "rating": 4.77,
+          "reviews": 141
+        }
+      ],
+      "seller": {
+        "id": "6944",
+        "name": "Marketplace"
+      },
+      "price": "$119.99",
+      "extracted_price": 119.99,
+      "installment": {
+        "months": "4 months",
+        "extracted_months": 4,
+        "cost_per_month": "$30.00",
+        "extracted_cost_per_month": 30
+      },
+      "buying_options": [
+        {
+          "type": "New",
+          "link": "https://www.bestbuy.com/product/greenworks-24v-1-2-310-in-lbs-brushless-cordless-drill-driver-with-2ah-battery-and-charger-green/J39FCSVHQ4/sku/12476337"
+        }
+      ],
+      "release_date": "2026-03-30T05:00Z",
+      "thumbnail": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6a78c4da-6dfc-4712-a3b2-7db84a9a8d06.jpg",
+      "images": [
+        {
+          "title": "Front Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6a78c4da-6dfc-4712-a3b2-7db84a9a8d06.jpg",
+          "alt_text": "1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD\n\n1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD"
+        },
+        {
+          "title": "Front Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/6a78c4da-6dfc-4712-a3b2-7db84a9a8d06.jpg",
+          "alt_text": "1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD\n\n1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD"
+        },
+        {
+          "title": "Front Detail",
+          "link": "https://pisces.bbystatic.com/prescaled/105/210/image2/BestBuy_US/images/products/6a78c4da-6dfc-4712-a3b2-7db84a9a8d06.jpg",
+          "alt_text": "1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD\n\n1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD"
+        },
+        {
+          "title": "Front Large",
+          "link": "https://pisces.bbystatic.com/prescaled/160/220/image2/BestBuy_US/images/products/6a78c4da-6dfc-4712-a3b2-7db84a9a8d06.jpg",
+          "alt_text": "1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD\n\n1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD"
+        },
+        {
+          "title": "Front Medium",
+          "link": "https://pisces.bbystatic.com/prescaled/140/70/image2/BestBuy_US/images/products/6a78c4da-6dfc-4712-a3b2-7db84a9a8d06.jpg",
+          "alt_text": "1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD\n\n1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD"
+        },
+        {
+          "title": "Front Thumbnail",
+          "link": "https://pisces.bbystatic.com/prescaled/108/54/image2/BestBuy_US/images/products/6a78c4da-6dfc-4712-a3b2-7db84a9a8d06.jpg",
+          "alt_text": "1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD\n\n1/16-1/2 1 15 C greenworks LIYNL -O-- greenworks e .. 10 8 6 greenworks 4 ~ BAUSHLESS ESS CD"
+        },
+        {
+          "title": "Angle Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/23a960b4-60d2-486a-8a51-9b03f1e7addf.jpg",
+          "alt_text": "310 in/lbs of Torque Delivers Maximum Power"
+        },
+        {
+          "title": "Angle Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/23a960b4-60d2-486a-8a51-9b03f1e7addf.jpg",
+          "alt_text": "310 in/lbs of Torque Delivers Maximum Power"
+        },
+        {
+          "title": "Left Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/fbe4077c-ff5c-4883-aa17-23836ffec7ac.jpg",
+          "alt_text": "Brushless Motor Delivers More Power"
+        },
+        {
+          "title": "Left Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/fbe4077c-ff5c-4883-aa17-23836ffec7ac.jpg",
+          "alt_text": "Brushless Motor Delivers More Power"
+        }
+      ],
+      "badges_v2": [
+        {
+          "label": "Best Selling",
+          "type": "bestSelling",
+          "description": "One of the category's most frequently purchased items.",
+          "rank": 1,
+          "category_name": "Drills & Drivers",
+          "experience_url": "https://www.bestbuy.com/discover/best-selling/best-selling-drills/pcmcat1616429511771"
+        }
+      ],
+      "is_sponsored": true
+    },
+    {
+      "position": 3,
+      "product_id": "13178533",
+      "title": "Greenworks - 24V PowerAll 3/8\" Drill and Impact Driver Combo Kit, (2) 2Ah Batteries, 30W Charger, and 29pcs Bits Set - Green",
+      "short_title": "24V PowerAll 3/8\" Drill and Impact Driver Combo Kit, (2) 2Ah Batteries, 30W Charger, and 29pcs Bits Set",
+      "link": "https://www.bestbuy.com/product/greenworks-24v-powerall-3-8-drill-and-impact-driver-combo-kit-2-2ah-batteries-30w-charger-and-29pcs-bits-set-green/JJG745YRTV/sku/13178533",
+      "brand": "Greenworks",
+      "brand_id": "43650",
+      "model_number": "CK326",
+      "what_it_is": [
+        "Drill"
+      ],
+      "classification": {
+        "department": "DTS",
+        "department_id": "10",
+        "class": "TOOLS",
+        "class_id": "748",
+        "subclass": "HANDHELD TOOLS",
+        "subclass_id": "7873"
+      },
+      "condition": "new",
+      "rating": 0,
+      "reviews": 0,
+      "seller": {
+        "id": "6944",
+        "name": "Marketplace"
+      },
+      "price": "$169.99",
+      "extracted_price": 169.99,
+      "installment": {
+        "months": "4 months",
+        "extracted_months": 4,
+        "cost_per_month": "$42.50",
+        "extracted_cost_per_month": 42.5
+      },
+      "buying_options": [
+        {
+          "type": "New",
+          "link": "https://www.bestbuy.com/product/greenworks-24v-powerall-3-8-drill-and-impact-driver-combo-kit-2-2ah-batteries-30w-charger-and-29pcs-bits-set-green/JJG745YRTV/sku/13178533"
+        }
+      ],
+      "release_date": "2026-10-14T05:00Z",
+      "thumbnail": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/46bc62fc-369e-43e3-adce-249f7c3c3369.jpg",
+      "images": [
+        {
+          "title": "Front Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/46bc62fc-369e-43e3-adce-249f7c3c3369.jpg",
+          "alt_text": "8 - greenworks  \nG_VEIZAR CL-YCH2-55  \ngreenworks 10 10 - PASZUSA greenworks greenworks BRIGA BEE SET KAMING DOUBLE-SIDED IMPACT BIT That's % Q 55g - greenworks  \nBRUSHLESS POWERALL 24M  \ngreenworks  \nPA51302 9 PIECE greenworks NUT DRIVER SET [SAE] %  \n30W  \nPOWERALL 24M  \no/en  \nWe  \nVOLVO  \n3/8 1/2 DI  \ngreenwork  \ngreenworks"
+        },
+        {
+          "title": "Front Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/46bc62fc-369e-43e3-adce-249f7c3c3369.jpg",
+          "alt_text": "8 - greenworks  \nG_VEIZAR CL-YCH2-55  \ngreenworks 10 10 - PASZUSA greenworks greenworks BRIGA BEE SET KAMING DOUBLE-SIDED IMPACT BIT That's % Q 55g - greenworks  \nBRUSHLESS POWERALL 24M  \ngreenworks  \nPA51302 9 PIECE greenworks NUT DRIVER SET [SAE] %  \n30W  \nPOWERALL 24M  \no/en  \nWe  \nVOLVO  \n3/8 1/2 DI  \ngreenwork  \ngreenworks"
+        },
+        {
+          "title": "Front Detail",
+          "link": "https://pisces.bbystatic.com/prescaled/105/210/image2/BestBuy_US/images/products/46bc62fc-369e-43e3-adce-249f7c3c3369.jpg",
+          "alt_text": "8 - greenworks  \nG_VEIZAR CL-YCH2-55  \ngreenworks 10 10 - PASZUSA greenworks greenworks BRIGA BEE SET KAMING DOUBLE-SIDED IMPACT BIT That's % Q 55g - greenworks  \nBRUSHLESS POWERALL 24M  \ngreenworks  \nPA51302 9 PIECE greenworks NUT DRIVER SET [SAE] %  \n30W  \nPOWERALL 24M  \no/en  \nWe  \nVOLVO  \n3/8 1/2 DI  \ngreenwork  \ngreenworks"
+        },
+        {
+          "title": "Front Large",
+          "link": "https://pisces.bbystatic.com/prescaled/160/220/image2/BestBuy_US/images/products/46bc62fc-369e-43e3-adce-249f7c3c3369.jpg",
+          "alt_text": "8 - greenworks  \nG_VEIZAR CL-YCH2-55  \ngreenworks 10 10 - PASZUSA greenworks greenworks BRIGA BEE SET KAMING DOUBLE-SIDED IMPACT BIT That's % Q 55g - greenworks  \nBRUSHLESS POWERALL 24M  \ngreenworks  \nPA51302 9 PIECE greenworks NUT DRIVER SET [SAE] %  \n30W  \nPOWERALL 24M  \no/en  \nWe  \nVOLVO  \n3/8 1/2 DI  \ngreenwork  \ngreenworks"
+        },
+        {
+          "title": "Front Medium",
+          "link": "https://pisces.bbystatic.com/prescaled/140/70/image2/BestBuy_US/images/products/46bc62fc-369e-43e3-adce-249f7c3c3369.jpg",
+          "alt_text": "8 - greenworks  \nG_VEIZAR CL-YCH2-55  \ngreenworks 10 10 - PASZUSA greenworks greenworks BRIGA BEE SET KAMING DOUBLE-SIDED IMPACT BIT That's % Q 55g - greenworks  \nBRUSHLESS POWERALL 24M  \ngreenworks  \nPA51302 9 PIECE greenworks NUT DRIVER SET [SAE] %  \n30W  \nPOWERALL 24M  \no/en  \nWe  \nVOLVO  \n3/8 1/2 DI  \ngreenwork  \ngreenworks"
+        },
+        {
+          "title": "Front Thumbnail",
+          "link": "https://pisces.bbystatic.com/prescaled/108/54/image2/BestBuy_US/images/products/46bc62fc-369e-43e3-adce-249f7c3c3369.jpg",
+          "alt_text": "8 - greenworks  \nG_VEIZAR CL-YCH2-55  \ngreenworks 10 10 - PASZUSA greenworks greenworks BRIGA BEE SET KAMING DOUBLE-SIDED IMPACT BIT That's % Q 55g - greenworks  \nBRUSHLESS POWERALL 24M  \ngreenworks  \nPA51302 9 PIECE greenworks NUT DRIVER SET [SAE] %  \n30W  \nPOWERALL 24M  \no/en  \nWe  \nVOLVO  \n3/8 1/2 DI  \ngreenwork  \ngreenworks"
+        },
+        {
+          "title": "Angle Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/e97325e4-8aa5-4f9f-a71e-592e17e1f8b1.jpg",
+          "alt_text": "greenworks POWERALL 24V  \n5 YEAR TOOL WARRANTY  \n3 YEAR BATTERY WARRANTY  \n4.7\"  \n1/4\" HEX QUICK-CONNECT CHUCK LED LIGHT  \ngreenworks BRUSHLESS  \nCOMPACT & LIGHTWEIGHT BRUSHLESS MOTOR  \ngreenworks  \nPOWERALL 24V"
+        },
+        {
+          "title": "Angle Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/e97325e4-8aa5-4f9f-a71e-592e17e1f8b1.jpg",
+          "alt_text": "greenworks POWERALL 24V  \n5 YEAR TOOL WARRANTY  \n3 YEAR BATTERY WARRANTY  \n4.7\"  \n1/4\" HEX QUICK-CONNECT CHUCK LED LIGHT  \ngreenworks BRUSHLESS  \nCOMPACT & LIGHTWEIGHT BRUSHLESS MOTOR  \ngreenworks  \nPOWERALL 24V"
+        },
+        {
+          "title": "Left Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/130c27f8-a451-47cb-bf8f-3374cd53955b.jpg",
+          "alt_text": "greenworks POWERALL 24Y  \n5 YEAR TOOL WARRANTY  \n3 YEAR BATTERY WARRANTY  \n19+1-[DRILL] POSITION CLUTCH  \nBRUSHLESS MOTOR  \nCOMPACT & LIGHTWEIGHT  \nLED LIGHT  \nUSB-C  \ngreenworks  \nRALL N  \n565W  \nPOWERALL 24V"
+        },
+        {
+          "title": "Left Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/130c27f8-a451-47cb-bf8f-3374cd53955b.jpg",
+          "alt_text": "greenworks POWERALL 24Y  \n5 YEAR TOOL WARRANTY  \n3 YEAR BATTERY WARRANTY  \n19+1-[DRILL] POSITION CLUTCH  \nBRUSHLESS MOTOR  \nCOMPACT & LIGHTWEIGHT  \nLED LIGHT  \nUSB-C  \ngreenworks  \nRALL N  \n565W  \nPOWERALL 24V"
+        }
+      ],
+      "is_sponsored": true
+    },
+    {
+      "position": 4,
+      "product_id": "11212130",
+      "title": "Greenworks - 24V Cordless Brushless Drill/Driver+Impact Driver Combo, with 2.0Ah Batteries and Charger - Green",
+      "short_title": "24V Cordless Brushless Drill/Driver+Impact Driver Combo, with 2.0Ah Batteries and Charger",
+      "link": "https://www.bestbuy.com/product/greenworks-24v-cordless-brushless-drill-driver-impact-driver-combo-with-2-0ah-batteries-and-charger-green/JJG745397H/sku/11212130",
+      "brand": "Greenworks",
+      "brand_id": "43650",
+      "model_number": "CK32100",
+      "what_it_is": [
+        "Drill"
+      ],
+      "classification": {
+        "department": "DTS",
+        "department_id": "10",
+        "class": "TOOLS",
+        "class_id": "748",
+        "subclass": "HANDHELD TOOLS",
+        "subclass_id": "7873"
+      },
+      "condition": "new",
+      "rating": 0,
+      "reviews": 0,
+      "syndicated_reviews": [
+        {
+          "source": "greenworkstools.com",
+          "rating": 4.73,
+          "reviews": 177
+        }
+      ],
+      "seller": {
+        "id": "6944",
+        "name": "Marketplace"
+      },
+      "price": "$199.99",
+      "extracted_price": 199.99,
+      "installment": {
+        "months": "4 months",
+        "extracted_months": 4,
+        "cost_per_month": "$50.00",
+        "extracted_cost_per_month": 50
+      },
+      "buying_options": [
+        {
+          "type": "New",
+          "link": "https://www.bestbuy.com/product/greenworks-24v-cordless-brushless-drill-driver-impact-driver-combo-with-2-0ah-batteries-and-charger-green/JJG745397H/sku/11212130"
+        }
+      ],
+      "release_date": "2025-11-05T06:00Z",
+      "thumbnail": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/f79b57e3-763c-4e67-9597-2e7c0b1f931b.jpg",
+      "images": [
+        {
+          "title": "Front Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/f79b57e3-763c-4e67-9597-2e7c0b1f931b.jpg",
+          "alt_text": "$400+ VALUE IF PURCHASED SEPARATELY\n\n16 - 18\n18 greenworks\nSERIES M\npreemanks\n24\nO narO I 1E greenworks\n24 2\nCcend 4W greenworks\n\ngreenworks\nSERIES 3"
+        },
+        {
+          "title": "Front Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/f79b57e3-763c-4e67-9597-2e7c0b1f931b.jpg",
+          "alt_text": "$400+ VALUE IF PURCHASED SEPARATELY\n\n16 - 18\n18 greenworks\nSERIES M\npreemanks\n24\nO narO I 1E greenworks\n24 2\nCcend 4W greenworks\n\ngreenworks\nSERIES 3"
+        },
+        {
+          "title": "Front Detail",
+          "link": "https://pisces.bbystatic.com/prescaled/105/210/image2/BestBuy_US/images/products/f79b57e3-763c-4e67-9597-2e7c0b1f931b.jpg",
+          "alt_text": "$400+ VALUE IF PURCHASED SEPARATELY\n\n16 - 18\n18 greenworks\nSERIES M\npreemanks\n24\nO narO I 1E greenworks\n24 2\nCcend 4W greenworks\n\ngreenworks\nSERIES 3"
+        },
+        {
+          "title": "Front Large",
+          "link": "https://pisces.bbystatic.com/prescaled/160/220/image2/BestBuy_US/images/products/f79b57e3-763c-4e67-9597-2e7c0b1f931b.jpg",
+          "alt_text": "$400+ VALUE IF PURCHASED SEPARATELY\n\n16 - 18\n18 greenworks\nSERIES M\npreemanks\n24\nO narO I 1E greenworks\n24 2\nCcend 4W greenworks\n\ngreenworks\nSERIES 3"
+        },
+        {
+          "title": "Front Medium",
+          "link": "https://pisces.bbystatic.com/prescaled/140/70/image2/BestBuy_US/images/products/f79b57e3-763c-4e67-9597-2e7c0b1f931b.jpg",
+          "alt_text": "$400+ VALUE IF PURCHASED SEPARATELY\n\n16 - 18\n18 greenworks\nSERIES M\npreemanks\n24\nO narO I 1E greenworks\n24 2\nCcend 4W greenworks\n\ngreenworks\nSERIES 3"
+        },
+        {
+          "title": "Front Thumbnail",
+          "link": "https://pisces.bbystatic.com/prescaled/108/54/image2/BestBuy_US/images/products/f79b57e3-763c-4e67-9597-2e7c0b1f931b.jpg",
+          "alt_text": "$400+ VALUE IF PURCHASED SEPARATELY\n\n16 - 18\n18 greenworks\nSERIES M\npreemanks\n24\nO narO I 1E greenworks\n24 2\nCcend 4W greenworks\n\ngreenworks\nSERIES 3"
+        },
+        {
+          "title": "Angle Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/dd08e1b0-3e70-411d-9392-d46698192ceb.jpg",
+          "alt_text": "OVER VALUE $ 400+ TOTAL KIT IF PURCHASED SEPARATELY\n\n- greenworks 1/2\" Drill Driver\n- greenworks 1/4\" Impact Driver\n- Tool Bag\n- greenworks 65W POWERALL (2) 24V 2AH Battery\n- AC 65W Charger\n- 100W 1M Charging Cable"
+        },
+        {
+          "title": "Angle Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/dd08e1b0-3e70-411d-9392-d46698192ceb.jpg",
+          "alt_text": "OVER VALUE $ 400+ TOTAL KIT IF PURCHASED SEPARATELY\n\n- greenworks 1/2\" Drill Driver\n- greenworks 1/4\" Impact Driver\n- Tool Bag\n- greenworks 65W POWERALL (2) 24V 2AH Battery\n- AC 65W Charger\n- 100W 1M Charging Cable"
+        },
+        {
+          "title": "Left Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6a414de7-b25d-4585-82ad-559c19c7f428.jpg",
+          "alt_text": "Greater Runtime  \nImproved Performance  \nMore Compact Tools  \nLighter Weight  \nUSB-C Bi-Directional Charging  \n\ngreenworks"
+        },
+        {
+          "title": "Left Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/6a414de7-b25d-4585-82ad-559c19c7f428.jpg",
+          "alt_text": "Greater Runtime  \nImproved Performance  \nMore Compact Tools  \nLighter Weight  \nUSB-C Bi-Directional Charging  \n\ngreenworks"
+        }
+      ],
+      "is_sponsored": true
+    },
+    {
+      "position": 5,
+      "product_id": "13013208",
+      "title": "MECHTRON - TL-G007S Hammer Drill, Cordless Electric Screwdriver, 8V Rechargeable 2000mAh, 2-Speed 1000RPM, Digital Display",
+      "short_title": "TL-G007S Hammer Drill, Cordless Electric Screwdriver, 8V Rechargeable 2000mAh, 2-Speed 1000RPM, Digital Display",
+      "link": "https://www.bestbuy.com/product/mechtron-tl-g007s-hammer-drill-cordless-electric-screwdriver-8v-rechargeable-2000mah-2-speed-1000rpm-digital-display/CZW3TQWCC3/sku/13013208",
+      "brand": "MECHTRON",
+      "brand_id": "54854",
+      "model_number": "1296490",
+      "what_it_is": [
+        "Hammer Drill"
+      ],
+      "classification": {
+        "department": "DTS",
+        "department_id": "10",
+        "class": "TOOLS",
+        "class_id": "748",
+        "subclass": "HANDHELD TOOLS",
+        "subclass_id": "7873"
+      },
+      "condition": "new",
+      "rating": 0,
+      "reviews": 0,
+      "seller": {
+        "id": "2202",
+        "name": "Marketplace"
+      },
+      "price": "$109.00",
+      "extracted_price": 109,
+      "installment": {
+        "months": "4 months",
+        "extracted_months": 4,
+        "cost_per_month": "$27.25",
+        "extracted_cost_per_month": 27.25
+      },
+      "buying_options": [
+        {
+          "type": "New",
+          "link": "https://www.bestbuy.com/product/mechtron-tl-g007s-hammer-drill-cordless-electric-screwdriver-8v-rechargeable-2000mah-2-speed-1000rpm-digital-display/CZW3TQWCC3/sku/13013208"
+        }
+      ],
+      "release_date": "2026-08-24T05:00Z",
+      "thumbnail": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6269d3a1-a98c-4411-9a8b-b7dc14df6cd9.jpg",
+      "images": [
+        {
+          "title": "Front Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6269d3a1-a98c-4411-9a8b-b7dc14df6cd9.jpg",
+          "alt_text": "MECHTRON  \nIIIII 000 START WORKING  \nELECTROMECHTRONICS  \n0070 CTROMECHTRONICS TRONICS 007"
+        },
+        {
+          "title": "Front Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/6269d3a1-a98c-4411-9a8b-b7dc14df6cd9.jpg",
+          "alt_text": "MECHTRON  \nIIIII 000 START WORKING  \nELECTROMECHTRONICS  \n0070 CTROMECHTRONICS TRONICS 007"
+        },
+        {
+          "title": "Front Detail",
+          "link": "https://pisces.bbystatic.com/prescaled/105/210/image2/BestBuy_US/images/products/6269d3a1-a98c-4411-9a8b-b7dc14df6cd9.jpg",
+          "alt_text": "MECHTRON  \nIIIII 000 START WORKING  \nELECTROMECHTRONICS  \n0070 CTROMECHTRONICS TRONICS 007"
+        },
+        {
+          "title": "Front Large",
+          "link": "https://pisces.bbystatic.com/prescaled/160/220/image2/BestBuy_US/images/products/6269d3a1-a98c-4411-9a8b-b7dc14df6cd9.jpg",
+          "alt_text": "MECHTRON  \nIIIII 000 START WORKING  \nELECTROMECHTRONICS  \n0070 CTROMECHTRONICS TRONICS 007"
+        },
+        {
+          "title": "Front Medium",
+          "link": "https://pisces.bbystatic.com/prescaled/140/70/image2/BestBuy_US/images/products/6269d3a1-a98c-4411-9a8b-b7dc14df6cd9.jpg",
+          "alt_text": "MECHTRON  \nIIIII 000 START WORKING  \nELECTROMECHTRONICS  \n0070 CTROMECHTRONICS TRONICS 007"
+        },
+        {
+          "title": "Front Thumbnail",
+          "link": "https://pisces.bbystatic.com/prescaled/108/54/image2/BestBuy_US/images/products/6269d3a1-a98c-4411-9a8b-b7dc14df6cd9.jpg",
+          "alt_text": "MECHTRON  \nIIIII 000 START WORKING  \nELECTROMECHTRONICS  \n0070 CTROMECHTRONICS TRONICS 007"
+        },
+        {
+          "title": "Angle Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/90becdf6-442d-4e2d-8a0f-e0e0182e9dbf.jpg",
+          "alt_text": "MECHTRON  \nMECHTRON  \nPRODUCT ACCESSORIES"
+        },
+        {
+          "title": "Angle Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/90becdf6-442d-4e2d-8a0f-e0e0182e9dbf.jpg",
+          "alt_text": "MECHTRON  \nMECHTRON  \nPRODUCT ACCESSORIES"
+        },
+        {
+          "title": "Left Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/81779a59-b329-431b-b4cf-ba81cdaf93d3.jpg",
+          "alt_text": "MECHTRON  \nTECHNOMEON 007  \n\nMECHTRON Brand Story  \nMECHTRON = Machine (Mech) + Electron  \n\nMechtron Mecha Universe is a pioneering enterprise focusing on innovative branding, dedicated to providing customers with an exceptional range of products including small power tools, hand tools, flashlights, electric shavers, lighters, as well as a series of household, outdoor, and automotive accessories. As a brand committed to developing and delivering urban household products tailored to the modern younger generation, we not only prioritize the core functionality of our products but also highlight the highly designed appearance as a key selling point. After all, great design is far more than just about looks."
+        },
+        {
+          "title": "Left Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/81779a59-b329-431b-b4cf-ba81cdaf93d3.jpg",
+          "alt_text": "MECHTRON  \nTECHNOMEON 007  \n\nMECHTRON Brand Story  \nMECHTRON = Machine (Mech) + Electron  \n\nMechtron Mecha Universe is a pioneering enterprise focusing on innovative branding, dedicated to providing customers with an exceptional range of products including small power tools, hand tools, flashlights, electric shavers, lighters, as well as a series of household, outdoor, and automotive accessories. As a brand committed to developing and delivering urban household products tailored to the modern younger generation, we not only prioritize the core functionality of our products but also highlight the highly designed appearance as a key selling point. After all, great design is far more than just about looks."
+        }
+      ],
+      "is_sponsored": true
+    },
+    {
+      "position": 6,
+      "product_id": "6674762",
+      "title": "WORX - WX109L 20V PowerShare 105 Nm Brushless Cordless Drill/Driver (Battery & Charger Included) - Black",
+      "short_title": "WX109L 20V PowerShare 105 Nm Brushless Cordless Drill/Driver (Battery & Charger Included)",
+      "link": "https://www.bestbuy.com/product/worx-wx109l-20v-powershare-105-nm-brushless-cordless-drill-driver-battery-charger-included-black/J3YWZSGP6P/sku/6674762",
+      "brand": "WORX",
+      "brand_id": "14080",
+      "model_number": "WX109L",
+      "what_it_is": [
+        "Drill"
+      ],
+      "classification": {
+        "department": "DTS",
+        "department_id": "10",
+        "class": "TOOLS",
+        "class_id": "748",
+        "subclass": "SO OUTDOOR PWR TOOLS",
+        "subclass_id": "7872"
+      },
+      "condition": "new",
+      "rating": 0,
+      "reviews": 0,
+      "syndicated_reviews": [
+        {
+          "source": "worx.com",
+          "rating": 4,
+          "reviews": 3
+        }
+      ],
+      "seller": {
+        "id": "bby",
+        "name": "Best Buy"
+      },
+      "price": "$159.99",
+      "extracted_price": 159.99,
+      "installment": {
+        "months": "4 months",
+        "extracted_months": 4,
+        "cost_per_month": "$40.00",
+        "extracted_cost_per_month": 40
+      },
+      "buying_options": [
+        {
+          "type": "New",
+          "link": "https://www.bestbuy.com/product/worx-wx109l-20v-powershare-105-nm-brushless-cordless-drill-driver-battery-charger-included-black/J3YWZSGP6P/sku/6674762"
+        }
+      ],
+      "thumbnail": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/34430e80-2864-4cf4-9121-325be615469d.jpg",
+      "images": [
+        {
+          "title": "Front Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/34430e80-2864-4cf4-9121-325be615469d.jpg",
+          "alt_text": "NORX  \nPOWER PRO 20V SHAR  \nLOAD"
+        },
+        {
+          "title": "Front Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/34430e80-2864-4cf4-9121-325be615469d.jpg",
+          "alt_text": "NORX  \nPOWER PRO 20V SHAR  \nLOAD"
+        },
+        {
+          "title": "Front Detail",
+          "link": "https://pisces.bbystatic.com/prescaled/105/210/image2/BestBuy_US/images/products/34430e80-2864-4cf4-9121-325be615469d.jpg",
+          "alt_text": "NORX  \nPOWER PRO 20V SHAR  \nLOAD"
+        },
+        {
+          "title": "Front Large",
+          "link": "https://pisces.bbystatic.com/prescaled/160/220/image2/BestBuy_US/images/products/34430e80-2864-4cf4-9121-325be615469d.jpg",
+          "alt_text": "NORX  \nPOWER PRO 20V SHAR  \nLOAD"
+        },
+        {
+          "title": "Front Medium",
+          "link": "https://pisces.bbystatic.com/prescaled/140/70/image2/BestBuy_US/images/products/34430e80-2864-4cf4-9121-325be615469d.jpg",
+          "alt_text": "NORX  \nPOWER PRO 20V SHAR  \nLOAD"
+        },
+        {
+          "title": "Front Thumbnail",
+          "link": "https://pisces.bbystatic.com/prescaled/108/54/image2/BestBuy_US/images/products/34430e80-2864-4cf4-9121-325be615469d.jpg",
+          "alt_text": "NORX  \nPOWER PRO 20V SHAR  \nLOAD"
+        },
+        {
+          "title": "Angle Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/08b4cf2d-f5b5-4b3c-a68a-b9877db3e28b.jpg",
+          "alt_text": "Need more power? Just add batteries\n\n20V | 40V | 80V\n\nPOWER SHAR™ expandable power\n\nPower your 20 V, 40 V and 80 V gear with the same battery\n\nWORX"
+        },
+        {
+          "title": "Angle Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/08b4cf2d-f5b5-4b3c-a68a-b9877db3e28b.jpg",
+          "alt_text": "Need more power? Just add batteries\n\n20V | 40V | 80V\n\nPOWER SHAR™ expandable power\n\nPower your 20 V, 40 V and 80 V gear with the same battery\n\nWORX"
+        },
+        {
+          "title": "Left Zoom",
+          "link": "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/97900563-8eeb-4fd8-bdf9-a9cf084c2018.jpg",
+          "alt_text": "WORX C 20V POWER SHAR  \nOver 2x more torque up to 930 in-lb  \n*Compared to the WX108L."
+        },
+        {
+          "title": "Left Standard",
+          "link": "https://pisces.bbystatic.com/prescaled/500/500/image2/BestBuy_US/images/products/97900563-8eeb-4fd8-bdf9-a9cf084c2018.jpg",
+          "alt_text": "WORX C 20V POWER SHAR  \nOver 2x more torque up to 930 in-lb  \n*Compared to the WX108L."
+        }
+      ],
+      "is_sponsored": true
+    }
+  ],
+  "filters": [
+    {
+      "type": "Category",
+      "options": [
+        {
+          "text": "Tools",
+          "filter_value": "category_facet=Category~Tools",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=category_facet%3DCategory~Tools",
+          "category_id": "pcmcat251300050011",
+          "subcategories": [
+            {
+              "text": "Power Tools",
+              "category_id": "pcmcat1597938493855"
+            },
+            {
+              "text": "Hand Tools",
+              "category_id": "pcmcat251300050012"
+            },
+            {
+              "text": "Power Tool Accessories",
+              "category_id": "pcmcat1597939138088"
+            }
+          ]
+        },
+        {
+          "text": "Household Essentials",
+          "filter_value": "category_facet=Category~Household Essentials",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=category_facet%3DCategory~Household%20Essentials",
+          "category_id": "pcmcat341100050005",
+          "subcategories": [
+            {
+              "text": "Appliance Cleaners",
+              "category_id": "pcmcat341100050006"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Sold & shipped by",
+      "options": [
+        {
+          "text": "Best Buy",
+          "items": 7,
+          "filter_value": "bbyonly_facet=Sold & shipped by~Best Buy",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=bbyonly_facet%3DSold%20%26%20shipped%20by~Best%20Buy"
+        }
+      ]
+    },
+    {
+      "type": "Current Deals",
+      "options": [
+        {
+          "text": "On Sale",
+          "items": 58,
+          "filter_value": "currentoffers_facet=Current Deals~On Sale",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentoffers_facet%3DCurrent%20Deals~On%20Sale"
+        },
+        {
+          "text": "Clearance",
+          "items": 2,
+          "filter_value": "currentoffers_facet=Current Deals~Clearance",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentoffers_facet%3DCurrent%20Deals~Clearance"
+        }
+      ]
+    },
+    {
+      "type": "Brand",
+      "options": [
+        {
+          "text": "Greenworks",
+          "items": 26,
+          "filter_value": "brand_facet=Brand~Greenworks",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Greenworks"
+        },
+        {
+          "text": "Dewalt",
+          "items": 10,
+          "filter_value": "brand_facet=Brand~Dewalt",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Dewalt"
+        },
+        {
+          "text": "Bosch",
+          "items": 1,
+          "filter_value": "brand_facet=Brand~Bosch",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Bosch"
+        },
+        {
+          "text": "VEVOR",
+          "items": 49,
+          "filter_value": "brand_facet=Brand~VEVOR",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~VEVOR"
+        },
+        {
+          "text": "Black+Decker",
+          "items": 7,
+          "filter_value": "brand_facet=Brand~Black%2BDecker",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Black%2BDecker"
+        },
+        {
+          "text": "Drillbrush",
+          "items": 7,
+          "filter_value": "brand_facet=Brand~Drillbrush",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Drillbrush"
+        },
+        {
+          "text": "Topteng",
+          "items": 7,
+          "filter_value": "brand_facet=Brand~Topteng",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Topteng"
+        },
+        {
+          "text": "Unique Bargains",
+          "items": 6,
+          "filter_value": "brand_facet=Brand~Unique Bargains",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Unique%20Bargains"
+        },
+        {
+          "text": "WORX",
+          "items": 6,
+          "filter_value": "brand_facet=Brand~WORX",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~WORX"
+        },
+        {
+          "text": "MECHTRON",
+          "items": 5,
+          "filter_value": "brand_facet=Brand~MECHTRON",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~MECHTRON"
+        },
+        {
+          "text": "Pursonic",
+          "items": 5,
+          "filter_value": "brand_facet=Brand~Pursonic",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Pursonic"
+        },
+        {
+          "text": "Skil",
+          "items": 5,
+          "filter_value": "brand_facet=Brand~Skil",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Skil"
+        },
+        {
+          "text": "COSLUS",
+          "items": 3,
+          "filter_value": "brand_facet=Brand~COSLUS",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~COSLUS"
+        },
+        {
+          "text": "Genesis",
+          "items": 3,
+          "filter_value": "brand_facet=Brand~Genesis",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Genesis"
+        },
+        {
+          "text": "Makita",
+          "items": 3,
+          "filter_value": "brand_facet=Brand~Makita",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Makita"
+        },
+        {
+          "text": "SnapFresh",
+          "items": 3,
+          "filter_value": "brand_facet=Brand~SnapFresh",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~SnapFresh"
+        },
+        {
+          "text": "Amber Sporting Goods",
+          "items": 2,
+          "filter_value": "brand_facet=Brand~Amber Sporting Goods",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Amber%20Sporting%20Goods"
+        },
+        {
+          "text": "Steel Grip",
+          "items": 2,
+          "filter_value": "brand_facet=Brand~Steel Grip",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Steel%20Grip"
+        },
+        {
+          "text": "HQRP",
+          "items": 1,
+          "filter_value": "brand_facet=Brand~HQRP",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~HQRP"
+        },
+        {
+          "text": "Klein",
+          "items": 1,
+          "filter_value": "brand_facet=Brand~Klein",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Klein"
+        },
+        {
+          "text": "Litheli",
+          "items": 1,
+          "filter_value": "brand_facet=Brand~Litheli",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Litheli"
+        },
+        {
+          "text": "Milwaukee",
+          "items": 1,
+          "filter_value": "brand_facet=Brand~Milwaukee",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Milwaukee"
+        },
+        {
+          "text": "Stalwart",
+          "items": 1,
+          "filter_value": "brand_facet=Brand~Stalwart",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Stalwart"
+        },
+        {
+          "text": "Sugift",
+          "items": 1,
+          "filter_value": "brand_facet=Brand~Sugift",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=brand_facet%3DBrand~Sugift"
+        }
+      ]
+    },
+    {
+      "type": "Price",
+      "options": [
+        {
+          "text": "Less than $25",
+          "items": 11,
+          "filter_value": "currentprice_facet=Price~Less than $25",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~Less%20than%20%2425"
+        },
+        {
+          "text": "$25 - $49.99",
+          "items": 36,
+          "filter_value": "currentprice_facet=Price~$25 - $49.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%2425%20-%20%2449.99"
+        },
+        {
+          "text": "$50 - $74.99",
+          "items": 20,
+          "filter_value": "currentprice_facet=Price~$50 - $74.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%2450%20-%20%2474.99"
+        },
+        {
+          "text": "$75 - $99.99",
+          "items": 26,
+          "filter_value": "currentprice_facet=Price~$75 - $99.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%2475%20-%20%2499.99"
+        },
+        {
+          "text": "$100 - $149.99",
+          "items": 30,
+          "filter_value": "currentprice_facet=Price~$100 - $149.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%24100%20-%20%24149.99"
+        },
+        {
+          "text": "$150 - $199.99",
+          "items": 11,
+          "filter_value": "currentprice_facet=Price~$150 - $199.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%24150%20-%20%24199.99"
+        },
+        {
+          "text": "$200 - $249.99",
+          "items": 4,
+          "filter_value": "currentprice_facet=Price~$200 - $249.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%24200%20-%20%24249.99"
+        },
+        {
+          "text": "$250 - $499.99",
+          "items": 15,
+          "filter_value": "currentprice_facet=Price~$250 - $499.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%24250%20-%20%24499.99"
+        },
+        {
+          "text": "$500 - $749.99",
+          "items": 3,
+          "filter_value": "currentprice_facet=Price~$500 - $749.99",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=currentprice_facet%3DPrice~%24500%20-%20%24749.99"
+        }
+      ]
+    },
+    {
+      "type": "Features",
+      "options": [
+        {
+          "text": "Cordless",
+          "items": 118,
+          "filter_value": "features_facet=Features~Cordless",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=features_facet%3DFeatures~Cordless"
+        },
+        {
+          "text": "Plug-In",
+          "items": 14,
+          "filter_value": "features_facet=Features~Plug-In",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=features_facet%3DFeatures~Plug-In"
+        },
+        {
+          "text": "Case Included",
+          "items": 9,
+          "filter_value": "features_facet=Features~Case Included",
+          "link": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&qp=features_facet%3DFeatures~Case%20Included"
+        }
+      ]
+    }
+  ],
+  "related_searches": [
+    {
+      "query": "printer",
+      "link": "https://www.bestbuy.com/site/searchpage.jsp?st=printer"
+    },
+    {
+      "query": "laptop",
+      "link": "https://www.bestbuy.com/site/searchpage.jsp?st=laptop"
+    },
+    {
+      "query": "wireless headphones",
+      "link": "https://www.bestbuy.com/site/searchpage.jsp?st=wireless+headphones"
+    },
+    {
+      "query": "smart thermostat",
+      "link": "https://www.bestbuy.com/site/searchpage.jsp?st=smart+thermostat"
+    },
+    {
+      "query": "computer monitor",
+      "link": "https://www.bestbuy.com/site/searchpage.jsp?st=computer+monitor"
+    }
+  ],
+  "pagination": {
+    "current": 1,
+    "next": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&cp=2",
+    "other_pages": {
+      "2": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&cp=2",
+      "3": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&cp=3",
+      "4": "https://www.bestbuy.com/site/searchpage.jsp?st=cordless+drill&cp=4"
+    }
+  }
+}

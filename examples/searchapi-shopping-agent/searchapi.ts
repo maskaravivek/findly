@@ -27,7 +27,7 @@ const COUNTRIES: Record<string, { amazon: string; currency: string }> = {
 // Every field is optional and a wrong type degrades to undefined, so one odd item never fails a whole search.
 const opt = <S extends z.ZodType>(s: S) => s.optional().catch(undefined);
 const numberish = opt(z.union([z.number(), z.string()]));
-const window = opt(z.object({ text: opt(z.string()), start_date: opt(z.string()), stock: opt(z.number()) }));
+const window = opt(z.object({ text: opt(z.string()), type: opt(z.string()), expected_date: opt(z.string()), start_date: opt(z.string()), stock: opt(z.number()) }));
 const Item = z.object({
   asin: opt(z.string()), product_id: opt(z.union([z.string(), z.number()]).transform(String)),
   title: opt(z.string()), link: opt(z.string()), product_link: opt(z.string()),
@@ -38,6 +38,11 @@ const Item = z.object({
   fulfillment: opt(z.object({ standard_delivery: window, fastest_delivery: window, delivery: window, pickup: window })),
   delivery: opt(z.string()),
 });
+// Amazon delivery lines read "Or Non-members get FREE delivery Tue, Nov 17"; keep just "Delivery Tue, Nov 17".
+const cleanDelivery = (text?: string) => {
+  const t = text?.replace(/^(Or\s+)?(Non-members get\s+|Join Prime to get\s+)?(FREE\s+)?/i, "").trim();
+  return t ? (t[0]!.toUpperCase() + t.slice(1)).slice(0, 60) : undefined;
+};
 const toNumber = (v: string | number | undefined) => { const n = Number(String(v ?? "").replace(/[^\d.]/g, "")); return v !== undefined && Number.isFinite(n) && n > 0 ? n : undefined; };
 
 const cache = new Map<string, { expiresAt: number; offers: Offer[] }>();
@@ -64,10 +69,13 @@ export async function searchProducts(engine: Engine, query: string, opts: Search
     const item = Item.safeParse(r).data, id = item?.[info.idKey], url = item?.link ?? item?.product_link;
     if (!item?.title || !item.extracted_price || !id || !url) return []; // unpriced or unlinkable items are useless to a shopper
     const f = item.fulfillment, seller = typeof item.seller === "string" ? item.seller : item.seller?.name;
+    // Amazon's standard_delivery is often the "Join Prime to get..." offer; then the non-member line applies.
+    const std = f?.standard_delivery?.text, amazon = std && !/join prime/i.test(std) ? std : f?.fastest_delivery?.text ?? std;
     return [{
       id: `${info.retailer}:${id}`, retailer: info.retailer, title: item.title, price: item.extracted_price, currency, url,
       rating: toNumber(item.rating), reviews: toNumber(item.reviews), thumbnail: item.thumbnail, seller: seller ?? item.seller_name ?? item.brand,
-      delivery: item.delivery ?? f?.fastest_delivery?.text ?? f?.standard_delivery?.text ?? f?.delivery?.text ?? f?.delivery?.start_date,
+      // Walmart's fulfillment text is only a label ("DELIVERY"); its date is expected_date. Home Depot uses start_date.
+      delivery: item.delivery ?? cleanDelivery(amazon) ?? f?.delivery?.expected_date ?? f?.delivery?.start_date,
       pickup: f?.pickup ? (f.pickup.stock ?? 1) > 0 : undefined,
     }];
   });

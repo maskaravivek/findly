@@ -27,6 +27,21 @@ const httpUrl = (value: string | undefined) => {
   if (!value) return undefined;
   try { const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : undefined; } catch { return undefined; }
 };
+/** Resolves relative links against the store origin and unwraps Google `/url?q=` redirects. */
+export const normalizeLink = (value: string | undefined, base: string) => {
+  if (!value?.trim()) return undefined;
+  try {
+    const url = new URL(value.trim(), base);
+    const target = /(^|\.)google\.[a-z.]+$/.test(url.hostname) && url.pathname === "/url" ? url.searchParams.get("q") ?? url.searchParams.get("url") : null;
+    return httpUrl(target ?? url.toString());
+  } catch { return undefined; }
+};
+/** "2026-11-13" -> "Fri, Nov 13" (UTC, so the calendar date never shifts). Non-ISO text passes through. */
+export const shortDate = (value: string | undefined) => {
+  const iso = value?.trim().match(/^(\d{4}-\d{2}-\d{2})/)?.[1];
+  if (!iso) return value?.trim() || undefined;
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
+};
 const retailerInfo = (id: RetailerId, domain?: string) => ({ id, name: KNOWN_RETAILERS[id]?.name ?? id, domain: domain ?? KNOWN_RETAILERS[id]?.domain ?? "" });
 const sellerOf = (name: string | undefined, retailerId: RetailerId): NormalizedRetailOffer["seller"] => {
   const trimmed = name?.trim();
@@ -45,11 +60,14 @@ function baseOffer(retailerId: RetailerId, item: Common, context: EngineContext,
   const url = httpUrl(extra.url ?? item.link);
   if (!item.id || !url) return null;
   const price = money(item.extracted_price, context.currency);
+  const reviewCount = parseReviewCount(item.reviews);
+  // Unrated listings come back as rating 0 with 0 reviews (Best Buy); a 0-star rating would mislead ranking.
+  const rating = reviewCount === 0 ? undefined : parseRating(item.rating);
   return {
     offerId: `${retailerId}:${item.id}`, retailer: retailerInfo(retailerId, context.domain), seller: extra.seller,
     product: {
       title: item.title.trim(), ...optional("brand", item.brand?.trim() || undefined), ...optional("modelNumber", item.model_number?.trim() || undefined),
-      ...optional("imageUrl", httpUrl(item.thumbnail)), ...optional("rating", parseRating(item.rating)), ...optional("reviewCount", parseReviewCount(item.reviews))
+      ...optional("imageUrl", httpUrl(item.thumbnail)), ...optional("rating", rating), ...optional("reviewCount", reviewCount)
     },
     price: { item: price, total: price }, fulfillment: extra.fulfillment, url,
     source: { kind: "search_api", observedAt: context.observedAt, liveVerified: true }, confidence, warnings: extra.warnings ?? []
@@ -72,11 +90,37 @@ const storeId = (value: string | undefined) => value && /^\d{1,6}$/.test(value.t
 const AMAZON_DOMAINS: Record<string, string> = { US: "amazon.com", CA: "amazon.ca", GB: "amazon.co.uk", UK: "amazon.co.uk", DE: "amazon.de", FR: "amazon.fr", IT: "amazon.it", ES: "amazon.es", AU: "amazon.com.au", MX: "amazon.com.mx", IN: "amazon.in" };
 export const amazonCurrency = (domain: string) =>
   domain.endsWith(".ca") ? "CAD" : domain.endsWith(".co.uk") ? "GBP" : /\.(de|fr|it|es|nl)$/.test(domain) ? "EUR" : domain.endsWith(".com.au") ? "AUD" : domain.endsWith(".com.mx") ? "MXN" : domain.endsWith(".in") ? "INR" : "USD";
+// Live shape: standard_delivery is often the Prime upsell ("Join Prime to get FREE delivery Tomorrow, Nov 13") and
+// fastest_delivery the non-member date ("Or Non-members get FREE delivery Tue, Nov 17"); `date` is display text, not ISO.
+// Recorded results carry no `brand` or `is_prime`; brand is kept optional because some queries return it.
 const delivery = z.object({ text: opt(text), type: opt(text), date: opt(text) });
 const AmazonItem = z.object({
   ...required, asin: opt(idish), link: opt(text), brand: opt(text), rating: opt(numberish), reviews: opt(numberish), price: opt(text),
-  is_prime: opt(z.boolean()), thumbnail: opt(text), fulfillment: opt(z.object({ standard_delivery: opt(delivery), fastest_delivery: opt(delivery) }))
+  thumbnail: opt(text), fulfillment: opt(z.object({ standard_delivery: opt(delivery), fastest_delivery: opt(delivery) }))
 });
+type AmazonDelivery = z.infer<typeof delivery> | undefined;
+/** "Or Non-members get FREE delivery Tue, Nov 17" -> "Delivery Tue, Nov 17"; capped at 60 chars. */
+export function cleanAmazonDelivery(value: string | undefined): string | undefined {
+  const stripped = value?.replace(/\s+/g, " ").trim()
+    .replace(/^or\s+/i, "").replace(/^(non-members get|join prime to get)\s+/i, "").replace(/^free\s+/i, "");
+  if (!stripped) return undefined;
+  const sentence = stripped.charAt(0).toUpperCase() + stripped.slice(1);
+  return sentence.length <= 60 ? sentence : `${sentence.slice(0, 59).replace(/\s+\S*$/, "")}…`;
+}
+const primeOnly = (d: AmazonDelivery) => /join prime|prime members/i.test(`${d?.type ?? ""} ${d?.text ?? ""}`);
+/** Prefer standard delivery, unless it is the Prime-membership offer: then the non-member (fastest_delivery) date applies. */
+export const amazonDeliveryEstimate = (f: { standard_delivery?: AmazonDelivery; fastest_delivery?: AmazonDelivery } | undefined) => {
+  const standard = f?.standard_delivery, other = f?.fastest_delivery;
+  const chosen = standard?.text && !(primeOnly(standard) && other?.text) ? standard : other;
+  return cleanAmazonDelivery(chosen?.text);
+};
+/** Search links carry long session/tracking params; /dp/<asin> on the same storefront is the stable product page. */
+const amazonProductUrl = (link: string | undefined, asin: string | undefined, domain: string) => {
+  const base = normalizeLink(link, `https://www.${domain}`);
+  if (!asin) return base;
+  const origin = base ? new URL(base).origin : `https://www.${domain}`;
+  return `${origin}/dp/${encodeURIComponent(asin)}`;
+};
 const amazon: SearchApiEngineDefinition<z.infer<typeof AmazonItem>> = {
   engine: "amazon_search", retailerId: "amazon", resultsKey: "organic_results", itemSchema: AmazonItem,
   capabilities: { productSearch: true, currentPrice: true, deliveryEstimate: true, officialApi: true },
@@ -90,14 +134,18 @@ const amazon: SearchApiEngineDefinition<z.infer<typeof AmazonItem>> = {
     } };
   },
   toOffer(item, context) {
-    const estimate = item.fulfillment?.fastest_delivery?.text ?? item.fulfillment?.standard_delivery?.text;
-    return baseOffer("amazon", { ...item, id: item.asin }, context, 0.85, { seller: { type: "first_party" },
+    const estimate = amazonDeliveryEstimate(item.fulfillment);
+    return baseOffer("amazon", { ...item, id: item.asin }, context, 0.85, { url: amazonProductUrl(item.link, item.asin, context.domain), seller: { type: "first_party" },
       fulfillment: { shipping: true, delivery: true, pickup: false, inStore: false, status: "unknown", ...optional("estimate", estimate) } });
   }
 };
 
 // ---------- Walmart ----------
+// Live shape: `id` is the numeric item id used in /ip/<id> links; `product_id` is an alphanumeric catalog id.
+// fulfillment.*.text is only a label ("DELIVERY", "PICKUP"); the date is expected_date (ISO). No `stock` or
+// `is_free_shipping` in recorded results (only is_free_shipping_with_walmart_plus, a membership perk we ignore).
 const walmartWindow = z.object({ text: opt(text), expected_date: opt(text) });
+const fulfillmentLabel = (value: string | undefined) => !value || /^(delivery|pickup|shipping)$/i.test(value.trim());
 const WalmartItem = z.object({
   ...required, id: opt(idish), product_id: opt(idish), link: opt(text), seller_name: opt(text), rating: opt(numberish), reviews: opt(numberish), price: opt(text),
   is_free_shipping: opt(z.boolean()), stock: opt(numberish), thumbnail: opt(text), fulfillment: opt(z.object({ pickup: opt(walmartWindow), delivery: opt(walmartWindow) }))
@@ -114,15 +162,20 @@ const walmart: SearchApiEngineDefinition<z.infer<typeof WalmartItem>> = {
   },
   toOffer(item, context) {
     const pickup = Boolean(item.fulfillment?.pickup), deliver = Boolean(item.fulfillment?.delivery);
-    const estimate = item.fulfillment?.pickup?.text ?? item.fulfillment?.delivery?.text;
-    return baseOffer("walmart", { ...item, id: item.product_id ?? item.id }, context, 0.85, { seller: sellerOf(item.seller_name, "walmart"),
+    const del = item.fulfillment?.delivery, pick = item.fulfillment?.pickup;
+    const estimate = del?.expected_date ? `Delivery by ${shortDate(del.expected_date)}`
+      : pick?.expected_date ? `Pickup ${shortDate(pick.expected_date)}`
+      : !fulfillmentLabel(pick?.text) ? pick?.text : !fulfillmentLabel(del?.text) ? del?.text : pickup ? "Pickup available" : undefined;
+    return baseOffer("walmart", { ...item, id: item.id ?? item.product_id }, context, 0.85, { url: normalizeLink(item.link, "https://www.walmart.com"), seller: sellerOf(item.seller_name, "walmart"),
       fulfillment: { shipping: deliver || item.is_free_shipping === true, delivery: deliver, pickup, inStore: false, status: stockPositive(item.stock) ? "in_stock" : "unknown", ...optional("estimate", estimate) } });
   }
 };
 
 // ---------- Home Depot ----------
+// Live shape matched the docs except `price` is display text ("$59.00") and rating has 4 decimals (4.6708).
+// Without store_id the response has fulfillment.delivery only (no pickup block).
 const HomeDepotItem = z.object({
-  ...required, product_id: opt(idish), link: opt(text), brand: opt(text), model_number: opt(idish), rating: opt(numberish), reviews: opt(numberish), price: opt(numberish), thumbnail: opt(text),
+  ...required, product_id: opt(idish), link: opt(text), brand: opt(text), model_number: opt(idish), rating: opt(numberish), reviews: opt(numberish), price: opt(text), thumbnail: opt(text),
   fulfillment: opt(z.object({
     pickup: opt(z.object({ store_id: opt(idish), store_name: opt(text), stock: opt(z.number()) })),
     delivery: opt(z.object({ start_date: opt(text), end_date: opt(text), price: opt(numberish), is_free_shipping: opt(z.boolean()), stock: opt(z.number()) }))
@@ -142,9 +195,9 @@ const homeDepot: SearchApiEngineDefinition<z.infer<typeof HomeDepotItem>> = {
   toOffer(item, context) {
     const pick = item.fulfillment?.pickup, del = item.fulfillment?.delivery;
     const pickup = (pick?.stock ?? 0) > 0, deliver = Boolean(del);
-    const window = del?.start_date ? (del.end_date && del.end_date !== del.start_date ? `Delivery ${del.start_date} to ${del.end_date}` : `Delivery ${del.start_date}`) : undefined;
+    const window = del?.start_date ? (del.end_date && del.end_date !== del.start_date ? `Delivery ${shortDate(del.start_date)} to ${shortDate(del.end_date)}` : `Delivery ${shortDate(del.start_date)}`) : undefined;
     const estimate = pickup ? `Pickup${pick?.store_name ? ` at ${pick.store_name}` : ""}` : window;
-    return baseOffer("home_depot", { ...item, id: item.product_id }, context, 0.85, { seller: { type: "first_party" },
+    return baseOffer("home_depot", { ...item, id: item.product_id }, context, 0.85, { url: normalizeLink(item.link, "https://www.homedepot.com"), seller: { type: "first_party" },
       fulfillment: {
         shipping: deliver, delivery: deliver, pickup, inStore: pickup, status: pickup || (del?.stock ?? 0) > 0 ? "in_stock" : "unknown",
         ...optional("inventoryQuantity", nonNegInt(pick?.stock)), ...optional("storeId", pick?.store_id), ...optional("storeName", pick?.store_name), ...optional("estimate", estimate)
@@ -153,6 +206,8 @@ const homeDepot: SearchApiEngineDefinition<z.infer<typeof HomeDepotItem>> = {
 };
 
 // ---------- Best Buy ----------
+// Live shape matched the docs; marketplace listings have seller { id: "<numeric>", name: "Marketplace" } and
+// first-party ones { id: "bby", name: "Best Buy" }. Unrated items report rating 0 / reviews 0 (dropped in baseOffer).
 const BestBuyItem = z.object({
   ...required, product_id: opt(idish), link: opt(text), brand: opt(text), model_number: opt(idish), rating: opt(numberish), reviews: opt(numberish), price: opt(text), thumbnail: opt(text),
   seller: opt(z.object({ id: opt(idish), name: opt(text) }))
@@ -168,15 +223,17 @@ const bestBuy: SearchApiEngineDefinition<z.infer<typeof BestBuyItem>> = {
     } };
   },
   toOffer(item, context) {
-    return baseOffer("best_buy", { ...item, id: item.product_id }, context, 0.85, { seller: sellerOf(item.seller?.name, "best_buy"),
+    return baseOffer("best_buy", { ...item, id: item.product_id }, context, 0.85, { url: normalizeLink(item.link, "https://www.bestbuy.com"), seller: sellerOf(item.seller?.name, "best_buy"),
       fulfillment: { shipping: true, delivery: false, pickup: false, inStore: false, status: "unknown" } });
   }
 };
 
 // ---------- Google Shopping ----------
 const COUNTRY_CURRENCY: Record<string, string> = { US: "USD", CA: "CAD", GB: "GBP", UK: "GBP", AU: "AUD", DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", IE: "EUR", MX: "MXN", IN: "INR" };
+// Live shape: no `product_id`; the offer id is `prds` (headline offer docid). product_link is a google.com/search
+// page (ibp=oshop&prds=...), not a merchant URL. `delivery` is absent when unknown; returns are in `delivery_return`.
 const GoogleItem = z.object({
-  ...required, product_id: opt(idish), product_link: opt(text), seller: opt(text), rating: opt(numberish), reviews: opt(numberish), price: opt(text), delivery: opt(text), thumbnail: opt(text)
+  ...required, product_id: opt(idish), prds: opt(idish), product_link: opt(text), offers_link: opt(text), seller: opt(text), rating: opt(numberish), reviews: opt(numberish), price: opt(text), delivery: opt(text), thumbnail: opt(text)
 });
 const googleShopping: SearchApiEngineDefinition<z.infer<typeof GoogleItem>> = {
   engine: "google_shopping", retailerId: "google_shopping", resultsKey: "shopping_results", itemSchema: GoogleItem,
@@ -191,7 +248,8 @@ const googleShopping: SearchApiEngineDefinition<z.infer<typeof GoogleItem>> = {
   },
   toOffer(item, context) {
     const deliveryText = item.delivery?.trim() || undefined;
-    return baseOffer("google_shopping", { ...item, id: item.product_id }, context, 0.75, { url: item.product_link, warnings: ["Link opens a Google Shopping page"],
+    const url = normalizeLink(item.product_link, "https://www.google.com") ?? normalizeLink(item.offers_link, "https://www.google.com");
+    return baseOffer("google_shopping", { ...item, id: item.product_id ?? item.prds }, context, 0.75, { url, warnings: ["Link opens a Google Shopping page"],
       seller: sellerOf(item.seller, "google_shopping"),
       fulfillment: { shipping: false, delivery: Boolean(deliveryText), pickup: false, inStore: false, status: "unknown", ...optional("estimate", deliveryText) } });
   }
