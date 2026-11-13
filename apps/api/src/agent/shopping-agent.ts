@@ -15,7 +15,7 @@ export type AgentToolContext = { request: ShoppingRequest; requestId: string; co
 const retailerNotes = (adapter: RetailerAdapter) => {
   const c = adapter.retailer.capabilities;
   const extras = [c.storeInventory && "store inventory", c.pickupEstimate && "pickup", c.deliveryEstimate && "delivery estimates"].filter(Boolean);
-  return `${adapter.retailer.domain}${extras.length ? `; ${extras.join(", ")}` : ""}${adapter.retailer.live ? "" : "; demo data"}`;
+  return `${adapter.retailer.domain}${extras.length ? `; ${extras.join(", ")}` : ""}`;
 };
 
 export function buildAgentTools(adapters: RetailerAdapter[], ctx: AgentToolContext): ShoppingAgentTools {

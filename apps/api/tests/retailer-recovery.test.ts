@@ -10,9 +10,9 @@ describe("retailer failure recovery", () => {
   });
 
   it("keeps access challenges and timeouts distinct without exposing diagnostics", () => {
-    expect(publicRetailerError("home_depot_ca", new Error("Retailer access challenge; not retried"))).toEqual({
-      retailerId: "home_depot_ca",
-      message: "Home Depot Canada requires verification right now",
+    expect(publicRetailerError("home_depot", new Error("Retailer access challenge; not retried"))).toEqual({
+      retailerId: "home_depot",
+      message: "The Home Depot requires verification right now",
     });
     expect(publicRetailerError("google_shopping", new Error("Request timed out after 20000ms")).message).toBe("Google Shopping did not respond in time");
   });

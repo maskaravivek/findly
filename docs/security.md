@@ -1,7 +1,7 @@
 # Security
 
 - Android receives no model, SearchAPI, retailer, database, or administrator credentials.
-- `SEARCHAPI_API_KEY` and model keys are server-only. Fastify log redaction covers `apiKey`, cookies, `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and `SEARCHAPI_API_KEY`. The SearchAPI key travels only in the `Authorization` header (never the URL), and `SearchApiError` messages never include the key or upstream body text.
+- `SEARCHAPI_API_KEY` and `ANTHROPIC_API_KEY` are server-only. Fastify log redaction covers `apiKey`, cookies, `ANTHROPIC_API_KEY`, and `SEARCHAPI_API_KEY`. The SearchAPI key travels only in the `Authorization` header (never the URL), and `SearchApiError` messages never include the key or upstream body text.
 - SearchAPI requests go to one fixed HTTPS endpoint with encoded query parameters. Engine names come from configuration, not the model.
 - Retailer data is untrusted. Each item is parsed with a Zod schema of the fields we read, URLs must be http(s), and the final offer must pass `NormalizedRetailOfferSchema`.
 - The agent's system prompt states that the shopping request and all tool output are untrusted data whose instructions must never be followed. The request is passed inside a `<shopping_request>` block marked as data.

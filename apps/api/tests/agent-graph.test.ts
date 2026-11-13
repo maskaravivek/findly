@@ -1,22 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { searchApiFixtures } from "@findly/test-fixtures";
-import type { ModelProvider } from "@findly/model-sdk";
-import { EnvSchema, searchApiEngines } from "../src/config/env.js";
+import { searchApiEngines } from "../src/config/env.js";
 import { buildApp } from "../src/server/app.js";
-import { SearchApiClient } from "../src/retailers/searchapi/client.js";
 import { MockModelProvider } from "../src/models/providers.js";
 import { AGENT_BUDGET_EXHAUSTED_WARNING, createShoppingGraph, initialState } from "../src/graph/shopping-graph.js";
-import { fakeAdapter, offer, request } from "./agent-fixtures.js";
-
-const config = EnvSchema.parse({ NODE_ENV: "test", DEMO_MODE: "false", RETAILER_MODE: "searchapi", MODEL_PROVIDER: "mock", SEARCHAPI_API_KEY: "test" });
-
-function fixtureClient() {
-  const fetch = vi.fn<typeof globalThis.fetch>(async (url) => {
-    const engine = new URL(String(url)).searchParams.get("engine") as keyof typeof searchApiFixtures;
-    return new Response(JSON.stringify(searchApiFixtures[engine]), { status: 200 });
-  });
-  return { fetch, client: new SearchApiClient({ apiKey: "test", timeoutMs: 1_000, cacheTtlMs: 0, fetch }) };
-}
+import { fakeAdapter, fixtureClient, offer, request, testConfig as config } from "./agent-fixtures.js";
 
 class LiteralModelProvider extends MockModelProvider {
   override async understandShoppingRequest() { return request; }
@@ -48,20 +35,10 @@ describe("agent search over HTTP", () => {
   });
 });
 
-describe("agent routing in the graph", () => {
-  it("dispatches retailer searches when the provider has no runShoppingAgent", async () => {
-    const model = new LiteralModelProvider();
-    expect((model as ModelProvider).runShoppingAgent).toBeUndefined();
-    const state = await run(model);
-    expect(state.progressEvents.some(e => e.stage === "searching_retailer")).toBe(true);
-    expect(state.progressEvents.some(e => e.stage === "tool_call")).toBe(false);
-    expect(state.toolTrace).toEqual([]);
-    expect(state.rankedOffers.map(o => o.offerId)).toEqual(["hd-1"]);
-  });
-
-  it("runs agent_search instead of dispatch when the provider has runShoppingAgent", async () => {
-    const state = await run(new LiteralModelProvider({ agent: true }));
-    expect(state.progressEvents.some(e => e.stage === "searching_retailer")).toBe(false);
+describe("agent search in the graph", () => {
+  it("runs agent_search and records each tool call as a progress event", async () => {
+    const state = await run(new LiteralModelProvider());
+    expect(state.progressEvents.some(e => e.stage === "searching")).toBe(true);
     expect(state.progressEvents.filter(e => e.stage === "tool_call")).toHaveLength(1);
     expect(state.agentReasoning).toBe("Mock agent");
     expect(state.rankedOffers.map(o => o.offerId)).toEqual(["hd-1"]);
@@ -82,7 +59,7 @@ describe("agent routing in the graph", () => {
     expect(state.warnings.some(w => w.includes("search agent failed"))).toBe(true);
   });
 
-  it("on the agent path enforces the price cap but keeps differently-worded products", async () => {
+  it("enforces the price cap but keeps differently-worded products", async () => {
     const headphones = { ...request, originalQuery: "wireless noise cancelling headphones under $200", possibleProductNames: ["wireless noise cancelling headphones"], category: "headphones" };
     class HeadphonesProvider extends MockModelProvider { override async understandShoppingRequest() { return headphones; } }
     const model = new HeadphonesProvider();

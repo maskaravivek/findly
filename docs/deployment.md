@@ -5,38 +5,37 @@ The production vertical slice uses:
 - Cloudflare Worker `findly-api` with one on-demand `basic` Container constrained to Eastern North America.
 - In-memory LangGraph checkpoints that last for the lifetime of the current container instance.
 - IP-based Cloudflare rate limits with no account or authentication service.
-- Gemini shopping-request understanding and SearchAPI retailer adapters (`RETAILER_MODE=searchapi`).
+- The Anthropic shopping agent (`claude-sonnet-5-5`) over SearchAPI retailer adapters.
 
 The public API base URL is `https://findly-api.maskaravivek.workers.dev/`.
 
 ## Environment variables
 
-`apps/api/src/config/env.ts` is the source of truth; `.env.example` lists every variable with its default. The ones that matter for live mode:
+`apps/api/src/config/env.ts` is the source of truth; `.env.example` lists every variable with its default. The ones that matter in production:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `RETAILER_MODE` | `demo` if `DEMO_MODE=true`, else `searchapi` | `demo` fixtures or SearchAPI adapters |
-| `SEARCHAPI_API_KEY` | none | Required in `searchapi` mode |
+| `SEARCHAPI_API_KEY` | none | Required |
 | `SEARCHAPI_ENGINES` | all five engines | Comma list of enabled engines |
 | `SEARCHAPI_TIMEOUT_MS` / `SEARCHAPI_CACHE_TTL_MS` | `20000` / `300000` | Per-request timeout; response cache TTL (`0` disables) |
-| `MODEL_PROVIDER` | `mock` | `mock`, `gemini`, `openai`, or `anthropic` (only `anthropic` runs the agent loop with a real model) |
-| `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` / `OPENAI_API_KEY` | none | Required for the matching provider |
-| `PRIMARY_MODEL` | provider default | e.g. `claude-sonnet-5-5`, `gemini-3.1-flash-lite` |
+| `ANTHROPIC_API_KEY` | none | Required |
+| `MODEL_PROVIDER` | `anthropic` | `mock` is for tests only |
+| `PRIMARY_MODEL` | `claude-sonnet-5-5` | Anthropic model id |
 | `DEFAULT_COUNTRY` / `DEFAULT_CURRENCY` | `US` / `USD` | Used when a request omits them |
 | `AGENT_MAX_TOOL_CALLS` / `AGENT_MAX_RESULTS_PER_CALL` | `6` / `8` | Agent search budget |
 
-The API refuses to start if the selected retailer mode or provider is missing its key.
+The API refuses to start without `SEARCHAPI_API_KEY`, or without `ANTHROPIC_API_KEY` when `MODEL_PROVIDER=anthropic`.
 
 ## Cloudflare configuration
 
-The deployment source of truth is `apps/cloudflare/wrangler.jsonc`. Non-sensitive production configuration is declared in `vars` there (`RETAILER_MODE=searchapi`, `MODEL_PROVIDER=gemini`, `PRIMARY_MODEL`). `apps/cloudflare/src/index.ts` forwards an explicit list of bindings to the container, so a new variable (for example `ANTHROPIC_API_KEY` or `DEFAULT_COUNTRY`) must be added there as well as in `wrangler.jsonc` or as a secret. Store keys as Worker secrets:
+The deployment source of truth is `apps/cloudflare/wrangler.jsonc`. Non-sensitive production configuration is declared in `vars` there (`MODEL_PROVIDER=anthropic`, `PRIMARY_MODEL`). `apps/cloudflare/src/index.ts` forwards an explicit list of bindings to the container, so a new variable (for example `DEFAULT_COUNTRY`) must be added there as well as in `wrangler.jsonc` or as a secret. Store keys as Worker secrets:
 
 ```bash
-pnpm --filter @findly/cloudflare exec wrangler secret put GEMINI_API_KEY
+pnpm --filter @findly/cloudflare exec wrangler secret put ANTHROPIC_API_KEY
 pnpm --filter @findly/cloudflare exec wrangler secret put SEARCHAPI_API_KEY
 ```
 
-Do not place model keys, the SearchAPI key, or retailer credentials in the Android build.
+Do not place the Anthropic key, the SearchAPI key, or retailer credentials in the Android build.
 
 Deploy the container image and Worker from the repository root. Wrangler builds the image from `infra/docker/api.Dockerfile`, publishes a content-addressed image, and immediately rolls the updated container application forward:
 

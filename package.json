@@ -9,7 +9,6 @@
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
-    "demo": "DEMO_MODE=true pnpm --filter @findly/api dev",
     "cloudflare:dev": "pnpm --filter @findly/cloudflare run dev",
     "cloudflare:deploy": "pnpm --filter @findly/cloudflare run deploy",
     "android:build": "cd apps/android && ./gradlew assembleDebug"

@@ -48,7 +48,7 @@ export class SearchApiRetailerAdapter implements RetailerAdapter {
 }
 
 export function createSearchApiAdapters(env: Env, client?: SearchApiClient): RetailerAdapter[] {
-  if (!env.SEARCHAPI_API_KEY && !client) throw new Error("SEARCHAPI_API_KEY is required for searchapi retailer mode");
+  if (!env.SEARCHAPI_API_KEY && !client) throw new Error("SEARCHAPI_API_KEY is required");
   const shared = client ?? new SearchApiClient({ apiKey: env.SEARCHAPI_API_KEY ?? "", timeoutMs: env.SEARCHAPI_TIMEOUT_MS, cacheTtlMs: env.SEARCHAPI_CACHE_TTL_MS });
   const defaults = { country: env.DEFAULT_COUNTRY, currency: env.DEFAULT_CURRENCY };
   const adapters: RetailerAdapter[] = [];

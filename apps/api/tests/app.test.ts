@@ -1,9 +1,41 @@
 import { describe, expect, it } from "vitest";
 import { buildApp } from "../src/server/app.js";
 import { EnvSchema } from "../src/config/env.js";
-const config = EnvSchema.parse({ NODE_ENV: "test", DEMO_MODE: "true", MODEL_PROVIDER: "mock" });
-describe("Findly API demo", () => {
-  it("reports in-memory readiness without a database", async () => { const app = await buildApp(config); const response = await app.inject({ method: "GET", url: "/ready" }); expect(response.statusCode).toBe(200); expect(response.json()).toEqual({ status: "ready", state: "memory" }); await app.close(); });
-  it("returns provenance-marked offers and checkpoint-backed events without live credentials", async () => { const app = await buildApp(config); const response = await app.inject({ method: "POST", url: "/v1/search", payload: { text: "Find this DeWalt drill cheaper nearby", postalCode: "L1G 0A1", imageIds: [] } }); expect(response.statusCode).toBe(200); const body = response.json(); expect(body.status).toBe("completed"); expect(body.offers.length).toBeGreaterThan(1); expect(body.offers.every((offer: any) => offer.source.liveVerified === false)).toBe(true); const events = await app.inject({ method: "GET", url: `/v1/search/${body.requestId}/events` }); expect(events.statusCode).toBe(200); expect(events.body).toContain("event: progress"); expect(events.body).toContain("Recommendations ready"); await app.close(); });
-  it("interrupts and resumes the same thread after clarification", async () => { const app = await buildApp(config); const response = await app.inject({ method: "POST", url: "/v1/search", payload: { text: "I need a drill for hanging shelves", imageIds: [] } }); const interrupted = response.json(); expect(interrupted.status).toBe("awaiting_clarification"); expect(interrupted.clarification.question).toContain("material"); const events = await app.inject({ method: "GET", url: `/v1/search/${interrupted.requestId}/events` }); expect(events.body).toContain("event: clarification"); const resumed = await app.inject({ method: "POST", url: `/v1/search/${interrupted.requestId}/clarification`, payload: { answer: "Concrete" } }); expect(resumed.json().status).toBe("completed"); expect(resumed.json().threadId).toBe(interrupted.threadId); await app.close(); });
+import { fixtureClient, testConfig as config } from "./agent-fixtures.js";
+
+describe("Findly API", () => {
+  it("reports health and in-memory readiness without a database", async () => {
+    const app = await buildApp(config, { searchApiClient: fixtureClient().client });
+    const health = await app.inject({ method: "GET", url: "/health" });
+    expect(health.statusCode).toBe(200);
+    expect(health.json()).toEqual({ status: "ok", brand: "Findly" });
+    const ready = await app.inject({ method: "GET", url: "/ready" });
+    expect(ready.statusCode).toBe(200);
+    expect(ready.json()).toEqual({ status: "ready", state: "memory" });
+    await app.close();
+  });
+
+  it("refuses to start without a SearchAPI key or, for anthropic, an Anthropic key", async () => {
+    await expect(buildApp(config)).rejects.toThrow("SEARCHAPI_API_KEY is required");
+    const anthropic = EnvSchema.parse({ NODE_ENV: "test", MODEL_PROVIDER: "anthropic", SEARCHAPI_API_KEY: "test" });
+    await expect(buildApp(anthropic)).rejects.toThrow("ANTHROPIC_API_KEY is required");
+  });
+
+  it("interrupts and resumes the same thread after clarification", async () => {
+    const app = await buildApp(config, { searchApiClient: fixtureClient().client });
+    const response = await app.inject({ method: "POST", url: "/v1/search", payload: { text: "I need a drill for hanging shelves", imageIds: [] } });
+    const interrupted = response.json();
+    expect(interrupted.status).toBe("awaiting_clarification");
+    expect(interrupted.clarification.question).toContain("material");
+    const events = await app.inject({ method: "GET", url: `/v1/search/${interrupted.requestId}/events` });
+    expect(events.body).toContain("event: clarification");
+    const resumed = await app.inject({ method: "POST", url: `/v1/search/${interrupted.requestId}/clarification`, payload: { answer: "Concrete" } });
+    const body = resumed.json();
+    expect(body.status).toBe("completed");
+    expect(body.threadId).toBe(interrupted.threadId);
+    expect(body.offers.length).toBeGreaterThan(0);
+    expect(body.offers.every((o: any) => o.source.kind === "search_api")).toBe(true);
+    expect(body.toolTrace.length).toBeGreaterThan(0);
+    await app.close();
+  });
 });

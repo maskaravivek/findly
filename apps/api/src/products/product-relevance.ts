@@ -18,19 +18,6 @@ const rawWords = (value: string) => value
   .split(/[^a-z0-9]+/)
   .filter(Boolean);
 
-const canonicalToken = (value: string) => {
-  if (value.length > 5 && value.endsWith("ing")) {
-    let root = value.slice(0, -3);
-    if (root.length > 3 && root.at(-1) === root.at(-2) && !root.endsWith("ll") && !root.endsWith("ss")) root = root.slice(0, -1);
-    return root.endsWith("v") ? `${root}e` : root;
-  }
-  if (value.length > 4 && value.endsWith("ied")) return `${value.slice(0, -3)}y`;
-  if (value.length > 4 && value.endsWith("ed")) return value.slice(0, -2);
-  if (value.length > 4 && value.endsWith("ies")) return `${value.slice(0, -3)}y`;
-  if (value.length > 4 && value.endsWith("s") && !value.endsWith("ss")) return value.slice(0, -1);
-  return value;
-};
-
 const tokenVariants = (value: string) => {
   const variants = new Set([value]);
   if (value.length > 5 && value.endsWith("ing")) {
@@ -93,24 +80,4 @@ export function partitionRelevantOffers(request: ShoppingRequest, offers: Normal
     (assessProductRelevance(request, offer).matches ? relevant : rejected).push(offer);
   }
   return { relevant, rejected };
-}
-
-export function buildRetailerSearchQueries(request: ShoppingRequest) {
-  const exact = request.modelNumber ?? request.barcode;
-  if (exact) return [exact];
-  const candidates = [...request.possibleProductNames, request.category, request.originalQuery]
-    .filter((value): value is string => Boolean(value?.trim()));
-  const queries: string[] = [];
-  const add = (value: string) => {
-    const clean = value.trim().replace(/\s+/g, " ");
-    if (clean && !queries.some(existing => existing.toLowerCase() === clean.toLowerCase())) queries.push(clean);
-  };
-  for (const candidate of candidates) {
-    add(candidate);
-    const canonical = rawWords(candidate).map(canonicalToken);
-    const concise = canonical.filter(value => !genericProductWords.has(value));
-    if (concise.length) add(concise.join(" "));
-    if (canonical.length) add(canonical.join(" "));
-  }
-  return queries.slice(0, 3).length ? queries.slice(0, 3) : ["product"];
 }

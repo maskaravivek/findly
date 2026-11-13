@@ -31,9 +31,7 @@ export const RetailerIdSchema = z.string().min(1);
 export type RetailerId = z.infer<typeof RetailerIdSchema>;
 export const KNOWN_RETAILERS: Record<string, { name: string; domain: string }> = {
   amazon: { name: "Amazon", domain: "amazon.com" }, walmart: { name: "Walmart", domain: "walmart.com" }, home_depot: { name: "The Home Depot", domain: "homedepot.com" },
-  best_buy: { name: "Best Buy", domain: "bestbuy.com" }, google_shopping: { name: "Google Shopping", domain: "shopping.google.com" },
-  home_depot_ca: { name: "Home Depot Canada", domain: "homedepot.ca" }, amazon_ca: { name: "Amazon Canada", domain: "amazon.ca" }, walmart_ca: { name: "Walmart Canada", domain: "walmart.ca" },
-  canadian_tire: { name: "Canadian Tire", domain: "canadiantire.ca" }, rona_ca: { name: "RONA", domain: "rona.ca" }, best_buy_ca: { name: "Best Buy Canada", domain: "bestbuy.ca" }
+  best_buy: { name: "Best Buy", domain: "bestbuy.com" }, google_shopping: { name: "Google Shopping", domain: "shopping.google.com" }
 };
 export const RetailerCapabilitiesSchema = z.object({ productSearch: z.boolean(), productDetails: z.boolean(), currentPrice: z.boolean(), storeInventory: z.boolean(), inventoryQuantity: z.boolean(), pickupEstimate: z.boolean(), deliveryEstimate: z.boolean(), aisleLocation: z.boolean(), bayLocation: z.boolean(), cartDeepLink: z.boolean(), pickupDeepLink: z.boolean(), officialApi: z.boolean(), browserAutomation: z.boolean() });
 export type RetailerCapabilities = z.infer<typeof RetailerCapabilitiesSchema>;

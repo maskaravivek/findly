@@ -6,13 +6,11 @@ type FindlyBindings = {
   FINDLY_API_CONTAINER: DurableObjectNamespace<FindlyApiContainer>;
   API_RATE_LIMITER: RateLimit;
   SEARCH_RATE_LIMITER: RateLimit;
-  GEMINI_API_KEY: string;
+  ANTHROPIC_API_KEY: string;
   SEARCHAPI_API_KEY: string;
   NODE_ENV: string;
   HOST: string;
   PORT: string;
-  DEMO_MODE: string;
-  RETAILER_MODE: string;
   ENABLE_DOCS: string;
   RATE_LIMIT_MAX: string;
   MODEL_PROVIDER: string;
@@ -29,14 +27,12 @@ export class FindlyApiContainer extends Container {
     NODE_ENV: bindings.NODE_ENV,
     HOST: bindings.HOST,
     PORT: bindings.PORT,
-    DEMO_MODE: bindings.DEMO_MODE,
-    RETAILER_MODE: bindings.RETAILER_MODE,
     ENABLE_DOCS: bindings.ENABLE_DOCS,
     RATE_LIMIT_MAX: bindings.RATE_LIMIT_MAX,
     MODEL_PROVIDER: bindings.MODEL_PROVIDER,
     PRIMARY_MODEL: bindings.PRIMARY_MODEL,
     BRAND_NAME: bindings.BRAND_NAME,
-    GEMINI_API_KEY: bindings.GEMINI_API_KEY,
+    ANTHROPIC_API_KEY: bindings.ANTHROPIC_API_KEY,
     SEARCHAPI_API_KEY: bindings.SEARCHAPI_API_KEY,
   };
 }

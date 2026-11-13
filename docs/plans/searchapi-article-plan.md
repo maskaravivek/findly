@@ -61,8 +61,8 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
 - Loop: system prompt describes the engines and budget (max N tool calls, max M results per call); LLM picks engines + queries, inspects results, re-queries if relevance is poor, then calls `finalize_shortlist`. Code enforces the budget and returns whatever was found when it runs out.
 - Provider (decided 2026-11-12): Anthropic SDK (`@anthropic-ai/sdk`) with `claude-sonnet-5-5`. Use the tool runner (`client.beta.messages.toolRunner`) for the article's main loop, and show the manual `tool_use` / `tool_result` loop once so readers see what the runner does for them. Add an `AnthropicModelProvider` next to the existing ones; `ANTHROPIC_API_KEY` in env.
   - OpenAI Responses API function-tool variant goes in a short aside, not the main code path.
-  - Keep Gemini provider in repo but out of the article.
-- Graph wiring: replace `build_search_plan` + `dispatch_retailer_searches` with a single `agent_search` node, or keep the plan node and let the agent run inside `dispatch`. Keep `match_products` and `rank_offers` as deterministic guardrails so the article can say "the LLM proposes, the code verifies".
+  - Superseded: the Gemini and OpenAI providers were removed from the repo; Anthropic is the only provider.
+- Graph wiring (done: a single `agent_search` node; the plan and dispatch nodes were removed). Keep `match_products` and `rank_offers` as deterministic guardrails so the article can say "the LLM proposes, the code verifies".
 - Emit each tool call as a `ProgressEvent` (`stage: "tool_call"`, engine, query, hits) so SSE shows the agent thinking without leaking prompts.
 
 ### 3.5 API surface for the article
@@ -73,7 +73,7 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
 - Keep `/v1/search/:id/events` SSE; drop clarification endpoint from the article (mention as extension).
 
 ### 3.6 Tests
-> Status: done with sample responses in `apps/api/tests/` (`searchapi-*.test.ts`, `shopping-agent.test.ts`, `agent-graph.test.ts`); real recorded fixtures still pending.
+> Status: done with sample responses in `apps/api/tests/` (`searchapi-*.test.ts`, `shopping-agent.test.ts`, `agent-graph.test.ts`); real responses recorded via `pnpm --filter @findly/api record:fixtures` into `packages/test-fixtures/src/searchapi/recorded/`.
 
 - Record 3–4 real SearchAPI responses once into `packages/test-fixtures/searchapi/*.json` (strip keys), use them for adapter mapping tests and a mocked agent-loop test in vitest.
 - Fake tool runner for the loop: assert budget enforcement and that `finalize_shortlist` ids are validated against seen results (no hallucinated offers).
@@ -91,7 +91,8 @@ Article goal: show how a natural-language shopping request becomes a grounded sh
   - `README.md`: setup, run, response shape.
 
 ### What's left
-- Run against live SearchAPI + Anthropic keys and record real fixtures (keys stripped) to replace the hand-written sample responses.
+- Done: single-path cleanup. SearchAPI is the only retailer source and the Anthropic agent the only model path; demo mode, fixture retailers, the Gemini/OpenAI providers, `RETAILER_MODE`, and the fixed search-plan branch are removed. `MockModelProvider` remains for tests only.
+- Done: live runs pass for the example and the API; real fixtures are recorded (keys stripped) and back the adapter tests.
 - Android client not updated for open retailer ids: `Models.kt` decodes any id string, but the UI formats prices as CAD (`OfferLenses.kt`, `MainActivity.kt`) and hard-codes a Home Depot pickup heading.
 - `tool_call` SSE events are replayed after the agent completes, not streamed live while it runs.
 

@@ -13,12 +13,10 @@
     "NODE_ENV": "production",
     "HOST": "0.0.0.0",
     "PORT": "3000",
-    "DEMO_MODE": "false",
-    "RETAILER_MODE": "searchapi",
     "ENABLE_DOCS": "false",
     "RATE_LIMIT_MAX": "30",
-    "MODEL_PROVIDER": "gemini",
-    "PRIMARY_MODEL": "gemini-3.1-flash-lite",
+    "MODEL_PROVIDER": "anthropic",
+    "PRIMARY_MODEL": "claude-sonnet-5-5",
     "BRAND_NAME": "Findly"
   },
   "ratelimits": [

@@ -1,5 +1,21 @@
+import { vi } from "vitest";
 import type { NormalizedRetailOffer, ShoppingRequest } from "@findly/contracts";
 import type { RetailerAdapter, RetailerSearchInput } from "@findly/retailer-sdk";
+import { searchApiFixtures } from "@findly/test-fixtures";
+import { EnvSchema } from "../src/config/env.js";
+import { SearchApiClient } from "../src/retailers/searchapi/client.js";
+
+/** Test config: the mock provider and no SearchAPI key; tests inject fixtureClient() instead. */
+export const testConfig = EnvSchema.parse({ NODE_ENV: "test", MODEL_PROVIDER: "mock" });
+
+/** A real SearchApiClient whose fetch serves the recorded responses in @findly/test-fixtures. */
+export function fixtureClient() {
+  const fetch = vi.fn<typeof globalThis.fetch>(async (url) => {
+    const engine = new URL(String(url)).searchParams.get("engine") as keyof typeof searchApiFixtures;
+    return new Response(JSON.stringify(searchApiFixtures[engine]), { status: 200 });
+  });
+  return { fetch, client: new SearchApiClient({ apiKey: "test", timeoutMs: 1_000, cacheTtlMs: 0, fetch }) };
+}
 
 export const request: ShoppingRequest = {
   intent: "find_product_for_task", originalQuery: "cordless drill", possibleProductNames: ["cordless drill"], requiredFeatures: [], optionalFeatures: [], excludedFeatures: [],

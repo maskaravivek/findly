@@ -4,20 +4,18 @@
 Android (Compose, UDF/MVVM)
        | HTTPS + SSE
        v
-Fastify API -> LangGraph shopping graph -> model-sdk (mock | Gemini | OpenAI | Anthropic)
+Fastify API -> LangGraph shopping graph -> model-sdk (AnthropicModelProvider)
                          |
-                         |-- agent_search (Anthropic): tool loop over retailer adapters, budgeted
-                         |-- dispatch_retailer_searches (other providers): fixed plan, concurrent
+                         |-- agent_search: Claude tool loop over retailer adapters, budgeted
                          |        -> retailer-sdk adapters
                          |             -> SearchApiRetailerAdapter (one per engine) -> searchapi.io
-                         |             -> DemoRetailerAdapter (fixtures, demo mode)
-                         -> deterministic normalization, matching and ranking
+                         -> deterministic verification (hard constraints) and ranking
                          -> in-memory checkpoints
 ```
 
-The current vertical slice accepts a natural-language query, may interrupt for one material/compatibility clarification, then searches retailers in one of two ways. When the model provider implements `runShoppingAgent` (Anthropic, or the mock provider in `RETAILER_MODE=searchapi`), the `agent_search` node lets the model choose retailers and queries through tools; code enforces the call budget and accepts only shortlisted offers it has seen. Otherwise the fixed search plan fans out to the selected adapters concurrently. Both paths feed the same `match_products` and `rank_offers` nodes, so the model proposes and code verifies. Partial results are preserved, money is ranked as integer minor units, and every offer carries provenance.
+The current vertical slice accepts a natural-language query, may interrupt for one material/compatibility clarification, then runs the `agent_search` node: Claude chooses retailers and queries through tools, while code enforces the call budget and accepts only shortlisted offers it has seen. `match_products` and `rank_offers` then verify and order the shortlist, so the model proposes and code verifies. Partial results are preserved, money is ranked as integer minor units, and every offer carries provenance.
 
-Retailers are SearchAPI engines configured by `SEARCHAPI_ENGINES`; country and currency come from the request or `DEFAULT_COUNTRY` / `DEFAULT_CURRENCY`. All modes use an in-memory checkpointer; demo mode additionally uses a mock model and fixture adapters.
+Retailers are SearchAPI engines configured by `SEARCHAPI_ENGINES`; country and currency come from the request or `DEFAULT_COUNTRY` / `DEFAULT_CURRENCY`. State lives in an in-memory checkpointer. Tests swap in a mock model provider and a SearchAPI client that serves recorded responses; there is no other runtime mode.
 
 Images are represented by artifact IDs. Raw images and raw retailer payloads must not be placed in graph state. Stable `thread_id` checkpoints allow clarification to resume while the current container instance remains awake. State is intentionally lost when the scale-to-zero container sleeps or restarts.
 

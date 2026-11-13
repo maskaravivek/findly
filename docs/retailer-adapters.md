@@ -4,7 +4,7 @@ Every retailer declares capabilities separately from its methods. The UI must ch
 
 ## SearchAPI adapters
 
-Live mode (`RETAILER_MODE=searchapi`) builds one `SearchApiRetailerAdapter` per engine listed in `SEARCHAPI_ENGINES` (`apps/api/src/retailers/searchapi/`). Unknown engine names are logged and skipped.
+SearchAPI is the only retailer source. The API builds one `SearchApiRetailerAdapter` per engine listed in `SEARCHAPI_ENGINES` (`apps/api/src/retailers/searchapi/`). Unknown engine names are logged and skipped.
 
 - `client.ts`: `SearchApiClient` calls `GET https://www.searchapi.io/api/v1/search?engine=...` with `Authorization: Bearer`, a per-request timeout (`SEARCHAPI_TIMEOUT_MS`), one retry on network errors, 429 and 5xx (honouring `Retry-After`, capped at 5 s; timeouts are not retried), and an in-memory TTL cache keyed on engine plus sorted params (`SEARCHAPI_CACHE_TTL_MS`, `0` disables it). Error messages never contain the key or upstream body.
 - `engines.ts`: one `SearchApiEngineDefinition` per engine: Zod item schema for the fields we read, `buildParams` (query, location, price ceiling, sort), and `toOffer` mapping into `NormalizedRetailOffer`.
@@ -40,8 +40,8 @@ Price ceilings are passed in major units (Home Depot rounds up to whole dollars)
 4. Register it in `SEARCHAPI_ENGINES` and add it to `SEARCHAPI_ENGINES` in `.env.example` if it should be on by default.
 5. Add a mapping test with a sample response in `apps/api/tests/searchapi-adapter.test.ts`.
 
-## Demo adapters
+## Tests
 
-`DemoRetailerAdapter` implements the full interface with fixture data from `packages/test-fixtures` and never claims live data (`liveVerified: false`). Demo mode is the default when `DEMO_MODE=true` and `RETAILER_MODE` is unset.
+Tests never call SearchAPI. They pass a `SearchApiClient` with a stubbed `fetch` that serves the recorded responses in `packages/test-fixtures` (`searchApiFixtures`, keyed by engine) to `buildApp(config, { searchApiClient })`; with an injected client no `SEARCHAPI_API_KEY` is needed.
 
 Retailer results are cached only by the SearchAPI client TTL cache; only data observed during a SearchAPI response may be marked `liveVerified=true`.
