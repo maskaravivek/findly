@@ -6,13 +6,8 @@ android {
         fun quoted(value: String) = "\"${value.replace("\\", "\\\\").replace("\"", "\\\"")}\""
         val brand = providers.gradleProperty("brandName").orElse("Findly").get()
         val apiBaseUrl = providers.gradleProperty("apiBaseUrl").orElse("http://10.0.2.2:3000/").get()
-        val supabaseUrl = providers.gradleProperty("supabaseUrl").orElse("http://10.0.2.2:54321/").get()
-        val supabasePublishableKey = providers.gradleProperty("supabasePublishableKey").orElse("").get()
-        if (apiBaseUrl.startsWith("https://") && supabasePublishableKey.isBlank()) {
-            throw GradleException("A Supabase publishable key is required for a production API build.")
-        }
         resValue("string", "app_name", brand)
-        buildConfigField("String", "BRAND_NAME", quoted(brand)); buildConfigField("String", "API_BASE_URL", quoted(apiBaseUrl)); buildConfigField("String", "SUPABASE_URL", quoted(supabaseUrl)); buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", quoted(supabasePublishableKey))
+        buildConfigField("String", "BRAND_NAME", quoted(brand)); buildConfigField("String", "API_BASE_URL", quoted(apiBaseUrl))
         manifestPlaceholders["usesCleartextTraffic"] = providers.gradleProperty("usesCleartextTraffic").orElse("true").get()
     }
     buildFeatures { compose = true; buildConfig = true }

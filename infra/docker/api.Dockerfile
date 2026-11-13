@@ -12,6 +12,7 @@ COPY . .
 RUN pnpm --filter @findly/api... build
 
 FROM node:24-alpine AS runtime
+RUN apk add --no-cache curl
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app/node_modules ./node_modules

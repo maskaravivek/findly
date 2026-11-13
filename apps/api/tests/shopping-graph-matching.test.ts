@@ -1,4 +1,3 @@
-import { MemorySaver } from "@langchain/langgraph";
 import { describe, expect, it } from "vitest";
 import { ShoppingRequestSchema, type NormalizedRetailOffer, type RetailerCapabilities } from "@findly/contracts";
 import type { RetailerAdapter } from "@findly/retailer-sdk";
@@ -53,7 +52,7 @@ describe("shopping graph product matching", () => {
       async getStoreInventory() { return { status: "unknown" }; },
       async preparePurchaseLink(input) { return { url: input.offer.url, retailerCheckout: true }; },
     };
-    const graph = createShoppingGraph(new LiteralModelProvider(), [adapter], new MemorySaver());
+    const graph = createShoppingGraph(new LiteralModelProvider(), [adapter]);
 
     const result = await graph.invoke(initialState("req_match", "req_match", { text: "drilling machine", imageIds: [] }), {
       configurable: { thread_id: "req_match" },

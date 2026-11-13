@@ -24,19 +24,19 @@ Build Android with `pnpm android:build` (or `./gradlew assembleDebug -PbrandName
 
 ## Workspace
 
-- `apps/api`: Fastify, LangGraph, SSE, model providers, adapters, and PostgreSQL checkpointing.
+- `apps/api`: Fastify, LangGraph with in-memory checkpoints, SSE, model providers, and adapters.
 - `apps/android`: Compose/Material 3 client using MVVM and unidirectional Flow state.
 - `packages/contracts`: Zod wire and domain schemas.
 - `packages/model-sdk`: provider-neutral AI contract.
 - `packages/retailer-sdk`: adapter and capability contract.
 - `packages/test-fixtures`: deterministic Canadian retailer demo data.
-- `infra`: local PostgreSQL and deployment starting points.
+- `infra`: the production API container image.
 - `docs`: architecture, security, workflow, adapters, and API details.
 
 Brand display name is configured by `BRAND_NAME` on the API and Android resources/application configuration on the client. No purchasing endpoint exists: offer links hand control to the retailer.
 
 ## Production vertical slice
 
-The phone-test deployment is available at `https://findly-api.maskaravivek.workers.dev`. It uses a scale-to-zero Cloudflare Container behind a Worker for the Node.js API, a Canada Central Supabase project for PostgreSQL checkpointing and anonymous JWT authentication, Gemini for shopping-request understanding, and Browserbase for Home Depot Canada plus Amazon Canada. Home Depot results are bound to a validated nearby store and expose stock/pickup/aisle fields only when supplied by the retailer; Amazon is an online price comparison and does not claim local inventory.
+The phone-test deployment is available at `https://findly-api.maskaravivek.workers.dev`. It uses a scale-to-zero Cloudflare Container behind a Worker for the Node.js API, in-memory workflow state, Gemini for shopping-request understanding, Home Depot Canada's public JSON endpoints, and Browser Use managed browsers for Amazon Canada. No account or database service is required. Home Depot results are bound to a validated nearby store and expose stock/pickup/aisle fields only when supplied by the retailer; Amazon is an online price comparison and does not claim local inventory.
 
 See [`docs/deployment.md`](docs/deployment.md) for environment variables, verification commands, Android build configuration, and the boundary between the deployed demo slice and future live retailer/model credentials.

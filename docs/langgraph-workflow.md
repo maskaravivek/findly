@@ -14,6 +14,6 @@ Graph state is declared with LangGraph `Annotation.Root`. Array reducers preserv
 
 Search plans contain a preferred retailer query and bounded canonical variants. Retailers still run concurrently. Within one retailer, a second query is attempted only when the first request succeeded but all returned products failed deterministic relevance matching. Retailer errors such as access challenges and timeouts remain terminal for that adapter invocation. `match_products` is a final shared gate so no adapter can send an unrelated offer into ranking.
 
-Demo uses `MemorySaver`. Outside demo mode, `PostgresSaver` is mandatory, runs `setup()`, and receives a stable `thread_id`. Resume uses `Command({resume})`, so completed upstream work is not restarted. Cancellation can be added with an authenticated cancellation route and an abort signal stored outside graph state.
+All modes use `MemorySaver` with a stable `thread_id`. Resume uses `Command({resume})`, so completed upstream work is not restarted while the current container instance remains awake. If the scale-to-zero container sleeps or restarts, unfinished clarification and event-replay state is intentionally discarded.
 
 SSE publishes only sanitized progress events. It never publishes prompts, hidden reasoning, raw website text, credentials, or cookies.

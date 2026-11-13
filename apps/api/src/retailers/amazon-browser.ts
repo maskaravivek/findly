@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
 import { z } from "zod";
 import type { NormalizedRetailOffer, RetailerCapabilities } from "@findly/contracts";
 import type { RetailerAdapter, RetailerExecutionContext, RetailerSearchInput, RetailerSearchResult } from "@findly/retailer-sdk";
@@ -29,13 +29,14 @@ const isRelevantPowerDrill = (query: string, category: string | undefined, title
   return tokens.some(token => normalizedTitle.includes(token.replace(/ing$/, "")));
 };
 
-export class AmazonBrowserbaseAdapter implements RetailerAdapter {
+export class AmazonBrowserAdapter implements RetailerAdapter {
   readonly retailer = { id: "amazon_ca" as const, name: "Amazon Canada", domain: "amazon.ca", capabilities, live: true };
-  constructor(private readonly browserService: BrowserService) {}
+  constructor(private readonly browserService: BrowserService, private readonly defaultCountry = "CA") {}
   supports(capability: keyof RetailerCapabilities) { return capabilities[capability]; }
 
   async searchProducts(input: RetailerSearchInput, context: RetailerExecutionContext): Promise<RetailerSearchResult> {
-    const session = await this.browserService.createSession({ retailerDomain: this.retailer.domain, timeoutSeconds: 90, correlationId: context.correlationId });
+    const country = (input.country ?? this.defaultCountry).toLowerCase();
+    const session = await this.browserService.createSession({ retailerDomain: this.retailer.domain, country, timeoutSeconds: 90 });
     const browser = await chromium.connectOverCDP(session.connectUrl);
     const observedAt = new Date().toISOString();
     try {
@@ -103,7 +104,7 @@ export class AmazonBrowserbaseAdapter implements RetailerAdapter {
     }
   }
 
-  private async trySetPostalCode(page: import("playwright").Page, postalCode: string) {
+  private async trySetPostalCode(page: import("playwright-core").Page, postalCode: string) {
     try {
       const consent = page.locator("#sp-cc-accept");
       if (await consent.isVisible({ timeout: 500 }).catch(() => false)) await consent.click();

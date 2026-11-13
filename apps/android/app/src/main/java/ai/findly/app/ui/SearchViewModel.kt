@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import ai.findly.app.data.AuthenticationUnavailableException
 import ai.findly.app.data.InvalidClientConfigurationException
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -206,12 +205,10 @@ class SearchViewModel @Inject constructor(
 }
 
 internal fun userFacingError(error: Throwable): String = when (error) {
-    is AuthenticationUnavailableException -> "Findly could not start a secure session. Please try again."
     is InvalidClientConfigurationException -> "This Findly build is configured for an emulator, not a physical phone."
     is SocketTimeoutException -> "Findly could not reach the service in time. Please try again."
     is UnknownHostException -> "Findly could not connect. Check your internet connection and try again."
     is HttpException -> when (error.code()) {
-        401 -> "Your Findly session expired. Please try again."
         429 -> "Findly is receiving too many searches right now. Please wait a moment and try again."
         else -> "Findly could not complete this search. Please try again."
     }

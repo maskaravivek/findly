@@ -6,13 +6,14 @@ Android (Compose, UDF/MVVM)
        v
 Fastify API -> LangGraph shopping graph -> model-sdk
                          |              -> retailer-sdk adapters
-                         |                    -> Browserbase + Playwright
+                         |                    -> Home Depot public JSON endpoints
+                         |                    -> Browser Use managed browser + Playwright (Amazon)
                          -> deterministic normalization, matching and ranking
-                         -> PostgreSQL checkpoints
+                         -> in-memory checkpoints
 ```
 
-The current vertical slice accepts a natural-language query, may interrupt for one material/compatibility clarification, searches six adapters concurrently, preserves partial results, distinguishes the tool-only marketplace fixture, ranks with integer money, and returns provenance. Demo mode uses a mock model, fixture adapters, and an in-memory checkpointer. Non-demo startup requires PostgreSQL; production deployments must run the LangGraph checkpointer setup before serving.
+The current vertical slice accepts a natural-language query, may interrupt for one material/compatibility clarification, searches six adapters concurrently, preserves partial results, distinguishes the tool-only marketplace fixture, ranks with integer money, and returns provenance. All modes use an in-memory checkpointer; demo mode additionally uses a mock model and fixture adapters.
 
-Images are represented by artifact IDs. Raw images, screenshots, and browser traces belong in encrypted object storage, not graph state. PostgreSQL stores stable `thread_id` checkpoints so clarification resumes the same workflow after a process restart.
+Images are represented by artifact IDs. Raw images, screenshots, and browser traces must not be placed in graph state. Stable `thread_id` checkpoints allow clarification to resume while the current container instance remains awake. State is intentionally lost when the scale-to-zero container sleeps or restarts.
 
 The Android source includes the requested platform dependencies and boundaries for CameraX, ML Kit barcode scanning, Room, DataStore, location, WorkManager, and Coil. The first UI slice exercises typed Retrofit requests, clarification resume, offer provenance, package variants, fulfillment, and aisle/bay presentation. Camera capture, barcode analyzer, offline Room history, saved lists, and watches are the next vertical slices rather than simulated controls.

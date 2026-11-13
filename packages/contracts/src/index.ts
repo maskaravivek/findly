@@ -45,14 +45,14 @@ export const NormalizedRetailOfferSchema = z.object({
     inventoryQuantity: z.int().nonnegative().optional(), storeId: z.string().optional(), storeName: z.string().optional(),
     storeDistanceKm: z.number().nonnegative().optional(), aisle: z.string().optional(), bay: z.string().optional(), estimate: z.string().optional()
   }),
-  url: z.url(), source: z.object({ kind: z.enum(["official_api", "browser_verified", "cached_verified", "fixture", "unknown"]), observedAt: z.iso.datetime(), liveVerified: z.boolean(), artifactId: z.string().optional() }),
+  url: z.url(), source: z.object({ kind: z.enum(["official_api", "browser_verified", "fixture", "unknown"]), observedAt: z.iso.datetime(), liveVerified: z.boolean(), artifactId: z.string().optional() }),
   confidence: z.number().min(0).max(1), warnings: z.array(z.string()).default([])
 });
 export type NormalizedRetailOffer = z.infer<typeof NormalizedRetailOfferSchema>;
 
 export const SearchRequestSchema = z.object({
   text: z.string().min(1).optional(), barcode: z.string().optional(), productUrl: z.url().optional(), imageIds: z.array(z.string()).default([]),
-  selectedStoreId: z.string().optional(), postalCode: z.string().optional(), latitude: z.number().min(-90).max(90).optional(), longitude: z.number().min(-180).max(180).optional(),
+  selectedStoreId: z.string().optional(), postalCode: z.string().optional(), country: z.string().regex(/^[A-Za-z]{2}$/).optional(), latitude: z.number().min(-90).max(90).optional(), longitude: z.number().min(-180).max(180).optional(),
   locationAccuracyMeters: z.number().nonnegative().optional(), locationApproximate: z.boolean().optional()
 }).refine(v => Boolean(v.text || v.barcode || v.productUrl || v.imageIds.length), "At least one input is required")
   .refine(v => (v.latitude === undefined) === (v.longitude === undefined), "Latitude and longitude must be supplied together");

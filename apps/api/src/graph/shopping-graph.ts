@@ -1,5 +1,4 @@
-import { Command, END, MemorySaver, START, StateGraph, interrupt, type BaseCheckpointSaver } from "@langchain/langgraph";
-import { PostgresSaver } from "@langchain/langgraph-checkpoint-postgres";
+import { Command, END, MemorySaver, START, StateGraph, interrupt } from "@langchain/langgraph";
 import type { ModelProvider } from "@findly/model-sdk";
 import type { RetailerAdapter } from "@findly/retailer-sdk";
 import type { SearchRequest } from "@findly/contracts";
@@ -19,6 +18,7 @@ async function searchRetailerWithFallback(adapter: RetailerAdapter, state: Shopp
     const result = await adapter.searchProducts({
       request, query,
       ...(state.input.postalCode ? { postalCode: state.input.postalCode } : {}),
+      ...(state.input.country ? { country: state.input.country } : {}),
       ...(state.input.selectedStoreId ? { selectedStoreId: state.input.selectedStoreId } : {}),
       ...(state.input.latitude !== undefined ? { latitude: state.input.latitude } : {}),
       ...(state.input.longitude !== undefined ? { longitude: state.input.longitude } : {}),
@@ -43,8 +43,7 @@ async function searchRetailerWithFallback(adapter: RetailerAdapter, state: Shopp
   };
 }
 
-export async function createCheckpointer(mode: "memory" | "postgres", databaseUrl?: string, schema = "findly_internal"): Promise<BaseCheckpointSaver> { if (mode === "memory") return new MemorySaver(); if (!databaseUrl) throw new Error("DATABASE_URL is required"); const saver = PostgresSaver.fromConnString(databaseUrl, { schema }); await saver.setup(); return saver; }
-export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdapter[], checkpointer: BaseCheckpointSaver) {
+export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdapter[]) {
   const graph = new StateGraph(ShoppingGraphAnnotation)
     .addNode("load_request", async () => ({ status: "understanding", updatedAt: new Date().toISOString(), progressEvents: [event("understanding", "Understanding what you need")] }))
     .addNode("understand_request", async (state) => ({ understoodRequest: await model.understandShoppingRequest({ imageIds: state.input.imageIds, ...(state.input.text ? { text: state.input.text } : {}), ...(state.input.barcode ? { barcode: state.input.barcode } : {}), ...(state.input.selectedStoreId ? { selectedStoreId: state.input.selectedStoreId } : {}), ...(state.input.postalCode ? { postalCode: state.input.postalCode } : {}) }), updatedAt: new Date().toISOString() }))
@@ -60,8 +59,8 @@ export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdap
     .addConditionalEdges("understand_request", (state) => state.understoodRequest?.clarificationNeeded && !state.clarificationAnswer ? "clarify" : "plan", { clarify: "prepare_clarification", plan: "build_search_plan" })
     .addEdge("prepare_clarification", "request_clarification")
     .addEdge("request_clarification", "build_search_plan").addEdge("build_search_plan", "dispatch_retailer_searches").addEdge("dispatch_retailer_searches", "normalize_offers").addEdge("normalize_offers", "match_products").addEdge("match_products", "rank_offers").addEdge("rank_offers", "generate_result_summary").addEdge("generate_result_summary", END);
-  return graph.compile({ checkpointer });
+  return graph.compile({ checkpointer: new MemorySaver() });
 }
 export type ShoppingGraph = ReturnType<typeof createShoppingGraph>;
-export const initialState = (requestId: string, threadId: string, input: SearchRequest, userId?: string): Partial<ShoppingGraphState> => ({ requestId, threadId, ...(userId ? { userId } : {}), input, status: "draft", startedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+export const initialState = (requestId: string, threadId: string, input: SearchRequest): Partial<ShoppingGraphState> => ({ requestId, threadId, input, status: "draft", startedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
 export const resumeCommand = (answer: string) => new Command({ resume: answer });
