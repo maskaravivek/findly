@@ -17,7 +17,8 @@ export interface ModelProvider {
   generateSearchPlan(input: { request: ShoppingRequest }): Promise<SearchPlan>;
   compareAmbiguousProducts(input: { request: ShoppingRequest; offers: NormalizedRetailOffer[] }): Promise<{ equivalentOfferIds: string[]; reason: string }>;
   assessCompatibility(input: { request: ShoppingRequest; offer: NormalizedRetailOffer }): Promise<{ compatible: boolean | null; confidence: number; reason: string }>;
-  summarizeRecommendation(input: { request: ShoppingRequest; rankedOffers: NormalizedRetailOffer[] }): Promise<RecommendationSummary>;
+  /** agentReasoning is the agent's own shortlist rationale, when the agent path ran. */
+  summarizeRecommendation(input: { request: ShoppingRequest; rankedOffers: NormalizedRetailOffer[]; agentReasoning?: string }): Promise<RecommendationSummary>;
   /** Optional agentic search. Providers without it fall back to generateSearchPlan + adapter dispatch. */
   runShoppingAgent?(input: { request: ShoppingRequest; tools: ShoppingAgentTools; budget: ShoppingAgentBudget }): Promise<ShoppingAgentResult>;
 }

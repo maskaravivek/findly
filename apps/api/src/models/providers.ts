@@ -7,7 +7,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { ShoppingRequestSchema, type NormalizedRetailOffer, type ShoppingRequest } from "@findly/contracts";
 import type { AgentToolCall, ModelProvider, RecommendationSummary, SearchPlan, ShoppingAgentBudget, ShoppingAgentResult, ShoppingAgentTools } from "@findly/model-sdk";
-import type { Env } from "../config/env.js";
+import { retailerMode, type Env } from "../config/env.js";
 import { buildRetailerSearchQueries } from "../products/product-relevance.js";
 import { FinalizeShortlistInputSchema, SearchProductsInputSchema, SeenOffers, agentToolDefinitions, buildSystemPrompt, buildUserMessage, compactView, fallbackShortlist, searchSummary, validateShortlist } from "../agent/shopping-agent.js";
 
@@ -19,7 +19,26 @@ const defaults = (input: Omit<UnderstandInput, "imageIds">): ShoppingRequest => 
   return ShoppingRequestSchema.parse({ intent: input.selectedStoreId ? "find_in_store" : input.barcode ? "find_exact_product" : concrete ? "compare_product" : "find_product_for_task", originalQuery: text || undefined, barcode: input.barcode, category: /drill/.test(lower) ? "Cordless drills" : undefined, possibleProductNames: /drill/.test(lower) ? ["cordless drill", "drill driver"] : [text], useCase: text || undefined, requiredFeatures: [], optionalFeatures: [], excludedFeatures: [], existingEquipment: /dewalt batter/.test(lower) ? [{ kind: "battery platform", brand: "DEWALT", model: "20V MAX" }] : [], compatibilityConstraints: [], preferredBrands: /dewalt/.test(lower) ? ["DEWALT"] : [], excludedBrands: [], preferredRetailers: [], excludedRetailers: [], currency: input.currency ?? "USD", urgency: /today|now|immediate/.test(lower) ? "today" : "no_preference", fulfillmentPreferences: /nearby|today|store|aisle/.test(lower) ? ["pickup", "in_store"] : ["shipping", "pickup"], location: input.postalCode ? { postalCode: input.postalCode, country: input.country ?? "US" } : undefined, selectedStoreId: input.selectedStoreId, clarificationNeeded: materialMissing, clarificationQuestion: materialMissing ? "What material are you drilling into?" : undefined, clarificationOptions: materialMissing ? ["Drywall", "Wood", "Brick", "Concrete", "Not sure"] : undefined, confidence: concrete ? 0.86 : 0.7 });
 };
 
+/** Deterministic stand-in for the agent loop: one search per retailer, first 3 offers each. */
+async function mockShoppingAgent({ request, tools }: { request: ShoppingRequest; tools: ShoppingAgentTools; budget: ShoppingAgentBudget }): Promise<ShoppingAgentResult> {
+  const query = request.possibleProductNames[0] ?? request.originalQuery ?? "product";
+  const maxPrice = request.maximumPrice ? request.maximumPrice.amountMinor / 100 : undefined;
+  const shortlist: NormalizedRetailOffer[] = [];
+  const toolTrace: AgentToolCall[] = [];
+  for (const retailer of tools.retailers) {
+    const started = Date.now();
+    const input = { retailerId: retailer.id, query, ...(maxPrice !== undefined ? { maxPrice } : {}) };
+    const result = await tools.searchProducts(input);
+    shortlist.push(...result.offers.slice(0, 3));
+    toolTrace.push({ tool: "search_products", input, resultSummary: searchSummary(retailer.id, result.offers.length, result.warnings), durationMs: Date.now() - started });
+  }
+  return { shortlist, reasoning: "Mock agent", toolTrace, exhaustedBudget: false };
+}
+
 export class MockModelProvider implements ModelProvider {
+  // runShoppingAgent is attached per instance, not declared on the class, so Gemini/OpenAI subclasses never inherit an agent
+  // and AnthropicModelProvider's own method is not shadowed by a class field.
+  constructor(options: { agent?: boolean } = {}) { if (options.agent) Object.assign(this, { runShoppingAgent: mockShoppingAgent }); }
   async understandShoppingRequest(input: UnderstandInput) { return defaults(input); }
   async analyzeProductImages(input: { imageIds: string[] }) { return { labels: input.imageIds.length ? ["unknown hardware item"] : [], confidence: 0.55 }; }
   async generateSearchPlan({ request }: { request: ShoppingRequest }): Promise<SearchPlan> { return { queries: buildRetailerSearchQueries(request), retailerIds: ["home_depot_ca", "amazon_ca"], exactMatch: Boolean(request.modelNumber || request.barcode) }; }
@@ -165,5 +184,5 @@ export function createModelProvider(config: Env): ModelProvider {
   if (config.MODEL_PROVIDER === "anthropic") return new AnthropicModelProvider(config.ANTHROPIC_API_KEY!, config.PRIMARY_MODEL || DEFAULT_ANTHROPIC_MODEL);
   if (config.MODEL_PROVIDER === "gemini") return new GeminiModelProvider(config.GEMINI_API_KEY!, config.PRIMARY_MODEL || "gemini-3.1-flash-lite");
   if (config.MODEL_PROVIDER === "openai") return new OpenAIModelProvider(config.OPENAI_API_KEY!, config.PRIMARY_MODEL || "gpt-5-mini");
-  return new MockModelProvider();
+  return new MockModelProvider({ agent: retailerMode(config) === "searchapi" });
 }
