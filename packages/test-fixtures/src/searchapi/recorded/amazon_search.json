@@ -1,0 +1,455 @@
+{
+  "search_metadata": {
+    "id": "search_K0EOpDkpY6hXYaLOle3wzYN9",
+    "status": "Success",
+    "created_at": "2026-11-13T01:31:12Z",
+    "request_time_taken": 2.96,
+    "parsing_time_taken": 0.15,
+    "total_time_taken": 3.1
+  },
+  "search_parameters": {
+    "engine": "amazon_search",
+    "q": "cordless drill",
+    "amazon_domain": "amazon.com",
+    "delivery_country": "us"
+  },
+  "search_information": {
+    "query_displayed": "cordless drill",
+    "price_min": "$2",
+    "extracted_price_min": 2,
+    "price_max": "$4,600+",
+    "extracted_price_max": 4600,
+    "delivering_to": "Delivering to New Bruns... 08901"
+  },
+  "filters": [
+    {
+      "type": "Eligible for Free Shipping",
+      "options": [
+        {
+          "text": "Free Shipping by Amazon",
+          "rh": "p_76:1249152011"
+        }
+      ]
+    },
+    {
+      "type": "Brands",
+      "options": [
+        {
+          "text": "DEWALT",
+          "rh": "p_123:195991"
+        },
+        {
+          "text": "Milwaukee",
+          "rh": "p_123:359095"
+        },
+        {
+          "text": "Makita",
+          "rh": "p_123:220860"
+        },
+        {
+          "text": "RYOBI",
+          "rh": "p_123:252605"
+        },
+        {
+          "text": "BLACK+DECKER",
+          "rh": "p_123:196436"
+        },
+        {
+          "text": "Bosch",
+          "rh": "p_123:46644"
+        },
+        {
+          "text": "CRAFTSMAN",
+          "rh": "p_123:304445"
+        },
+        {
+          "text": "Skil",
+          "rh": "p_123:359040"
+        },
+        {
+          "text": "RIDGID",
+          "rh": "p_123:237356"
+        },
+        {
+          "text": "PORTER-CABLE",
+          "rh": "p_123:195993"
+        },
+        {
+          "text": "WORX",
+          "rh": "p_123:233140"
+        },
+        {
+          "text": "Festool",
+          "rh": "p_123:254824"
+        },
+        {
+          "text": "HILTI",
+          "rh": "p_123:362507"
+        },
+        {
+          "text": "Greenworks",
+          "rh": "p_123:229357"
+        },
+        {
+          "text": "AVID POWER",
+          "rh": "p_123:443706"
+        },
+        {
+          "text": "Metabo HPT",
+          "rh": "p_123:461881"
+        },
+        {
+          "text": "Einhell",
+          "rh": "p_123:253354"
+        },
+        {
+          "text": "FLEX",
+          "rh": "p_123:582920"
+        },
+        {
+          "text": "WEN",
+          "rh": "p_123:338781"
+        },
+        {
+          "text": "metabo",
+          "rh": "p_123:311470"
+        },
+        {
+          "text": "Ingersoll Rand",
+          "rh": "p_123:358878"
+        },
+        {
+          "text": "Fein",
+          "rh": "p_123:310560"
+        },
+        {
+          "text": "Performance Tool",
+          "rh": "p_123:310743"
+        },
+        {
+          "text": "Hitachi",
+          "rh": "p_123:1422542"
+        },
+        {
+          "text": "COMOWARE",
+          "rh": "p_123:439181"
+        },
+        {
+          "text": "Fanttik",
+          "rh": "p_123:902734"
+        },
+        {
+          "text": "KLEIN TOOLS",
+          "rh": "p_123:239189"
+        },
+        {
+          "text": "Seesii",
+          "rh": "p_123:311000"
+        },
+        {
+          "text": "GALAX PRO",
+          "rh": "p_123:481333"
+        },
+        {
+          "text": "Dong Cheng",
+          "rh": "p_123:1188923"
+        },
+        {
+          "text": "ENEACRO",
+          "rh": "p_123:627045"
+        },
+        {
+          "text": "wowstick",
+          "rh": "p_123:245082"
+        },
+        {
+          "text": "CAT",
+          "rh": "p_123:586694"
+        },
+        {
+          "text": "XtremepowerUS",
+          "rh": "p_123:164181"
+        },
+        {
+          "text": "CARTMAN",
+          "rh": "p_123:245258"
+        }
+      ]
+    },
+    {
+      "type": "Customer Review",
+      "options": [
+        {
+          "text": "4 Stars",
+          "rh": "p_72:2661618011"
+        }
+      ]
+    },
+    {
+      "type": "Deals & Discounts",
+      "options": [
+        {
+          "text": "All Discounts",
+          "rh": "p_n_deal_type:23566065011"
+        },
+        {
+          "text": "Buy More, Save More",
+          "rh": "p_n_deal_type:210906365011"
+        },
+        {
+          "text": "Coupons",
+          "rh": "p_n_deal_type:210906366011"
+        },
+        {
+          "text": "Today's Deals",
+          "rh": "p_n_deal_type:23566064011"
+        }
+      ]
+    },
+    {
+      "type": "Condition",
+      "options": [
+        {
+          "text": "New",
+          "rh": "p_n_condition-type:6358196011"
+        },
+        {
+          "text": "Renewed",
+          "rh": "p_n_condition-type:16907721011"
+        },
+        {
+          "text": "Used",
+          "rh": "p_n_condition-type:6358198011"
+        }
+      ]
+    },
+    {
+      "type": "Power Source",
+      "options": [
+        {
+          "text": "Battery Powered",
+          "rh": "p_n_g-101016441455111:205746258011"
+        },
+        {
+          "text": "Corded Electric",
+          "rh": "p_n_g-101016441455111:205746257011"
+        }
+      ]
+    }
+  ],
+  "organic_results": [
+    {
+      "position": 1,
+      "asin": "B00IJ0ALYS",
+      "title": "DEWALT 20V MAX Cordless Drill and Impact Driver (DCK240C2)",
+      "link": "https://www.amazon.com/DEWALT-DCK240C2-Lithium-Driver-Impact/dp/B00IJ0ALYS/ref=sr_1_1?dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&dib_tag=se&keywords=cordless+drill&qid=1794533473&sr=8-1",
+      "rating": 4.7,
+      "reviews": 61409,
+      "recent_sales": "10K+ bought in past month",
+      "extracted_recent_sales": 10000,
+      "price": "$149.00",
+      "extracted_price": 149,
+      "original_price": "$239.00",
+      "extracted_original_price": 239,
+      "original_price_label": "List",
+      "fulfillment": {
+        "standard_delivery": {
+          "text": "Join Prime to get FREE delivery Tomorrow, Nov 13",
+          "type": "Join Prime",
+          "date": "Tomorrow, Nov 13"
+        },
+        "fastest_delivery": {
+          "text": "Or Non-members get FREE delivery Tue, Nov 17",
+          "type": "Or Non-members get FREE delivery",
+          "date": "Tue, Nov 17"
+        }
+      },
+      "is_overall_pick": true,
+      "thumbnail": "https://m.media-amazon.com/images/I/81XPDrUh9sL._AC_UL320_.jpg"
+    },
+    {
+      "position": 2,
+      "asin": "B00ET5VMTU",
+      "title": "DEWALT 20V Max XR Drill Driver, Battery and Charger (DCD771C2)",
+      "link": "https://www.amazon.com/DEWALT-Performance-Batteries-Contractor-DCD771C2/dp/B00ET5VMTU/ref=sr_1_2?dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&dib_tag=se&keywords=cordless+drill&qid=1794533473&sr=8-2",
+      "tags": [
+        "Battery Powered"
+      ],
+      "rating": 4.8,
+      "reviews": 50024,
+      "recent_sales": "6K+ bought in past month",
+      "extracted_recent_sales": 6000,
+      "price": "$119.00",
+      "extracted_price": 119,
+      "fulfillment": {
+        "standard_delivery": {
+          "text": "Join Prime to get FREE delivery Tomorrow, Nov 13",
+          "type": "Join Prime",
+          "date": "Tomorrow, Nov 13"
+        },
+        "fastest_delivery": {
+          "text": "Or Non-members get FREE delivery Tue, Nov 17",
+          "type": "Or Non-members get FREE delivery",
+          "date": "Tue, Nov 17"
+        }
+      },
+      "more_offers": {
+        "lowest_price": "$113.05",
+        "extracted_lowest_price": 113.05,
+        "link": "https://www.amazon.com/gp/offer-listing/B00ET5VMTU/ref=sr_1_2_olp?keywords=cordless+drill&dib_tag=se&dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&qid=1794533473&sr=8-2",
+        "offers_count": 2,
+        "description": "(2+ used & new offers)"
+      },
+      "thumbnail": "https://m.media-amazon.com/images/I/81dmm7FomNL._AC_UL320_.jpg"
+    },
+    {
+      "position": 3,
+      "asin": "B0CC1RHJY1",
+      "title": "Power Drill Cordless: DEKOPRO Cordless Drill 20V Electric Power Drills Set Tool Drills Cord-less Set with Battery and Charger",
+      "link": "https://www.amazon.com/Power-Drill-Cordless-Electric-Battery/dp/B0CC1RHJY1/ref=sr_1_3?dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&dib_tag=se&keywords=cordless+drill&qid=1794533473&sr=8-3",
+      "tags": [
+        "Battery Powered"
+      ],
+      "rating": 4.4,
+      "reviews": 7958,
+      "recent_sales": "Top Reviewed for Battery life",
+      "price": "$29.99",
+      "extracted_price": 29.99,
+      "fulfillment": {
+        "standard_delivery": {
+          "text": "Join Prime to get FREE delivery Tomorrow, Nov 13",
+          "type": "Join Prime",
+          "date": "Tomorrow, Nov 13"
+        },
+        "fastest_delivery": {
+          "text": "Or Non-members get FREE delivery Tue, Nov 17 on $35 of items shipped by Amazon",
+          "type": "Or Non-members get FREE delivery",
+          "condition": "on $35 of items shipped by Amazon",
+          "date": "Tue, Nov 17"
+        }
+      },
+      "more_offers": {
+        "lowest_price": "$28.18",
+        "extracted_lowest_price": 28.18,
+        "link": "https://www.amazon.com/gp/offer-listing/B0CC1RHJY1/ref=sr_1_3_olp?keywords=cordless+drill&dib_tag=se&dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&qid=1794533473&sr=8-3",
+        "offers_count": 9,
+        "description": "(9+ used & new offers)"
+      },
+      "bestseller": {
+        "category": "in Power Drill Drivers"
+      },
+      "thumbnail": "https://m.media-amazon.com/images/I/810mhyjBI7L._AC_UL320_.jpg"
+    },
+    {
+      "position": 4,
+      "asin": "B0GNB4XT2G",
+      "title": "CRAFTSMAN V20 1/2 Cordless Drill With Battery and Charger (CMCD702D1)",
+      "link": "https://www.amazon.com/CRAFTSMAN-Cordless-Battery-Ergonomic-CMCD702D1/dp/B0GNB4XT2G/ref=sr_1_4?dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&dib_tag=se&keywords=cordless+drill&qid=1794533473&sr=8-4",
+      "rating": 4.7,
+      "reviews": 146,
+      "recent_sales": "700+ bought in past month",
+      "extracted_recent_sales": 700,
+      "price": "$59.00",
+      "extracted_price": 59,
+      "original_price": "$99.00",
+      "extracted_original_price": 99,
+      "original_price_label": "List",
+      "fulfillment": {
+        "standard_delivery": {
+          "text": "Join Prime to get FREE delivery Tomorrow, Nov 13",
+          "type": "Join Prime",
+          "date": "Tomorrow, Nov 13"
+        },
+        "fastest_delivery": {
+          "text": "Or Non-members get FREE delivery Tue, Nov 17",
+          "type": "Or Non-members get FREE delivery",
+          "date": "Tue, Nov 17"
+        }
+      },
+      "more_offers": {
+        "lowest_price": "$49.68",
+        "extracted_lowest_price": 49.68,
+        "link": "https://www.amazon.com/gp/offer-listing/B0GNB4XT2G/ref=sr_1_4_olp?keywords=cordless+drill&dib_tag=se&dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&qid=1794533473&sr=8-4",
+        "offers_count": 10,
+        "description": "(10+ used & new offers)"
+      },
+      "thumbnail": "https://m.media-amazon.com/images/I/71qaYA2dT-L._AC_UL320_.jpg"
+    },
+    {
+      "position": 5,
+      "asin": "B0C3TGRLLM",
+      "title": "DEWALT 20V MAX Cordless Drill Driver Set with Battery, Charger (DCD777D1)",
+      "link": "https://www.amazon.com/DEWALT-Cordless-Battery-Included-DCD777D1/dp/B0C3TGRLLM/ref=sr_1_5?dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&dib_tag=se&keywords=cordless+drill&qid=1794533473&sr=8-5",
+      "rating": 4.8,
+      "reviews": 2494,
+      "recent_sales": "2K+ bought in past month",
+      "extracted_recent_sales": 2000,
+      "price": "$99.00",
+      "extracted_price": 99,
+      "original_price": "$179.00",
+      "extracted_original_price": 179,
+      "original_price_label": "List",
+      "fulfillment": {
+        "standard_delivery": {
+          "text": "Join Prime to get FREE delivery Tomorrow, Nov 13",
+          "type": "Join Prime",
+          "date": "Tomorrow, Nov 13"
+        },
+        "fastest_delivery": {
+          "text": "Or Non-members get FREE delivery Tue, Nov 17",
+          "type": "Or Non-members get FREE delivery",
+          "date": "Tue, Nov 17"
+        }
+      },
+      "more_offers": {
+        "lowest_price": "$89.99",
+        "extracted_lowest_price": 89.99,
+        "link": "https://www.amazon.com/gp/offer-listing/B0C3TGRLLM/ref=sr_1_5_olp?keywords=cordless+drill&dib_tag=se&dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&qid=1794533473&sr=8-5",
+        "offers_count": 18,
+        "description": "(18+ used & new offers)"
+      },
+      "thumbnail": "https://m.media-amazon.com/images/I/715+r4lU6mL._AC_UL320_.jpg"
+    },
+    {
+      "position": 6,
+      "asin": "B08YJTYDD4",
+      "title": "COMOWARE 20V Cordless Drill & Bits Set w/Charger, Battery and Storage Case",
+      "link": "https://www.amazon.com/COMOWARE-Cordless-Electric-Batteries-Variable/dp/B08YJTYDD4/ref=sr_1_6?dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&dib_tag=se&keywords=cordless+drill&qid=1794533473&sr=8-6",
+      "rating": 4.4,
+      "reviews": 9182,
+      "recent_sales": "5K+ bought in past month",
+      "extracted_recent_sales": 5000,
+      "price": "$29.99",
+      "extracted_price": 29.99,
+      "fulfillment": {
+        "standard_delivery": {
+          "text": "Join Prime to get FREE delivery Tomorrow, Nov 13",
+          "type": "Join Prime",
+          "date": "Tomorrow, Nov 13"
+        },
+        "fastest_delivery": {
+          "text": "Or Non-members get FREE delivery Tue, Nov 17 on $35 of items shipped by Amazon",
+          "type": "Or Non-members get FREE delivery",
+          "condition": "on $35 of items shipped by Amazon",
+          "date": "Tue, Nov 17"
+        }
+      },
+      "more_offers": {
+        "lowest_price": "$29.90",
+        "extracted_lowest_price": 29.9,
+        "link": "https://www.amazon.com/gp/offer-listing/B08YJTYDD4/ref=sr_1_6_olp?keywords=cordless+drill&dib_tag=se&dib=eyJ2IjoiMSJ9.iC1VAVCMo8FIDU2ULyDBZFDskNqheyvWP1iORughxO1OS99pib16zhUlb5X1IoED9Fm6CRgpIeCBaiwH5ihSxemBua8zpo7NGEiSIBk-5Jx4VhT-jv-8-vYdFe67Zv9tqBv00zWfrVPrSa35zieylz525iQwqc4sT5U3zvSw0JrYbDxS8JsMwZs8NVzbsYoWYxIDQfrZijMWFYrBsmjaJnhTTFJNOpHlzRlSUErl_bvjYnYdcfiO2aj0_A494bPpzGSiNVFtyFOAnVSm_yNzYZD8GdwWm_hmnBkGhwvpAMo.ag8wiquhXMU-k-hZRXdqW_lkjarryaaU5-sK9F_OTcY&qid=1794533473&sr=8-6",
+        "offers_count": 2,
+        "description": "(2 new offers)"
+      },
+      "thumbnail": "https://m.media-amazon.com/images/I/81ZQbw9N27L._AC_UL320_.jpg"
+    }
+  ],
+  "pagination": {
+    "current": 1,
+    "next": "https://www.amazon.com/s?k=cordless+drill&page=2&xpid=NhRWGtoK6uciS&qid=1794533473&ref=sr_pg_1",
+    "other_pages": {
+      "2": "https://www.amazon.com/s?k=cordless+drill&page=2&xpid=NhRWGtoK6uciS&qid=1794533473&ref=sr_pg_2",
+      "3": "https://www.amazon.com/s?k=cordless+drill&page=3&xpid=NhRWGtoK6uciS&qid=1794533473&ref=sr_pg_3"
+    }
+  }
+}

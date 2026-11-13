@@ -2,7 +2,6 @@ package ai.findly.app.ui
 
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import ai.findly.app.data.AuthenticationUnavailableException
 import ai.findly.app.data.InvalidClientConfigurationException
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
@@ -16,14 +15,6 @@ class SearchViewModelTest {
         assertEquals(
             "Findly could not reach the service in time. Please try again.",
             userFacingError(SocketTimeoutException()),
-        )
-    }
-
-    @Test
-    fun authenticationTimeoutIdentifiesSessionFailure() {
-        assertEquals(
-            "Findly could not start a secure session. Please try again.",
-            userFacingError(AuthenticationUnavailableException(SocketTimeoutException())),
         )
     }
 
@@ -44,9 +35,9 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun expiredSessionMessageDoesNotExposeRawHttpError() {
-        val error = HttpException(Response.error<String>(401, "".toResponseBody()))
+    fun rateLimitMessageDoesNotExposeRawHttpError() {
+        val error = HttpException(Response.error<String>(429, "".toResponseBody()))
 
-        assertEquals("Your Findly session expired. Please try again.", userFacingError(error))
+        assertEquals("Findly is receiving too many searches right now. Please wait a moment and try again.", userFacingError(error))
     }
 }

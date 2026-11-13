@@ -1,6 +1,5 @@
 package ai.findly.app.data
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
 @Serializable data class SearchRequest(
     val text: String? = null, val barcode: String? = null, val imageIds: List<String> = emptyList(),
     val selectedStoreId: String? = null, val postalCode: String? = null,
@@ -8,13 +7,6 @@ import kotlinx.serialization.SerialName
     val locationAccuracyMeters: Double? = null, val locationApproximate: Boolean? = null,
 )
 @Serializable data class ClarificationAnswer(val answer: String)
-@Serializable data class AnonymousSignInRequest(val data: Map<String, String> = emptyMap())
-@Serializable data class RefreshTokenRequest(@SerialName("refresh_token") val refreshToken: String)
-@Serializable data class AuthResponse(
-    @SerialName("access_token") val accessToken: String,
-    @SerialName("refresh_token") val refreshToken: String,
-    @SerialName("expires_in") val expiresIn: Long,
-)
 @Serializable data class Money(val amountMinor: Int, val currency: String)
 @Serializable data class Source(val kind: String, val observedAt: String, val liveVerified: Boolean)
 @Serializable data class Product(

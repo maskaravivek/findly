@@ -11,8 +11,6 @@ class ClientConfigurationTest {
             "emulator_endpoint_on_physical_device",
             clientConfigurationError(
                 apiBaseUrl = "http://10.0.2.2:3000/",
-                supabaseUrl = "http://10.0.2.2:54321/",
-                supabasePublishableKey = "",
                 isEmulator = false,
             ),
         )
@@ -23,33 +21,16 @@ class ClientConfigurationTest {
         assertNull(
             clientConfigurationError(
                 apiBaseUrl = "http://10.0.2.2:3000/",
-                supabaseUrl = "http://10.0.2.2:54321/",
-                supabasePublishableKey = "",
                 isEmulator = true,
             ),
         )
     }
 
     @Test
-    fun productionApiRequiresSupabaseClientConfiguration() {
-        assertEquals(
-            "missing_supabase_client_configuration",
-            clientConfigurationError(
-                apiBaseUrl = "https://findly.example/",
-                supabaseUrl = "https://project.supabase.co/",
-                supabasePublishableKey = "",
-                isEmulator = false,
-            ),
-        )
-    }
-
-    @Test
-    fun acceptsCompleteProductionConfiguration() {
+    fun acceptsProductionApiOnPhysicalPhone() {
         assertNull(
             clientConfigurationError(
                 apiBaseUrl = "https://findly.example/",
-                supabaseUrl = "https://project.supabase.co/",
-                supabasePublishableKey = "sb_publishable_example",
                 isEmulator = false,
             ),
         )

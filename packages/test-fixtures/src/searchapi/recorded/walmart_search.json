@@ -1,0 +1,1301 @@
+{
+  "search_metadata": {
+    "id": "search_mR5DzpePyDIzx1R7l4YdGQno",
+    "status": "Success",
+    "created_at": "2026-11-13T01:31:15Z",
+    "request_time_taken": 2.62,
+    "parsing_time_taken": 0.12,
+    "total_time_taken": 2.74
+  },
+  "search_parameters": {
+    "engine": "walmart_search",
+    "q": "cordless drill"
+  },
+  "search_information": {
+    "total_results": 2939,
+    "time_taken": 0.863,
+    "postal_code": "46214",
+    "province_code": "IN",
+    "city": "Indianapolis",
+    "store_id": "2786"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "id": "18851314230",
+      "product_id": "1O17KPTPJIG3",
+      "title": "Greenworks PowerAll 24V 3/8\" 280 in-lb Drill, 2.0 Ah Battery, Charger",
+      "link": "https://www.walmart.com/ip/Greenworks-PowerAll-24V-3-8-280-in-lb-Drill-with-2-0-Ah-USB-C-Battery-30W-USB-C-Charger-Block-3-100W-USB-C-Cable/18851314230?classType=REGULAR&athbdg=L1103",
+      "seller_id": "F55CDC31AB754BB68FE0B39041159D63",
+      "seller_name": "Walmart.com",
+      "rating": 4.5,
+      "reviews": 274,
+      "price": "$49.97",
+      "extracted_price": 49.97,
+      "fulfillment": {
+        "delivery": {
+          "text": "DELIVERY",
+          "expected_date": "2026-11-13"
+        },
+        "pickup": {
+          "text": "PICKUP"
+        }
+      },
+      "flag": "In 100+ people's carts",
+      "is_free_shipping_with_walmart_plus": true,
+      "is_sponsored": true,
+      "badges": [
+        {
+          "key": "SOCIAL_PROOF_ATC_FLAG",
+          "text": "In 100+ people's carts"
+        },
+        {
+          "key": "SAVE_WITH_W_PLUS",
+          "text": "Save with Walmart+"
+        },
+        {
+          "key": "FF_PICKUP",
+          "text": "Pickup as soon as 1 hour",
+          "group_name": "fulfillment"
+        },
+        {
+          "key": "FF_DELIVERY",
+          "text": "Delivery as soon as 33 mins",
+          "group_name": "fulfillment"
+        },
+        {
+          "key": "FF_SHIPPING",
+          "text": "Free shipping, arrives tomorrow",
+          "group_name": "fulfillment"
+        }
+      ],
+      "thumbnail": "https://i5.walmartimages.com/seo/Greenworks-PowerAll-24V-3-8-280-in-lb-Drill-with-2-0-Ah-USB-C-Battery-30W-USB-C-Charger-Block-3-100W-USB-C-Cable_3c32e8b0-414f-4475-b8bb-55b52dee4c5d.f6964e88af78984b72723c187b75edf1.jpeg"
+    },
+    {
+      "position": 2,
+      "id": "18930313407",
+      "product_id": "2ABRM7GFEMZ4",
+      "title": "Greenworks PowerAll 24V 400 in-lb Drill with 2.0 Ah USB-C Battery",
+      "link": "https://www.walmart.com/ip/Greenworks-PowerAll-24V-400-in-lb-Drill-Driver-with-1-2-0-Ah-USB-C-Battery-30W-USB-C-Charger-Block-3-100W-USB-C-Cable-Belt-Clip-and-Bit/18930313407?classType=REGULAR&athbdg=L1300",
+      "seller_id": "F55CDC31AB754BB68FE0B39041159D63",
+      "seller_name": "Walmart.com",
+      "rating": 4.7,
+      "reviews": 82,
+      "price": "$59.00",
+      "extracted_price": 59,
+      "original_price": "$78.44",
+      "extracted_original_price": 78.44,
+      "fulfillment": {
+        "delivery": {
+          "text": "DELIVERY",
+          "expected_date": "2026-11-13"
+        },
+        "pickup": {
+          "text": "PICKUP"
+        }
+      },
+      "flag": "Rollback",
+      "is_free_shipping_with_walmart_plus": true,
+      "is_sponsored": true,
+      "badges": [
+        {
+          "key": "ROLLBACK",
+          "text": "Rollback"
+        },
+        {
+          "key": "SAVE_WITH_W_PLUS",
+          "text": "Save with Walmart+"
+        },
+        {
+          "key": "FF_PICKUP",
+          "text": "Pickup as soon as 1 hour",
+          "group_name": "fulfillment"
+        },
+        {
+          "key": "FF_DELIVERY",
+          "text": "Delivery as soon as 33 mins",
+          "group_name": "fulfillment"
+        },
+        {
+          "key": "FF_SHIPPING",
+          "text": "Free shipping, arrives tomorrow",
+          "group_name": "fulfillment"
+        }
+      ],
+      "thumbnail": "https://i5.walmartimages.com/seo/Greenworks-PowerAll-24V-400-in-lb-Drill-Driver-with-1-2-0-Ah-USB-C-Battery-30W-USB-C-Charger-Block-3-100W-USB-C-Cable-Belt-Clip-and-Bit_4bd2787f-5658-40ed-aa1f-884c13803f8e.e0a03e21f2306a8d3b794290a76153a4.jpeg"
+    },
+    {
+      "position": 3,
+      "id": "18818517092",
+      "product_id": "395LDYPYYI1V",
+      "title": "Greenworks 8V Dual-Position Screwdriver, 70 in-lb Torque, 5+1 [Drill] Clutch Settings, with Phillips and Slotted Bits and USB-C Charging Cable.",
+      "link": "https://www.walmart.com/ip/Greenworks-8V-Power-Screwdriver-Dual-Position-Handle-5-1-Clutch-Settings-with-Phillips-and-Slotted-Bits-and-Charging-Cable/18818517092?classType=REGULAR&athbdg=L1300",
+      "seller_id": "F55CDC31AB754BB68FE0B39041159D63",
+      "seller_name": "Walmart.com",
+      "rating": 4.6,
+      "reviews": 217,
+      "price": "$24.97",
+      "extracted_price": 24.97,
+      "original_price": "$29.97",
+      "extracted_original_price": 29.97,
+      "fulfillment": {
+        "delivery": {
+          "text": "DELIVERY",
+          "expected_date": "2026-11-13"
+        },
+        "pickup": {
+          "text": "PICKUP"
+        }
+      },
+      "flag": "Rollback",
+      "is_free_shipping_with_walmart_plus": true,
+      "is_sponsored": true,
+      "badges": [
+        {
+          "key": "ROLLBACK",
+          "text": "Rollback"
+        },
+        {
+          "key": "SAVE_WITH_W_PLUS",
+          "text": "Save with Walmart+"
+        },
+        {
+          "key": "FF_PICKUP",
+          "text": "Pickup as soon as 1 hour",
+          "group_name": "fulfillment"
+        },
+        {
+          "key": "FF_DELIVERY",
+          "text": "Delivery as soon as 33 mins",
+          "group_name": "fulfillment"
+        },
+        {
+          "key": "FF_SHIPPING",
+          "text": "Shipping, arrives tomorrow",
+          "group_name": "fulfillment"
+        }
+      ],
+      "thumbnail": "https://i5.walmartimages.com/seo/Greenworks-8V-Power-Screwdriver-Dual-Position-Handle-5-1-Clutch-Settings-with-Phillips-and-Slotted-Bits-and-Charging-Cable_db60d00b-e16b-4638-b778-9fe5cf0aabcd.9c72a9012b091ccf68c9b00d48507c4b.jpeg"
+    },
+    {
+      "position": 4,
+      "id": "2989084669",
+      "product_id": "3L1G9K3ZNNDV",
+      "title": "Milwaukee 3404-20 M12 FUEL 1/2\" Hammer Drill 3404-20  Compact, High-Power Subcompact Drill with Brushless Motor & All-Metal Chuck (Bare Tool)",
+      "description": "Discover the Milwaukee M12 FUEL 1/2\" Hammer Drill (Model 3404-20) the most powerful and compact subcompact drill with brushless motor, all-metal chuck, and REDLINK PLUS Intelligence. Built for speed,",
+      "link": "https://www.walmart.com/ip/Milwaukee-3404-20-M12-FUEL-1-2-Hammer-Drill-3404-20-Compact-High-Power-Subcompact-Drill-with-Brushless-Motor-All-Metal-Chuck-Bare-Tool/2989084669?classType=REGULAR&athbdg=L1800",
+      "seller_id": "22FC941DB2F74B6FAED687CF2B1123D1",
+      "seller_name": "Tools R US",
+      "rating": 4.5,
+      "reviews": 252,
+      "price": "$65.00",
+      "extracted_price": 65,
+      "original_price": "$79.99",
+      "extracted_original_price": 79.99,
+      "fulfillment": {
+        "delivery": {
+          "text": "DELIVERY",
+          "expected_date": "2026-11-14"
+        }
+      },
+      "flag": "Black Friday Deal",
+      "is_free_shipping_with_walmart_plus": true,
+      "badges": [
+        {
+          "key": "HOLIDAY_DEAL",
+          "text": "Black Friday Deal"
+        },
+        {
+          "key": "SAVE_WITH_W_PLUS",
+          "text": "Save with Walmart+"
+        },
+        {
+          "key": "FF_SHIPPING",
+          "text": "Free shipping, arrives Sat, Nov 14",
+          "group_name": "fulfillment"
+        }
+      ],
+      "thumbnail": "https://i5.walmartimages.com/seo/Milwaukee-3404-20-M12-FUEL-1-2-Hammer-Drill-3404-20-Compact-High-Power-Subcompact-Drill-with-Brushless-Motor-All-Metal-Chuck-Bare-Tool_d1ac91df-0b47-4246-b7e2-f81990dace94.546c69b984078a7a36ea78691e69eea5.jpeg"
+    },
+    {
+      "position": 5,
+      "id": "5353073693",
+      "product_id": "4OBX4TRK8HNK",
+      "title": "Euur Cordless Drill, 21V Power Drill Set with 2Ah Battery, 3/8\"Keyless Chuck, 25+1 Position Electric Drill, 2-Speed Transmission For Screwdriving And Drilling, Yellow",
+      "description": "Features:\n1. 2-speed transmission for screwdriving and drilling\n2. 25+1 position with clutch to avoid stripped screws\n3. Low speed (gear 1) for high torque, suitable for screwing large pieces.\n4. High",
+      "link": "https://www.walmart.com/ip/VQJTCVLY-Cordless-Drill-21V-Power-Drill-Set-2Ah-Battery-3-8-Keyless-Chuck-25-1-Position-Electric-Drill-2-Speed-Transmission-Screwdriving-Drilling-Yel/5353073693?classType=VARIANT&athbdg=L1103",
+      "seller_id": "4F7EBD9FA05A4BCB9EEAFBFB4812486B",
+      "seller_name": "LUOYP",
+      "rating": 4.3,
+      "reviews": 3677,
+      "price": "$26.95",
+      "extracted_price": 26.95,
+      "original_price": "$40.99",
+      "extracted_original_price": 40.99,
+      "fulfillment": {
+        "delivery": {
+          "text": "DELIVERY",
+          "expected_date": "2026-11-14"
+        }
+      },
+      "variants": [
+        {
+          "id": "5360609488",
+          "product_id": "3OSX8HAWAK16",
+          "title": "Black",
+          "link": "https://www.walmart.com/ip/AIRXPRO-Cordless-Drill-21V-Power-Drill-Set-25-1-Position-Adjustable-Torque-Electric-2-Speed-Transmission-For-Screwdriving-And-Drilling-Black/5360609488?classType=undefined&variantFieldId=actual_color",
+          "thumbnail": "https://i5.walmartimages.com/asr/cb741ca4-c137-473f-9d98-1dd7880a19af.a533f4d692c3db37d94ccabc7fd8bd6f.png",
+          "swatch_thumbnail": "https://i5.walmartimages.com/asr/cb741ca4-c137-473f-9d98-1dd7880a19af.a533f4d692c3db37d94ccabc7fd8bd6f.png?odnBg=FFFFFF&odnHeight=30&odnWidth=30"
+        },
+        {
+          "id": "5351167263",
+          "product_id": "3OPOSTU3J8U0",
+          "title": "Blue",
+          "link": "https://www.walmart.com/ip/AIRXPRO-Cordless-Drill-21V-Power-Drill-Set-25-1-Position-Adjustable-Torque-Electric-Drill-2-Speed-Transmission-For-Screwdriving-And-Drilling-Blue/5351167263?classType=undefined&variantFieldId=actual_color",
+          "thumbnail": "https://i5.walmartimages.com/asr/c4dd989c-170b-4f5f-b4a7-9dcc12b5593d.e38e18792b7e399dbabd4f1c361d94c6.png",
+          "swatch_thumbnail": "https://i5.walmartimages.com/asr/c4dd989c-170b-4f5f-b4a7-9dcc12b5593d.e38e18792b7e399dbabd4f1c361d94c6.png?odnBg=FFFFFF&odnHeight=30&odnWidth=30"
+        },
+        {
+          "id": "5752864007",
+          "product_id": "2S1131FU1G0Y",
+          "title": "Pink",
+          "link": "https://www.walmart.com/ip/VQJTCVLY-Cordless-Drill-21V-Power-Drill-Set-25-1-Position-Adjustable-Torque-Electric-2-Speed-Transmission-For-Screwdriving-And-Drilling-Pink/5752864007?classType=undefined&variantFieldId=actual_color",
+          "thumbnail": "https://i5.walmartimages.com/asr/c9c8c86c-f848-4842-8fae-7fa67e0bfc1c.4b878f8b5e285de977c36fef270f5b58.png",
+          "swatch_thumbnail": "https://i5.walmartimages.com/asr/c9c8c86c-f848-4842-8fae-7fa67e0bfc1c.4b878f8b5e285de977c36fef270f5b58.png?odnBg=FFFFFF&odnHeight=30&odnWidth=30"
+        },
+        {
+          "id": "5353073693",
+          "product_id": "3EDNUA7IX9QW",
+          "title": "Yellow",
+          "link": "https://www.walmart.com/ip/VQJTCVLY-Cordless-Drill-21V-Power-Drill-Set-2Ah-Battery-3-8-Keyless-Chuck-25-1-Position-Electric-2-Speed-Transmission-For-Screwdriving-And-Drilling-Y/5353073693?classType=undefined&variantFieldId=actual_color",
+          "thumbnail": "https://i5.walmartimages.com/asr/2954e340-b22d-471c-be81-b19a538718b4.d01c2b1c1f1e22a0de8cb8b77b3bfb4f.png",
+          "swatch_thumbnail": "https://i5.walmartimages.com/asr/2954e340-b22d-471c-be81-b19a538718b4.d01c2b1c1f1e22a0de8cb8b77b3bfb4f.png?odnBg=FFFFFF&odnHeight=30&odnWidth=30"
+        }
+      ],
+      "flag": "In 100+ people's carts",
+      "is_free_shipping_with_walmart_plus": true,
+      "badges": [
+        {
+          "key": "SOCIAL_PROOF_ATC_FLAG",
+          "text": "In 100+ people's carts"
+        },
+        {
+          "key": "SAVE_WITH_W_PLUS",
+          "text": "Save with Walmart+"
+        },
+        {
+          "key": "FF_SHIPPING",
+          "text": "Shipping, arrives Sat, Nov 14",
+          "group_name": "fulfillment"
+        }
+      ],
+      "thumbnail": "https://i5.walmartimages.com/seo/VQJTCVLY-Cordless-Drill-21V-Power-Drill-Set-2Ah-Battery-3-8-Keyless-Chuck-25-1-Position-Electric-Drill-2-Speed-Transmission-Screwdriving-Drilling-Yel_2954e340-b22d-471c-be81-b19a538718b4.d01c2b1c1f1e22a0de8cb8b77b3bfb4f.png"
+    },
+    {
+      "position": 6,
+      "id": "5319484306",
+      "product_id": "3W45K7WPREBL",
+      "title": "HOEY 21V Cordless Drill Set Electric Power Drill 34Pcs with 3/8 Inch Keyless Chuck 25+3",
+      "link": "https://www.walmart.com/ip/HOEY-21V-Cordless-Drill-Set-Electric-Power-Drill-34Pcs-with-3-8-Inch-Keyless-Chuck-25-3/5319484306?classType=VARIANT",
+      "seller_id": "8025A91D9D8D4BB1B4323825340D3B44",
+      "seller_name": "HOEY INC",
+      "rating": 4.2,
+      "reviews": 3557,
+      "price": "$29.99",
+      "extracted_price": 29.99,
+      "original_price": "$49.99",
+      "extracted_original_price": 49.99,
+      "price_range": {
+        "text": "$24.99",
+        "from": "$24.99",
+        "extracted_from_price": 24.99
+      },
+      "fulfillment": {
+        "delivery": {
+          "text": "DELIVERY",
+          "expected_date": "2026-11-14"
+        }
+      },
+      "is_free_shipping_with_walmart_plus": true,
+      "is_sponsored": true,
+      "badges": [
+        {
+          "key": "SAVE_WITH_W_PLUS",
+          "text": "Save with Walmart+"
+        },
+        {
+          "key": "FF_SHIPPING",
+          "text": "Shipping, arrives Sat, Nov 14",
+          "group_name": "fulfillment"
+        }
+      ],
+      "thumbnail": "https://i5.walmartimages.com/seo/HOEY-21V-Cordless-Drill-Set-Electric-Power-Drill-34Pcs-with-3-8-Inch-Keyless-Chuck-25-3_26330cf0-bfe5-459c-aa55-5990de608cef.cd5601cb8b5f420ef42a96804e20dead.jpeg"
+    }
+  ],
+  "filters": [
+    {
+      "name": "Suggested",
+      "type": "suggested",
+      "values": [
+        {
+          "id": "Hyper Tough",
+          "name": "Hyper Tough",
+          "type": "brand"
+        },
+        {
+          "id": "DEWALT",
+          "name": "DEWALT",
+          "type": "brand"
+        },
+        {
+          "id": "BLACK+DECKER",
+          "name": "BLACK+DECKER",
+          "type": "brand"
+        },
+        {
+          "id": "Battery",
+          "name": "Battery",
+          "type": "power_type"
+        },
+        {
+          "id": "Over 20 V",
+          "name": "Over 20 V",
+          "type": "volts_drills_and_drivers"
+        },
+        {
+          "id": "Hoey",
+          "name": "Hoey",
+          "type": "brand"
+        },
+        {
+          "id": "Brushless",
+          "name": "Brushless",
+          "type": "electric_motor_type_filter_v0"
+        },
+        {
+          "id": "1/2 in",
+          "name": "1/2 in",
+          "type": "chuck_size"
+        }
+      ]
+    },
+    {
+      "name": "Sort by",
+      "type": "sort",
+      "values": [
+        {
+          "id": "best_match",
+          "name": "Best Match"
+        },
+        {
+          "id": "price_low",
+          "name": "Price: Low to High"
+        },
+        {
+          "id": "price_high",
+          "name": "Price: High to Low"
+        },
+        {
+          "id": "best_seller",
+          "name": "Best Seller"
+        },
+        {
+          "id": "rating_high",
+          "name": "Highly Rated"
+        },
+        {
+          "id": "new",
+          "name": "New Arrivals"
+        }
+      ]
+    },
+    {
+      "name": "Price",
+      "type": "price",
+      "min_value": 0,
+      "max_value": 140
+    },
+    {
+      "name": "Brand",
+      "type": "brand",
+      "values": [
+        {
+          "id": "Hoey",
+          "name": "Hoey"
+        },
+        {
+          "id": "Tmdioo",
+          "name": "Tmdioo"
+        },
+        {
+          "id": "UNTIMATY",
+          "name": "UNTIMATY"
+        },
+        {
+          "id": "YUNXI",
+          "name": "YUNXI"
+        },
+        {
+          "id": "Euur",
+          "name": "Euur"
+        },
+        {
+          "id": "BIHOO",
+          "name": "BIHOO"
+        },
+        {
+          "id": "WORKPRO",
+          "name": "WORKPRO"
+        },
+        {
+          "id": "FADAKWALT",
+          "name": "FADAKWALT"
+        },
+        {
+          "id": "Deli",
+          "name": "Deli"
+        },
+        {
+          "id": "HOTREE",
+          "name": "HOTREE"
+        },
+        {
+          "id": "RELOIVE",
+          "name": "RELOIVE"
+        },
+        {
+          "id": "Bingoway",
+          "name": "Bingoway"
+        },
+        {
+          "id": "BN-LINK",
+          "name": "BN-LINK"
+        },
+        {
+          "id": "Fotrix",
+          "name": "Fotrix"
+        },
+        {
+          "id": "Pulituo",
+          "name": "Pulituo"
+        },
+        {
+          "id": "Cshidworld",
+          "name": "Cshidworld"
+        },
+        {
+          "id": "DEISNGB",
+          "name": "DEISNGB"
+        },
+        {
+          "id": "DEKOPRO",
+          "name": "DEKOPRO"
+        },
+        {
+          "id": "AsterOutdoor",
+          "name": "AsterOutdoor"
+        },
+        {
+          "id": "BROCADEFLY",
+          "name": "BROCADEFLY"
+        },
+        {
+          "id": "Kisportee",
+          "name": "Kisportee"
+        },
+        {
+          "id": "SKIL",
+          "name": "SKIL"
+        },
+        {
+          "id": "EZBY",
+          "name": "EZBY"
+        },
+        {
+          "id": "Fylivore",
+          "name": "Fylivore"
+        },
+        {
+          "id": "GUIQIQI",
+          "name": "GUIQIQI"
+        },
+        {
+          "id": "HDJ",
+          "name": "HDJ"
+        },
+        {
+          "id": "ACDelco",
+          "name": "ACDelco"
+        },
+        {
+          "id": "Unbranded",
+          "name": "Unbranded"
+        },
+        {
+          "id": "MQTDIK",
+          "name": "MQTDIK"
+        },
+        {
+          "id": "Foukus",
+          "name": "Foukus"
+        },
+        {
+          "id": "ThinkLearn",
+          "name": "ThinkLearn"
+        },
+        {
+          "id": "SEYVUM",
+          "name": "SEYVUM"
+        },
+        {
+          "id": "Milwaukee",
+          "name": "Milwaukee"
+        },
+        {
+          "id": "Dremel",
+          "name": "Dremel"
+        },
+        {
+          "id": "MQ",
+          "name": "MQ"
+        },
+        {
+          "id": "NOBRAND",
+          "name": "NOBRAND"
+        },
+        {
+          "id": "Uxcell",
+          "name": "Uxcell"
+        },
+        {
+          "id": "Makita",
+          "name": "Makita"
+        },
+        {
+          "id": "Generic",
+          "name": "Generic"
+        },
+        {
+          "id": "Chang Lun",
+          "name": "Chang Lun"
+        },
+        {
+          "id": "IRWIN",
+          "name": "IRWIN"
+        },
+        {
+          "id": "Dodowin",
+          "name": "Dodowin"
+        },
+        {
+          "id": "WEGOLY",
+          "name": "WEGOLY"
+        },
+        {
+          "id": "DASNITE",
+          "name": "DASNITE"
+        },
+        {
+          "id": "Vinida",
+          "name": "Vinida"
+        },
+        {
+          "id": "Vowen",
+          "name": "Vowen"
+        },
+        {
+          "id": "Persever",
+          "name": "Persever"
+        },
+        {
+          "id": "Bosch",
+          "name": "Bosch"
+        },
+        {
+          "id": "RafKat",
+          "name": "RafKat"
+        },
+        {
+          "id": "Aestri",
+          "name": "Aestri"
+        },
+        {
+          "id": "Century Drill & Tool",
+          "name": "Century Drill & Tool"
+        },
+        {
+          "id": "Ryobi",
+          "name": "Ryobi"
+        },
+        {
+          "id": "Eugene Color",
+          "name": "Eugene Color"
+        },
+        {
+          "id": "Vanttech",
+          "name": "Vanttech"
+        },
+        {
+          "id": "JNPOG",
+          "name": "JNPOG"
+        },
+        {
+          "id": "TeeRees",
+          "name": "TeeRees"
+        },
+        {
+          "id": "Ohyes Bat",
+          "name": "Ohyes Bat"
+        },
+        {
+          "id": "FLARNRIANKI",
+          "name": "FLARNRIANKI"
+        },
+        {
+          "id": "KUIULS",
+          "name": "KUIULS"
+        },
+        {
+          "id": "Yannee",
+          "name": "Yannee"
+        },
+        {
+          "id": "YiQYi",
+          "name": "YiQYi"
+        },
+        {
+          "id": "ARTU-USA",
+          "name": "ARTU-USA"
+        },
+        {
+          "id": "Enermall",
+          "name": "Enermall"
+        },
+        {
+          "id": "TWRVI",
+          "name": "TWRVI"
+        },
+        {
+          "id": "CURYMAY",
+          "name": "CURYMAY"
+        },
+        {
+          "id": "SPYDER",
+          "name": "SPYDER"
+        },
+        {
+          "id": "Spyder",
+          "name": "Spyder"
+        },
+        {
+          "id": "Spyder Auto",
+          "name": "Spyder Auto"
+        },
+        {
+          "id": "Hoxipl",
+          "name": "Hoxipl"
+        },
+        {
+          "id": "Lozent",
+          "name": "Lozent"
+        },
+        {
+          "id": "18V",
+          "name": "18V"
+        },
+        {
+          "id": "Chicago Pneumatic",
+          "name": "Chicago Pneumatic"
+        },
+        {
+          "id": "FERRYBOAT",
+          "name": "FERRYBOAT"
+        },
+        {
+          "id": "Homenana",
+          "name": "Homenana"
+        },
+        {
+          "id": "Metabo HPT",
+          "name": "Metabo HPT"
+        },
+        {
+          "id": "Beudsa ChargN",
+          "name": "Beudsa ChargN"
+        },
+        {
+          "id": "KFFKFF",
+          "name": "KFFKFF"
+        },
+        {
+          "id": "Orvunela",
+          "name": "Orvunela"
+        },
+        {
+          "id": "Xmenany",
+          "name": "Xmenany"
+        },
+        {
+          "id": "Felmuzaro",
+          "name": "Felmuzaro"
+        },
+        {
+          "id": "Mingsci",
+          "name": "Mingsci"
+        },
+        {
+          "id": "Doscct",
+          "name": "Doscct"
+        },
+        {
+          "id": "EXLEAF",
+          "name": "EXLEAF"
+        },
+        {
+          "id": "YICHENY",
+          "name": "YICHENY"
+        },
+        {
+          "id": "Banshee",
+          "name": "Banshee"
+        },
+        {
+          "id": "Bkgifegr",
+          "name": "Bkgifegr"
+        },
+        {
+          "id": "The Teal Turtle Boutique",
+          "name": "The Teal Turtle Boutique"
+        },
+        {
+          "id": "ZMNGDOQD",
+          "name": "ZMNGDOQD"
+        },
+        {
+          "id": "AVPAVP",
+          "name": "AVPAVP"
+        },
+        {
+          "id": "JH STeady",
+          "name": "JH STeady"
+        },
+        {
+          "id": "K-Mains",
+          "name": "K-Mains"
+        },
+        {
+          "id": "TAPDRA",
+          "name": "TAPDRA"
+        },
+        {
+          "id": "DRILAX",
+          "name": "DRILAX"
+        },
+        {
+          "id": "FSKE",
+          "name": "FSKE"
+        },
+        {
+          "id": "VEVOR",
+          "name": "VEVOR"
+        },
+        {
+          "id": "Apex Tool Group",
+          "name": "Apex Tool Group"
+        },
+        {
+          "id": "Vanon",
+          "name": "Vanon"
+        },
+        {
+          "id": "Fangkenuo",
+          "name": "Fangkenuo"
+        },
+        {
+          "id": "KITESDER",
+          "name": "KITESDER"
+        },
+        {
+          "id": "TEAGAN",
+          "name": "TEAGAN"
+        },
+        {
+          "id": "ENDALDMV",
+          "name": "ENDALDMV"
+        },
+        {
+          "id": "HELMSHAR",
+          "name": "HELMSHAR"
+        },
+        {
+          "id": "Kusroie",
+          "name": "Kusroie"
+        },
+        {
+          "id": "Novlewign",
+          "name": "Novlewign"
+        },
+        {
+          "id": "TMWEFUSC",
+          "name": "TMWEFUSC"
+        },
+        {
+          "id": "Diablo",
+          "name": "Diablo"
+        },
+        {
+          "id": "Zeiwohndc",
+          "name": "Zeiwohndc"
+        },
+        {
+          "id": "ZEPARO",
+          "name": "ZEPARO"
+        },
+        {
+          "id": "Goader",
+          "name": "Goader"
+        },
+        {
+          "id": "Mosiee",
+          "name": "Mosiee"
+        },
+        {
+          "id": "RIDGID",
+          "name": "RIDGID"
+        },
+        {
+          "id": "Whoasyst",
+          "name": "Whoasyst"
+        },
+        {
+          "id": "Zuyitoku",
+          "name": "Zuyitoku"
+        },
+        {
+          "id": "Genesis",
+          "name": "Genesis"
+        },
+        {
+          "id": "ShinyLink",
+          "name": "ShinyLink"
+        },
+        {
+          "id": "CHAESHIC",
+          "name": "CHAESHIC"
+        },
+        {
+          "id": "DNA Motoring",
+          "name": "DNA Motoring"
+        },
+        {
+          "id": "Ingersoll Rand",
+          "name": "Ingersoll Rand"
+        },
+        {
+          "id": "WORX",
+          "name": "WORX"
+        },
+        {
+          "id": "Aluhayos",
+          "name": "Aluhayos"
+        },
+        {
+          "id": "BOTKK",
+          "name": "BOTKK"
+        },
+        {
+          "id": "Century",
+          "name": "Century"
+        },
+        {
+          "id": "FOMIYES",
+          "name": "FOMIYES"
+        },
+        {
+          "id": "Lerpwige",
+          "name": "Lerpwige"
+        },
+        {
+          "id": "Moobody",
+          "name": "Moobody"
+        },
+        {
+          "id": "XMHEIRD",
+          "name": "XMHEIRD"
+        },
+        {
+          "id": "ztiona",
+          "name": "ztiona"
+        },
+        {
+          "id": "Aimaya",
+          "name": "Aimaya"
+        },
+        {
+          "id": "ARCADORA",
+          "name": "ARCADORA"
+        },
+        {
+          "id": "Pritane",
+          "name": "Pritane"
+        },
+        {
+          "id": "Rooha",
+          "name": "Rooha"
+        },
+        {
+          "id": "UpBright",
+          "name": "UpBright"
+        },
+        {
+          "id": "FEIN",
+          "name": "FEIN"
+        },
+        {
+          "id": "HSSMHub",
+          "name": "HSSMHub"
+        },
+        {
+          "id": "KASIU",
+          "name": "KASIU"
+        },
+        {
+          "id": "LEALIEFKFV",
+          "name": "LEALIEFKFV"
+        },
+        {
+          "id": "Lyouno",
+          "name": "Lyouno"
+        },
+        {
+          "id": "MYOKOO",
+          "name": "MYOKOO"
+        },
+        {
+          "id": "Myradixon",
+          "name": "Myradixon"
+        },
+        {
+          "id": "SENIX",
+          "name": "SENIX"
+        },
+        {
+          "id": "Shenmamo shop",
+          "name": "Shenmamo shop"
+        },
+        {
+          "id": "Speedaire",
+          "name": "Speedaire"
+        },
+        {
+          "id": "Wanster",
+          "name": "Wanster"
+        },
+        {
+          "id": "Arealer",
+          "name": "Arealer"
+        },
+        {
+          "id": "Chenmal",
+          "name": "Chenmal"
+        },
+        {
+          "id": "CSYANXING",
+          "name": "CSYANXING"
+        },
+        {
+          "id": "Klutch",
+          "name": "Klutch"
+        },
+        {
+          "id": "ROVTECT",
+          "name": "ROVTECT"
+        },
+        {
+          "id": "Taelectric",
+          "name": "Taelectric"
+        },
+        {
+          "id": "Tonsiki",
+          "name": "Tonsiki"
+        },
+        {
+          "id": "Tredit Tire & Wheel",
+          "name": "Tredit Tire & Wheel"
+        },
+        {
+          "id": "WEN",
+          "name": "WEN"
+        },
+        {
+          "id": "GUYUTING",
+          "name": "GUYUTING"
+        },
+        {
+          "id": "JENABOM",
+          "name": "JENABOM"
+        },
+        {
+          "id": "kalakexiu",
+          "name": "kalakexiu"
+        },
+        {
+          "id": "Kobalt",
+          "name": "Kobalt"
+        },
+        {
+          "id": "Ounona",
+          "name": "Ounona"
+        },
+        {
+          "id": "Plorith",
+          "name": "Plorith"
+        },
+        {
+          "id": "PORTER-CABLE",
+          "name": "PORTER-CABLE"
+        },
+        {
+          "id": "Roaatta",
+          "name": "Roaatta"
+        },
+        {
+          "id": "SDFGTstore",
+          "name": "SDFGTstore"
+        },
+        {
+          "id": "SHITU",
+          "name": "SHITU"
+        },
+        {
+          "id": "Vermont American",
+          "name": "Vermont American"
+        },
+        {
+          "id": "Zenthis",
+          "name": "Zenthis"
+        },
+        {
+          "id": "ZENTRIVA",
+          "name": "ZENTRIVA"
+        },
+        {
+          "id": "AB Tools",
+          "name": "AB Tools"
+        },
+        {
+          "id": "CATGOOD",
+          "name": "CATGOOD"
+        },
+        {
+          "id": "CQLDYWXDY",
+          "name": "CQLDYWXDY"
+        },
+        {
+          "id": "Crisua",
+          "name": "Crisua"
+        },
+        {
+          "id": "DHJPSTUYW",
+          "name": "DHJPSTUYW"
+        },
+        {
+          "id": "DIYTOOLIFZ",
+          "name": "DIYTOOLIFZ"
+        },
+        {
+          "id": "FITE ON",
+          "name": "FITE ON"
+        },
+        {
+          "id": "Huajiang Tech",
+          "name": "Huajiang Tech"
+        },
+        {
+          "id": "Performance Tool",
+          "name": "Performance Tool"
+        },
+        {
+          "id": "PREZOYE",
+          "name": "PREZOYE"
+        },
+        {
+          "id": "SAIWORTY",
+          "name": "SAIWORTY"
+        },
+        {
+          "id": "Yolmary",
+          "name": "Yolmary"
+        },
+        {
+          "id": "Yustda",
+          "name": "Yustda"
+        },
+        {
+          "id": "Zorvanthex",
+          "name": "Zorvanthex"
+        },
+        {
+          "id": "Boetpcr",
+          "name": "Boetpcr"
+        },
+        {
+          "id": "Disston",
+          "name": "Disston"
+        },
+        {
+          "id": "DUROFIX",
+          "name": "DUROFIX"
+        },
+        {
+          "id": "Freeman Tools",
+          "name": "Freeman Tools"
+        },
+        {
+          "id": "Guy-Tech",
+          "name": "Guy-Tech"
+        },
+        {
+          "id": "haoqian",
+          "name": "haoqian"
+        },
+        {
+          "id": "HGYCPP",
+          "name": "HGYCPP"
+        },
+        {
+          "id": "KIRCUIT",
+          "name": "KIRCUIT"
+        },
+        {
+          "id": "likeweier",
+          "name": "likeweier"
+        },
+        {
+          "id": "Lynono",
+          "name": "Lynono"
+        },
+        {
+          "id": "LYUSCI",
+          "name": "LYUSCI"
+        },
+        {
+          "id": "NATEFEMIN",
+          "name": "NATEFEMIN"
+        },
+        {
+          "id": "NAY BATTERY",
+          "name": "NAY BATTERY"
+        },
+        {
+          "id": "PGENDAR",
+          "name": "PGENDAR"
+        },
+        {
+          "id": "PROKWR",
+          "name": "PROKWR"
+        },
+        {
+          "id": "Qmerlimui",
+          "name": "Qmerlimui"
+        }
+      ]
+    },
+    {
+      "name": "Battery Included",
+      "type": "batteries_included",
+      "values": [
+        {
+          "id": "Y",
+          "name": "Y"
+        },
+        {
+          "id": "N",
+          "name": "N"
+        }
+      ]
+    },
+    {
+      "name": "Power Type",
+      "type": "power_type",
+      "values": [
+        {
+          "id": "Battery",
+          "name": "Battery"
+        },
+        {
+          "id": "Cordless Electric",
+          "name": "Cordless Electric"
+        },
+        {
+          "id": "Corded Electric",
+          "name": "Corded Electric"
+        },
+        {
+          "id": "Manual",
+          "name": "Manual"
+        },
+        {
+          "id": "Gas",
+          "name": "Gas"
+        },
+        {
+          "id": "Hydraulic",
+          "name": "Hydraulic"
+        },
+        {
+          "id": "Electric",
+          "name": "Electric"
+        },
+        {
+          "id": "Air",
+          "name": "Air"
+        }
+      ]
+    }
+  ],
+  "related_searches": [
+    {
+      "query": "cordless screwdriver",
+      "link": "https://www.walmart.com/search/?q=cordless%20screwdriver&searchMethod=relatedSearch"
+    },
+    {
+      "query": "hand sanders for wood",
+      "link": "https://www.walmart.com/search/?q=hand%20sanders%20for%20wood&searchMethod=relatedSearch"
+    },
+    {
+      "query": "drill bits",
+      "link": "https://www.walmart.com/search/?q=drill%20bits&searchMethod=relatedSearch"
+    },
+    {
+      "query": "nail hole filler for walls",
+      "link": "https://www.walmart.com/search/?q=nail%20hole%20filler%20for%20walls&searchMethod=relatedSearch"
+    },
+    {
+      "query": "cordless hammer drill",
+      "link": "https://www.walmart.com/search/?q=cordless%20hammer%20drill&searchMethod=relatedSearch"
+    },
+    {
+      "query": "cordless drill set",
+      "link": "https://www.walmart.com/search/?q=cordless%20drill%20set&searchMethod=relatedSearch"
+    }
+  ],
+  "pagination": {
+    "current": 1,
+    "next": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=2",
+    "other_pages": {
+      "2": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=2",
+      "3": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=3",
+      "4": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=4",
+      "5": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=5",
+      "6": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=6",
+      "7": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=7",
+      "8": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=8",
+      "9": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=9",
+      "10": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=10",
+      "11": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=11",
+      "12": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=12",
+      "13": "https://www.walmart.com/search/?q=cordless%2Bdrill&page=13"
+    }
+  }
+}

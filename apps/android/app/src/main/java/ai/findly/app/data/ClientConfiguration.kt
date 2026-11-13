@@ -3,27 +3,15 @@ package ai.findly.app.data
 import android.os.Build
 import java.net.URI
 
-class AuthenticationUnavailableException(cause: Throwable) :
-    RuntimeException("Unable to establish an authenticated Findly session", cause)
-
 class InvalidClientConfigurationException(message: String) : RuntimeException(message)
 
 internal fun clientConfigurationError(
     apiBaseUrl: String,
-    supabaseUrl: String,
-    supabasePublishableKey: String,
     isEmulator: Boolean,
 ): String? {
-    if (!isEmulator && (apiBaseUrl.isEmulatorOnlyEndpoint() || supabaseUrl.isEmulatorOnlyEndpoint())) {
+    if (!isEmulator && apiBaseUrl.isEmulatorOnlyEndpoint()) {
         return "emulator_endpoint_on_physical_device"
     }
-
-    if (apiBaseUrl.startsWith("https://") &&
-        (supabaseUrl.isBlank() || supabasePublishableKey.isBlank())
-    ) {
-        return "missing_supabase_client_configuration"
-    }
-
     return null
 }
 

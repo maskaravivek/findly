@@ -278,7 +278,6 @@ private fun ShoppingScreen(
                 item {
                     ResultSummary(
                         liveOfferCount = result.offers.count { it.source.liveVerified },
-                        cachedOfferCount = result.offers.count { it.source.kind == "cached_verified" },
                         totalOfferCount = result.offers.size,
                         headline = result.recommendation?.headline,
                         explanation = result.recommendation?.explanation,
@@ -412,7 +411,6 @@ private fun ErrorCard(message: String, retry: () -> Unit) {
 @Composable
 private fun ResultSummary(
     liveOfferCount: Int,
-    cachedOfferCount: Int,
     totalOfferCount: Int,
     headline: String?,
     explanation: String?,
@@ -423,8 +421,6 @@ private fun ResultSummary(
         val provenanceText = when {
             totalOfferCount > 0 && liveOfferCount == totalOfferCount -> "$liveOfferCount live prices verified"
             liveOfferCount > 0 -> "$liveOfferCount of $totalOfferCount offers verified live"
-            totalOfferCount > 0 && cachedOfferCount == totalOfferCount -> "$cachedOfferCount recently verified offers"
-            cachedOfferCount > 0 -> "$cachedOfferCount of $totalOfferCount offers recently verified"
             totalOfferCount > 0 -> "Sample or unverified results"
             else -> null
         }
@@ -651,7 +647,6 @@ private fun compactOfferCaveat(offer: Offer): String? {
 private fun sourceSummary(offer: Offer): String = when {
     offer.source.liveVerified && offer.fulfillment.inventoryQuantity != null -> "Price and stock live • ${freshnessLabel(offer.source.observedAt)}"
     offer.source.liveVerified -> "Price live • ${freshnessLabel(offer.source.observedAt)}"
-    offer.source.kind == "cached_verified" -> "Recently verified • ${freshnessLabel(offer.source.observedAt)}"
     offer.source.kind == "fixture" -> "Demo result"
     else -> "Not live verified"
 }
