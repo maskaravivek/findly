@@ -57,6 +57,10 @@ function normalizeModelShoppingRequest(input: UnderstandInput, value: unknown): 
     location.country = typeof location.country === "string" && /^[a-z]{2}$/i.test(location.country) ? location.country.toUpperCase() : input.country ?? "US";
     request.location = location;
   }
+  // Facts the shopper supplied are copied from the input, not trusted to the model to echo back.
+  if (request.barcode === undefined && input.barcode) request.barcode = input.barcode;
+  if (request.selectedStoreId === undefined && input.selectedStoreId) request.selectedStoreId = input.selectedStoreId;
+  if (request.location === undefined && (input.postalCode || input.country)) request.location = { ...(input.postalCode ? { postalCode: input.postalCode } : {}), country: input.country?.toUpperCase() ?? "US" };
   return request;
 }
 abstract class JsonModelProvider extends MockModelProvider {
@@ -85,25 +89,52 @@ export const DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5-5";
 // Server-side refusal fallback: on a policy decline the API re-runs the turn on a fallback model it picks.
 const anthropicFallback = () => ({ betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const });
 const POST_BUDGET_GRACE_TURNS = 2;
+const AGENT_DEADLINE_MS = 120_000;
+
+// JSON Schema helpers for the model-facing request schema (see generateJson).
+const requireAll = (node: unknown): unknown => {
+  if (Array.isArray(node)) return node.map(requireAll);
+  if (!node || typeof node !== "object") return node;
+  const out: Record<string, unknown> = Object.fromEntries(Object.entries(node).map(([k, v]) => [k, requireAll(v)]));
+  if (out.type === "object" && out.properties && typeof out.properties === "object") out.required = Object.keys(out.properties);
+  return out;
+};
+const stripEmpty = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(stripEmpty);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value).flatMap(([k, v]) => v === "" ? [] : [[k, stripEmpty(v)]]));
+};
+// Input-only fields (barcode, store, location) are backfilled from the request input by normalizeModelShoppingRequest.
+const anthropicShoppingRequestFormat = {
+  type: "json_schema" as const,
+  schema: requireAll(betaZodOutputFormat(ShoppingRequestSchema.omit({ barcode: true, selectedStoreId: true, location: true })).schema) as Record<string, unknown>,
+};
+const ALL_REQUIRED_NOTE = "Every field in the output schema is required: use an empty string, an empty array, or maximumPrice.amountMinor 0 for anything the shopper did not say.";
 const BUDGET_SPENT = "Search budget is spent. Call finalize_shortlist now with offerIds you have already seen (get_seen_offers lists them).";
 
 export class AnthropicModelProvider extends JsonModelProvider {
   private readonly client: Anthropic;
   constructor(apiKey: string, private readonly model: string = DEFAULT_ANTHROPIC_MODEL, options: { client?: Anthropic } = {}) {
     super();
-    this.client = options.client ?? new Anthropic({ apiKey, timeout: 60_000, maxRetries: 2 });
+    this.client = options.client ?? new Anthropic({ apiKey, timeout: 60_000, maxRetries: 1 });
   }
 
   // Structured outputs, not a forced tool call: forced tool_choice returns a 400 on claude-sonnet-5-5.
+  // All-required schema: each optional property multiplies grammar compile time; the full schema (18 optional) stalled >60s or 400'd "Schema is too complex".
   protected async generateJson(prompt: string) {
     const response = await this.client.beta.messages.create({
       ...anthropicFallback(), model: this.model, max_tokens: 16_000,
-      output_config: { effort: "low", format: betaZodOutputFormat(ShoppingRequestSchema) },
-      messages: [{ role: "user", content: prompt }],
-    });
+      output_config: { effort: "low", format: anthropicShoppingRequestFormat },
+      messages: [{ role: "user", content: `${prompt}\n${ALL_REQUIRED_NOTE}` }],
+    }, { timeout: 45_000, maxRetries: 1 });
     if (response.stop_reason === "refusal") throw new Error("Model declined the request");
     const text = response.content.flatMap(b => b.type === "text" ? [b.text] : []).join("");
-    return JSON.parse(text || "{}");
+    const value = stripEmpty(JSON.parse(text || "{}")) as Record<string, unknown>;
+    // Undo the "absent" placeholders the all-required schema forces.
+    const price = value.maximumPrice as { amountMinor?: number } | undefined;
+    if (!price || !(Number(price.amountMinor) > 0)) delete value.maximumPrice;
+    if (Array.isArray(value.clarificationOptions) && !value.clarificationOptions.length) delete value.clarificationOptions;
+    return value;
   }
 
   /**
@@ -153,6 +184,8 @@ export class AnthropicModelProvider extends JsonModelProvider {
     // Validation happens inside run(), so invalid calls still land in the trace.
     const runnableTools: BetaRunnableTool[] = agentToolDefinitions(tools.retailers).map(def => ({ ...def, strict: true, parse: (raw: unknown) => raw, run: handlers[def.name]! }));
 
+    // A stuck request aborts and surfaces as agent_search_failed in the graph instead of holding the connection open.
+    const signal = AbortSignal.timeout(AGENT_DEADLINE_MS);
     const runner = this.client.beta.messages.toolRunner({
       ...anthropicFallback(), model: this.model, max_tokens: 16_000, output_config: { effort: "medium" },
       system: buildSystemPrompt(request, tools.retailers, budget),
@@ -160,13 +193,13 @@ export class AnthropicModelProvider extends JsonModelProvider {
       tools: runnableTools,
       thread: false, // send full history each turn; simpler to reason about and test
       max_iterations: budget.maxToolCalls + POST_BUDGET_GRACE_TURNS + 3,
-    });
+    }, { signal });
 
     let graceTurns = 0;
     for await (const message of runner) {
       if (message.stop_reason === "refusal") break;
       const spentBeforeThisTurn = budgetSpent();
-      await runner.generateToolResponse(); // run this turn's tools now so we can stop right after finalize
+      await runner.generateToolResponse(signal); // run this turn's tools now so we can stop right after finalize
       if (finalized) break;
       if (spentBeforeThisTurn && ++graceTurns >= POST_BUDGET_GRACE_TURNS) break;
     }

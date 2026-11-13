@@ -9,14 +9,14 @@ export type Offer = {
 };
 export type SearchOptions = { maxPrice?: number | undefined; sortBy?: "price_low_to_high" | "rating" | undefined; country?: string | undefined };
 
-type EngineInfo = { retailer: string; resultsKey: string; idKey: "asin" | "product_id"; sort: { price_low_to_high: string; rating?: string } };
+type EngineInfo = { retailer: string; resultsKey: string; idKeys: Array<"asin" | "id" | "product_id" | "prds">; sort: { price_low_to_high: string; rating?: string } };
 export type Engine = "amazon_search" | "walmart_search" | "home_depot_search" | "bestbuy_search" | "google_shopping";
 export const ENGINES: Record<Engine, EngineInfo> = {
-  amazon_search:     { retailer: "amazon",          resultsKey: "organic_results",  idKey: "asin",       sort: { price_low_to_high: "price_low_to_high", rating: "average_review" } },
-  walmart_search:    { retailer: "walmart",         resultsKey: "organic_results",  idKey: "product_id", sort: { price_low_to_high: "price_low_to_high" } },
-  home_depot_search: { retailer: "home_depot",      resultsKey: "organic_results",  idKey: "product_id", sort: { price_low_to_high: "price_low_to_high", rating: "customer_rating" } },
-  bestbuy_search:    { retailer: "best_buy",        resultsKey: "organic_results",  idKey: "product_id", sort: { price_low_to_high: "price_low_to_high", rating: "customer_rating" } },
-  google_shopping:   { retailer: "google_shopping", resultsKey: "shopping_results", idKey: "product_id", sort: { price_low_to_high: "price_low_to_high", rating: "rating_high_to_low" } },
+  amazon_search:     { retailer: "amazon",          resultsKey: "organic_results",  idKeys: ["asin"], sort: { price_low_to_high: "price_low_to_high", rating: "average_review" } },
+  walmart_search:    { retailer: "walmart",         resultsKey: "organic_results",  idKeys: ["id", "product_id"], sort: { price_low_to_high: "price_low_to_high" } }, // `id` is the numeric /ip/<id> item id
+  home_depot_search: { retailer: "home_depot",      resultsKey: "organic_results",  idKeys: ["product_id"], sort: { price_low_to_high: "price_low_to_high", rating: "customer_rating" } },
+  bestbuy_search:    { retailer: "best_buy",        resultsKey: "organic_results",  idKeys: ["product_id"], sort: { price_low_to_high: "price_low_to_high", rating: "customer_rating" } },
+  google_shopping:   { retailer: "google_shopping", resultsKey: "shopping_results", idKeys: ["product_id", "prds"], sort: { price_low_to_high: "price_low_to_high", rating: "rating_high_to_low" } }, // live results carry only `prds`
 };
 // Amazon and Google Shopping localise by country; the other three are US stores priced in USD.
 const COUNTRIES: Record<string, { amazon: string; currency: string }> = {
@@ -29,7 +29,8 @@ const opt = <S extends z.ZodType>(s: S) => s.optional().catch(undefined);
 const numberish = opt(z.union([z.number(), z.string()]));
 const window = opt(z.object({ text: opt(z.string()), type: opt(z.string()), expected_date: opt(z.string()), start_date: opt(z.string()), stock: opt(z.number()) }));
 const Item = z.object({
-  asin: opt(z.string()), product_id: opt(z.union([z.string(), z.number()]).transform(String)),
+  asin: opt(z.string()), id: opt(z.union([z.string(), z.number()]).transform(String)),
+  product_id: opt(z.union([z.string(), z.number()]).transform(String)), prds: opt(z.union([z.string(), z.number()]).transform(String)),
   title: opt(z.string()), link: opt(z.string()), product_link: opt(z.string()),
   // `price` is display text ("$129.00", "From $99"); `extracted_price` is the parsed number, so we never parse currency strings.
   extracted_price: opt(z.number().positive()),
@@ -66,7 +67,7 @@ export async function searchProducts(engine: Engine, query: string, opts: Search
   const currency = engine === "amazon_search" || engine === "google_shopping" ? local.currency : "USD";
 
   const offers = raw.flatMap((r): Offer[] => {
-    const item = Item.safeParse(r).data, id = item?.[info.idKey], url = item?.link ?? item?.product_link;
+    const item = Item.safeParse(r).data, id = item && info.idKeys.map(k => item[k]).find(Boolean), url = item?.link ?? item?.product_link;
     if (!item?.title || !item.extracted_price || !id || !url) return []; // unpriced or unlinkable items are useless to a shopper
     const f = item.fulfillment, seller = typeof item.seller === "string" ? item.seller : item.seller?.name;
     // Amazon's standard_delivery is often the "Join Prime to get..." offer; then the non-member line applies.
