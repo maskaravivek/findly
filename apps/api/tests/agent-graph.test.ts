@@ -81,4 +81,20 @@ describe("agent routing in the graph", () => {
     expect(state.rankedOffers).toEqual([]);
     expect(state.warnings.some(w => w.includes("search agent failed"))).toBe(true);
   });
+
+  it("on the agent path enforces the price cap but keeps differently-worded products", async () => {
+    const headphones = { ...request, originalQuery: "wireless noise cancelling headphones under $200", possibleProductNames: ["wireless noise cancelling headphones"], category: "headphones" };
+    class HeadphonesProvider extends MockModelProvider { override async understandShoppingRequest() { return headphones; } }
+    const model = new HeadphonesProvider();
+    const pricey = { ...offer("pricey", "amazon", "Sony WH-1000XM5 Wireless Headphones"), price: { item: { amountMinor: 39_999, currency: "USD" }, total: { amountMinor: 39_999, currency: "USD" } } };
+    const earbuds = offer("earbuds", "walmart", "Beats Powerbeats Pro Sport Earbuds");
+    Object.assign(model, { runShoppingAgent: async () => ({ shortlist: [pricey, earbuds], reasoning: "earbuds suit running", toolTrace: [], exhaustedBudget: false }) });
+    const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    const state = await createShoppingGraph(model, [fakeAdapter("amazon", () => [])]).invoke(
+      initialState("req_cap", "req_cap", { text: "wireless noise cancelling headphones", imageIds: [], maxPrice: 200 }), { configurable: { thread_id: "req_cap" } });
+    info.mockRestore();
+    expect(state.rankedOffers.map(o => o.offerId)).toEqual(["earbuds"]);
+    expect(state.warnings).toContain("Excluded 1 offer above the $200 price limit");
+    expect(state.warnings.some(w => w.includes("did not match the requested product"))).toBe(false);
+  });
 });

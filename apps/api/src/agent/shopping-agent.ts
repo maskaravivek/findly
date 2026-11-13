@@ -146,7 +146,10 @@ export function validateShortlist(ids: string[], seen: SeenOffers): { offers: No
 
 /** Used when the model never finalizes: let the deterministic ranker pick from what was seen. */
 export function fallbackShortlist(request: ShoppingRequest, seen: SeenOffers, size = 5): NormalizedRetailOffer[] {
-  return rankOffers(request, seen.all()).slice(0, size).map(r => r.offer);
+  // The price cap is a hard constraint even here; offers in another currency are left for verifyAgentShortlist to flag.
+  const limit = request.maximumPrice;
+  const affordable = limit ? seen.all().filter(o => o.price.total.currency !== limit.currency || o.price.total.amountMinor <= limit.amountMinor) : seen.all();
+  return rankOffers(request, affordable).slice(0, size).map(r => r.offer);
 }
 
 export const searchSummary = (retailerId: string, offers: number, warnings: string[]) =>

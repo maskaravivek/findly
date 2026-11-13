@@ -32,8 +32,14 @@ const productTypeScore = (request: ShoppingRequest, offer: NormalizedRetailOffer
   return { score: 20 + 10 * relevance.coverage, matches: relevance.matches };
 };
 
-export function rankOffers(request: ShoppingRequest, offers: NormalizedRetailOffer[]): Ranked[] {
-  const { relevant } = partitionRelevantOffers(request, offers);
+export type RankOptions = {
+  /** Drop offers that fail keyword relevance before ranking. The agent path passes false: the model chose the
+   * product type and verifyAgentShortlist enforced the hard constraints, so coverage is only a soft bonus. */
+  enforceRelevance?: boolean;
+};
+
+export function rankOffers(request: ShoppingRequest, offers: NormalizedRetailOffer[], options: RankOptions = {}): Ranked[] {
+  const relevant = options.enforceRelevance === false ? offers : partitionRelevantOffers(request, offers).relevant;
   const urgent = request.urgency === "today" || request.urgency === "immediate" || request.fulfillmentPreferences.some(value => value === "pickup" || value === "in_store");
   const totals = relevant.map(offer => offer.price.total.amountMinor);
   const minimumTotal = Math.min(...totals);

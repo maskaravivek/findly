@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SeenOffers, agentToolDefinitions, buildAgentTools, buildSystemPrompt, compactView, validateShortlist } from "../src/agent/shopping-agent.js";
+import { SeenOffers, agentToolDefinitions, buildAgentTools, buildSystemPrompt, compactView, fallbackShortlist, validateShortlist } from "../src/agent/shopping-agent.js";
 import { fakeAdapter, offer, request } from "./agent-fixtures.js";
 
 const ctx = { request, requestId: "r1", correlationId: "c1", input: { postalCode: "10001", country: "US" }, maxResultsPerCall: 2 };
@@ -57,5 +57,15 @@ describe("prompt and tool schemas", () => {
   it("search_products restricts retailerId to the known retailers", () => {
     const search = agentToolDefinitions(retailers).find(t => t.name === "search_products")!;
     expect((search.input_schema.properties.retailerId as { enum: string[] }).enum).toEqual(["amazon", "walmart"]);
+  });
+});
+
+describe("fallbackShortlist", () => {
+  it("respects the price cap when code picks the shortlist", () => {
+    const seen = new SeenOffers();
+    const cheap = offer("cheap");
+    seen.add([{ ...offer("dear"), price: { item: { amountMinor: 50_000, currency: "USD" }, total: { amountMinor: 50_000, currency: "USD" } } }, cheap]);
+    const capped = { ...request, maximumPrice: { amountMinor: 20_000, currency: "USD" } };
+    expect(fallbackShortlist(capped, seen).map(o => o.offerId)).toEqual(["cheap"]);
   });
 });

@@ -4,6 +4,7 @@ import type { RetailerAdapter } from "@findly/retailer-sdk";
 import type { SearchRequest } from "@findly/contracts";
 import { rankOffers } from "../ranking/rank-offers.js";
 import { partitionRelevantOffers } from "../products/product-relevance.js";
+import { verifyAgentShortlist } from "../products/verify-shortlist.js";
 import { ShoppingGraphAnnotation, event, type ShoppingGraphState } from "./state.js";
 import { publicRetailerError } from "../retailers/retailer-errors.js";
 import { buildAgentTools } from "../agent/shopping-agent.js";
@@ -67,6 +68,9 @@ async function runAgentSearch(model: ModelProvider, adapters: RetailerAdapter[],
   }
 }
 
+/** normalize_offers takes the agent shortlist whenever it is non-empty; the same test picks the verification mode. */
+const usedAgentShortlist = (state: ShoppingGraphState) => state.agentShortlist.length > 0;
+
 export type ShoppingGraphDefaults = { currency: string; country: string; maxToolCalls?: number; maxResultsPerCall?: number };
 export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdapter[], defaults: ShoppingGraphDefaults = { currency: "USD", country: "US" }) {
   const budget = { maxToolCalls: defaults.maxToolCalls ?? 6, maxResultsPerCall: defaults.maxResultsPerCall ?? 8 };
@@ -79,8 +83,18 @@ export function createShoppingGraph(model: ModelProvider, adapters: RetailerAdap
     .addNode("dispatch_retailer_searches", async (state) => { const selectedAdapters = adapters.filter(a => state.searchPlan!.retailerIds.includes(a.retailer.id)); const settled = await Promise.allSettled(selectedAdapters.map(adapter => searchRetailerWithFallback(adapter, state))); const results = settled.flatMap(x => x.status === "fulfilled" ? [x.value] : []); const errors = settled.flatMap((x, i) => x.status === "rejected" ? [publicRetailerError(selectedAdapters[i]?.retailer.id ?? "unknown", x.reason)] : []); return { status: "searching", retailerResults: results, retailerErrors: errors, progressEvents: results.map(r => event("searching_retailer", `Checked ${r.retailerId}`, { retailer: r.retailerId, offersFound: r.offers.length })), warnings: [...results.flatMap(r => r.warnings), ...errors.map(e => `${e.retailerId}: ${e.message}`)], updatedAt: new Date().toISOString() }; })
     .addNode("agent_search", async (state) => runAgentSearch(model, adapters, state, budget))
     .addNode("normalize_offers", async (state) => ({ status: "matching", normalizedOffers: state.agentShortlist.length ? state.agentShortlist : state.retailerResults.flatMap(r => r.offers), progressEvents: [event("matching", "Matching exact products, bundles and variants")], updatedAt: new Date().toISOString() }))
-    .addNode("match_products", async (state) => { const { relevant, rejected } = partitionRelevantOffers(state.understoodRequest!, state.normalizedOffers); return { matchedOffers: relevant, warnings: rejected.length ? [rejectedOfferWarning(rejected.length)] : [], progressEvents: [event("matching", `Matched ${relevant.length} relevant offers`)], updatedAt: new Date().toISOString() }; })
-    .addNode("rank_offers", async (state) => { const ranked = rankOffers(state.understoodRequest!, state.matchedOffers).map(r => r.offer); return { status: "ranking", rankedOffers: ranked, progressEvents: [event("ranking", `Ranked ${ranked.length} offers`)], updatedAt: new Date().toISOString() }; })
+    .addNode("match_products", async (state) => {
+      const request = state.understoodRequest!;
+      if (usedAgentShortlist(state)) {
+        // Agent path: the model picked from real results, so only check hard constraints, not product type.
+        const verified = verifyAgentShortlist(request, state.normalizedOffers);
+        console.info(JSON.stringify({ event: "agent_shortlist_verified", requestId: state.requestId, kept: verified.kept.length, dropped: verified.dropped.map(d => ({ offerId: d.offer.offerId, rule: d.rule })), coverage: verified.coverage }));
+        return { matchedOffers: verified.kept, warnings: verified.warnings, progressEvents: [event("matching", `Verified ${verified.kept.length} shortlisted offers`)], updatedAt: new Date().toISOString() };
+      }
+      const { relevant, rejected } = partitionRelevantOffers(request, state.normalizedOffers);
+      return { matchedOffers: relevant, warnings: rejected.length ? [rejectedOfferWarning(rejected.length)] : [], progressEvents: [event("matching", `Matched ${relevant.length} relevant offers`)], updatedAt: new Date().toISOString() };
+    })
+    .addNode("rank_offers", async (state) => { const ranked = rankOffers(state.understoodRequest!, state.matchedOffers, { enforceRelevance: !usedAgentShortlist(state) }).map(r => r.offer); return { status: "ranking", rankedOffers: ranked, progressEvents: [event("ranking", `Ranked ${ranked.length} offers`)], updatedAt: new Date().toISOString() }; })
     .addNode("generate_result_summary", async (state) => ({ recommendation: await model.summarizeRecommendation({ request: state.understoodRequest!, rankedOffers: state.rankedOffers, ...(state.agentReasoning ? { agentReasoning: state.agentReasoning } : {}) }), status: state.retailerErrors.length ? "partially_completed" : "completed", progressEvents: [event("completed", "Recommendations ready", { type: "complete", offersFound: state.rankedOffers.length })], completedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }))
     .addEdge(START, "load_request").addEdge("load_request", "understand_request")
     .addConditionalEdges("understand_request", (state) => state.understoodRequest?.clarificationNeeded && !state.clarificationAnswer ? "clarify" : "plan", { clarify: "prepare_clarification", plan: "build_search_plan" })
