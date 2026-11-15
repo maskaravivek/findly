@@ -1,5 +1,18 @@
-import "dotenv/config";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { config as loadDotenv } from "dotenv";
 import { z } from "zod";
+/** .env files to load: the cwd's, then the workspace root's (found via pnpm-workspace.yaml, so it works from src/ and dist/src/). */
+function dotenvPaths(): string[] {
+  const paths = [join(process.cwd(), ".env")];
+  for (let dir = dirname(fileURLToPath(import.meta.url)); dirname(dir) !== dir; dir = dirname(dir)) {
+    if (existsSync(join(dir, "pnpm-workspace.yaml"))) { paths.push(join(dir, ".env")); break; }
+  }
+  return paths;
+}
+// Variables already in the environment always win; missing files are ignored; tests never read a real .env.
+if (process.env.NODE_ENV !== "test") loadDotenv({ path: [...new Set(dotenvPaths())], quiet: true });
 const bool = (fallback = false) => z.preprocess(v => v === undefined ? fallback : v === true || v === "true", z.boolean());
 const int = (fallback: number) => z.coerce.number().int().positive().default(fallback);
 export const EnvSchema = z.object({
