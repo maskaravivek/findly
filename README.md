@@ -1,58 +1,87 @@
 # Findly
 
-Findly is a configurable shopping utility: describe, photograph, or scan an item, then compare exact products and ways to get them online or nearby. Country and currency are configuration, not hard-coded. Live retailer data comes from [SearchAPI](https://www.searchapi.io) (Amazon, Walmart, Home Depot, Best Buy, Google Shopping), and an Anthropic tool-calling agent picks retailers and queries while deterministic code verifies, matches, and ranks everything it proposes. The repository contains a native Android app and a Node.js/TypeScript API orchestrated with LangGraph.js.
+Findly turns a natural-language shopping request, like "a battery powered drilling machine for wood and drywall under $150", into a shortlist of live offers from Amazon, Walmart, Home Depot, Best Buy and Google Shopping.
 
-## Run it
+An LLM agent (Claude) decides which stores to search and how to word each query. Each search runs through [SearchApi](https://www.searchapi.io). Code enforces the search budget, drops any offer the searches didn't return, checks the price cap and exclusions, and ranks the results.
 
-Requirements: Node 24+, pnpm 10+, JDK 17+, Android SDK 35 (Android only). You need a [SearchAPI](https://www.searchapi.io) key and an Anthropic API key; the API refuses to start without them.
+The repo has a Node.js/TypeScript API (Fastify + LangGraph.js) and a native Android client.
 
-Set these in `.env` (see [`.env.example`](.env.example) for every variable):
+## Setup
 
-```text
-SEARCHAPI_API_KEY=<searchapi.io key>
-ANTHROPIC_API_KEY=<Anthropic API key>
-DEFAULT_COUNTRY=US            # ISO 3166-1 alpha-2, used when a request omits country
-DEFAULT_CURRENCY=USD          # ISO 4217, used when a request omits currency
-SEARCHAPI_ENGINES=amazon_search,walmart_search,home_depot_search,bestbuy_search,google_shopping
-AGENT_MAX_TOOL_CALLS=12       # search_products calls per request
-```
+You need Node 24+, pnpm 10+, a [SearchApi API key](https://www.searchapi.io) and an [Anthropic API key](https://console.anthropic.com).
 
-Then:
+1. Clone the repo and install dependencies:
 
-```bash
-cp .env.example .env   # fill in the two keys
-pnpm install
-pnpm dev
-```
+   ```bash
+   git clone https://github.com/maskaravivek/findly.git
+   cd findly
+   pnpm install
+   ```
 
-Open `http://localhost:3000/docs`, or send:
+2. Create `.env` and add both keys:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   ```text
+   SEARCHAPI_API_KEY=<your SearchApi key>
+   ANTHROPIC_API_KEY=<your Anthropic key>
+   ```
+
+   The other variables have working defaults. See [`.env.example`](.env.example) for engines, country, currency and the agent's search budget.
+
+3. Start the API:
+
+   ```bash
+   pnpm dev
+   ```
+
+   It runs on `http://localhost:3000`. OpenAPI docs are at `http://localhost:3000/docs`.
+
+## Try it
 
 ```bash
 curl -X POST http://localhost:3000/v1/search \
   -H 'content-type: application/json' \
-  -d '{"text":"cordless drill","country":"US","maxPrice":150,"imageIds":[]}'
+  -d '{"text":"battery powered drilling machine for wood and drywall under $150","country":"US","imageIds":[]}'
 ```
 
-Every search runs one path: the Anthropic agent loop (`claude-sonnet-5-5` by default, override with `PRIMARY_MODEL`) calls `search_products` against the configured SearchAPI engines, then `finalize_shortlist`; code enforces the budget, drops any offer id no search returned, verifies hard constraints (price cap, exclusions, exact model), and ranks. Walmart, Home Depot, and Best Buy engines are US stores; Amazon and Google Shopping localise by country. See [`docs/retailer-adapters.md`](docs/retailer-adapters.md).
+A search takes about 20 seconds. The response includes:
 
-Tests need no keys: they inject a `SearchApiClient` that serves the recorded responses in `apps/api/tests/fixtures/searchapi` and use `MODEL_PROVIDER=mock`, a deterministic test-only stand-in for the agent.
+* `offers`: the ranked shortlist
+* `agentReasoning`: why the agent picked them
+* `toolTrace`: every search the agent ran
 
-## Android
+If the response has `"status": "awaiting_clarification"`, answer the question:
 
-Build with `pnpm android:build` (or `./gradlew assembleDebug -PbrandName=YourBrand`). The emulator calls the API at `10.0.2.2:3000`. The client has not been updated for the SearchAPI retailers yet: it decodes any retailer id, but formats every price as CAD and labels the pickup section with Home Depot.
+```bash
+curl -X POST http://localhost:3000/v1/search/<requestId>/clarification \
+  -H 'content-type: application/json' \
+  -d '{"answer":"Concrete"}'
+```
 
-## Workspace
+## Tests
 
-- `apps/api`: Fastify, LangGraph with in-memory checkpoints, SSE, the Anthropic model provider and shopping agent (plus a test-only mock), and SearchAPI retailer adapters. Zod wire schemas live in `src/contracts.ts`, the model and retailer interfaces in `src/models/types.ts` and `src/retailers/types.ts`, and recorded SearchAPI responses in `tests/fixtures/searchapi`.
-- `apps/android`: Compose/Material 3 client using MVVM and unidirectional Flow state.
-- `infra/cloudflare`: Worker and Container configuration for the deployed API.
-- `infra/docker`: the production API container image.
-- `docs`: architecture, security, workflow, adapters, deployment, and API details.
+```bash
+pnpm test
+```
 
-Brand display name is configured by `BRAND_NAME` on the API and Android resources/application configuration on the client. No purchasing endpoint exists: offer links hand control to the retailer.
+The tests need no API keys. They replay recorded SearchApi responses from `apps/api/tests/fixtures/searchapi` and use a mock in place of the LLM.
 
-## Deployed API
+## Android app
 
-The phone-test deployment is available at `https://findly-api.maskaravivek.workers.dev`. It uses a scale-to-zero Cloudflare Container behind a Worker for the Node.js API, in-memory workflow state, the Anthropic shopping agent, and SearchAPI retailer adapters. The Worker needs `ANTHROPIC_API_KEY` and `SEARCHAPI_API_KEY` as secrets. No account or database service is required. Offers expose stock, pickup, and delivery fields only when the engine returned them.
+```bash
+pnpm android:build
+```
 
-See [`docs/deployment.md`](docs/deployment.md) for environment variables, secrets, verification commands, and Android build configuration.
+Requires JDK 17+ and Android SDK 35. The emulator reaches the local API at `10.0.2.2:3000`.
+
+![Findly Android app showing the search box, the recommendation and the ranked offers](docs/images/android-screens.png)
+
+## Project layout
+
+* `apps/api`: the API, covering the SearchApi client and engines (`src/retailers/searchapi`), the agent (`src/agent`, `src/models`) and the LangGraph pipeline (`src/graph`)
+* `apps/android`: the Compose client
+* `infra`: Docker image and Cloudflare Container config
+* `docs`: [architecture](docs/architecture.md), [API](docs/api.md), [retailer adapters](docs/retailer-adapters.md), [security](docs/security.md) and [deployment](docs/deployment.md)
