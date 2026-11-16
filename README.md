@@ -2,13 +2,13 @@
 
 Findly turns a natural-language shopping request, like "a battery powered drilling machine for wood and drywall under $150", into a shortlist of live offers from Amazon, Walmart, Home Depot, Best Buy and Google Shopping.
 
-An LLM agent (Claude) decides which stores to search and how to word each query. Each search runs through [SearchApi](https://www.searchapi.io). Code enforces the search budget, drops any offer the searches didn't return, checks the price cap and exclusions, and ranks the results.
+An LLM agent (Claude) decides which stores to search and how to word each query. Each search runs through [SearchApi]([https://www.searchapi.io](https://www.searchapi.io/?utm_source=dev&utm_medium=ambassador&utm_campaign=maskaravivek.com)). Code enforces the search budget, drops any offer the searches didn't return, checks the price cap and exclusions, and ranks the results.
 
 The repo has a Node.js/TypeScript API (Fastify + LangGraph.js) and a native Android client.
 
 ## Setup
 
-You need Node 24+, pnpm 10+, a [SearchApi API key](https://www.searchapi.io) and an [Anthropic API key](https://console.anthropic.com).
+You need Node 24+, pnpm 10+, a [SearchApi API key]([https://www.searchapi.io](https://www.searchapi.io/?utm_source=dev&utm_medium=ambassador&utm_campaign=maskaravivek.com)) and an [Anthropic API key](https://console.anthropic.com).
 
 1. Clone the repo and install dependencies:
 
